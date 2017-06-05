@@ -1,7 +1,9 @@
 package com.bonc.epm.paas;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Timer;
 
@@ -17,10 +19,8 @@ import com.bonc.epm.paas.entity.ceph.SnapTask;
 
 public class SnapListener implements ApplicationListener<ContextRefreshedEvent> {
 
-	@Autowired
 	private CephRbdInfoDao cephRbdInfoDao;
 
-	@Autowired
 	private SnapStrategyDao snapStrategyDao;
 
 	private static Map<CephRbdInfo, Timer> map;
@@ -28,10 +28,13 @@ public class SnapListener implements ApplicationListener<ContextRefreshedEvent> 
 	@Override
 	public void onApplicationEvent(ContextRefreshedEvent arg0) {
 		map = new HashMap<CephRbdInfo, Timer>();
+		snapStrategyDao = SpringApplicationContext.getBean(SnapStrategyDao.class);
+		cephRbdInfoDao = SpringApplicationContext.getBean(CephRbdInfoDao.class);
 		Iterable<CephRbdInfo> iterable = cephRbdInfoDao.findAll();
-		while (iterable.iterator().hasNext()) {
-			CephRbdInfo cephRbdInfo = iterable.iterator().next();
-			if (cephRbdInfo.getStrategyId() != 0) {
+		Iterator<CephRbdInfo> iterator = iterable.iterator();
+		while (iterator.hasNext()) {
+			CephRbdInfo cephRbdInfo = iterator.next();
+			if (cephRbdInfo.getStrategyId() != 0&&cephRbdInfo.isStrategyexcuting()) {
 				long strategyId = cephRbdInfo.getStrategyId();
 				SnapStrategy snapStrategy = snapStrategyDao.findById(strategyId);
 				if (snapStrategy != null) {
@@ -40,8 +43,11 @@ public class SnapListener implements ApplicationListener<ContextRefreshedEvent> 
 						Timer timer = new Timer();
 						for (String time : times) {
 							SnapTask snapTask = new SnapTask(cephRbdInfo, snapStrategy);
-							Date date = new Date();
-							date.setTime(Integer.parseInt(time));
+							Calendar calendar = Calendar.getInstance();
+							calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(time));
+							calendar.set(Calendar.MINUTE, 0);
+							calendar.set(Calendar.SECOND, 0);
+							Date date = calendar.getTime();
 							timer.scheduleAtFixedRate(snapTask, date, 24l * 3600l * 1000l);// 第一次时间是今天某一刻，周期为一天
 						}
 						map.put(cephRbdInfo, timer);
@@ -81,8 +87,11 @@ public class SnapListener implements ApplicationListener<ContextRefreshedEvent> 
 					Timer timer = new Timer();
 					for (String time : times) {
 						SnapTask snapTask = new SnapTask(cephRbdInfo, snapStrategy);
-						Date date = new Date();
-						date.setTime(Integer.parseInt(time));
+						Calendar calendar = Calendar.getInstance();
+						calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(time));
+						calendar.set(Calendar.MINUTE, 0);
+						calendar.set(Calendar.SECOND, 0);
+						Date date = calendar.getTime();
 						timer.scheduleAtFixedRate(snapTask, date, 24l * 3600l * 1000l);// 第一次时间是今天某一刻，周期为一天
 					}
 					map.put(cephRbdInfo, timer);

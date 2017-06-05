@@ -359,21 +359,137 @@ function formatStrategy(){
 })
 }
 
-function createStrategy(){
-	layer.open({
-		type:1,
-			title: '创建策略',
-			area: ['500px'],
-			content: $("#createStrategy"),
-			btn: ['确定', '取消'],
-			yes: function(index, layero){
+function createStrategy(obj){
+	var imgId = $(obj).parent().attr("rbdId");
 
+	$.ajax({
+			url:""+ctx+"/ceph/specifiedSnapStrategyInfo?imgId="+imgId,
+			type:"get",
+			success:function(data){
+				var data = eval("(" + data + ")");
+				if(data.status =='404'){
+					layer.msg("该设备目前还没有快照策略！");
+				}else{
+
+					$("input:checkbox[name='time']:checked").each(function(i) {
+						$(this).prop('checked', false);
+					});
+
+					$("input:checkbox[name='week']:checked").each(function(i) {
+						$(this).prop('checked', false);
+					});
+
+					$('input:radio[name="retainTime"]:checked').prop('checked', false);
+
+					$("#strategyname").val(data.snapStrategy.name);
+
+					var times = data.snapStrategy.time.split(',');
+					for (var i = 0; i < times.length; i++) {
+						$("input:checkbox[name='time']").each(function(index) {
+							if($(this).val()==times[i]){
+								$(this).prop('checked', true);
+							}
+						});
+					}
+
+					var weeks = data.snapStrategy.week.split(',');
+					for (var i = 0; i < weeks.length; i++) {
+						$("input:checkbox[name='week']").each(function(index) {
+							if($(this).val()==weeks[i]){
+								$(this).prop('checked', true);
+							}
+						});
+					}
+
+					if (data.snapStrategy.keep == 100000) {
+						$("input:radio[value='2']").prop('checked', true);
+					} else {
+						$("input:radio[value='1']").prop('checked', true);
+						$('#keep').val(data.snapStrategy.keep);
+					}
+
+					$("#operationBtn").empty();
+					var btn;
+					if(data.excuting == true){
+						btn="<button class=\"textBtn\" style=\"float:right\" onclick=\"cancel("+imgId+")\">取消执行</button>";
+					}else{
+						btn="<button class=\"textBtn\" style=\"float:right\" onclick=\"excute("+imgId+")\">执行策略</button>";
+						btn=btn+"<button class=\"textBtn\" style=\"float:right\" onclick=\"unbind("+imgId+")\">解除绑定</button>";
+					}
+					$("#operationBtn").append(btn);
+
+					layer.open({
+						    type:1,
+							title: '快照策略',
+							area: ['500px'],
+							content: $("#createStrategy")
+					})
 				}
-	})
+			}
+		});
 
 }
 
+function excute(imgId){
+	$.ajax({
+		url:""+ctx+"/ceph/excuteSnapStrategy?imgId="+imgId,
+		type:"get",
+		success:function(data){
+
+			var data = eval("(" + data + ")");
+			if(data.status =='500'){
+				layer.msg(data.msg,{icon : 5});
+			}else{
+				layer.msg("执行成功！",{icon : 6});
+
+				$("#operationBtn").empty();
+				var btn;
+				btn="<button class=\"textBtn\" style=\"float:right\" onclick=\"cancel("+imgId+")\">取消执行</button>";
+				$("#operationBtn").append(btn);
+			}
+		}
+	});
+}
 
 
+function cancel(imgId){
+	$.ajax({
+			url:""+ctx+"/ceph/cancelSnapStrategy?imgId="+imgId,
+			type:"get",
+			success:function(data){
+
+				var data = eval("(" + data + ")");
+				if(data.status =='500'){
+					layer.msg(data.msg,{icon : 5});
+				}else{
+					layer.msg("取消执行成功！",{icon : 6});
+
+					$("#operationBtn").empty();
+					var btn;
+					btn="<button class=\"textBtn\" style=\"float:right\" onclick=\"excute("+imgId+")\">执行策略</button>";
+					btn=btn+"<button class=\"textBtn\" style=\"float:right\" onclick=\"unbind("+imgId+")\">解除绑定</button>";
+
+					$("#operationBtn").append(btn);
+				}
+			}
+		});
+}
+
+function unbind(imgId){
+	$.ajax({
+		url:""+ctx+"/ceph/unbindSnapStrategy?imgId="+imgId,
+		type:"get",
+		success:function(data){
+
+			var data = eval("(" + data + ")");
+			if(data.status =='500'){
+				layer.msg(data.msg,{icon : 5});
+			}else{
+				layer.msg("解除绑定成功！",{icon : 6});
+                 location.reload();
+			}
+		}
+	});
+}
 
 

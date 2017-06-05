@@ -351,11 +351,11 @@ function unbind(obj){
 
 function excute(obj){
 	var imgId = $(obj).parent().parent().attr("imgId");
-	var strategyId = $(obj).parent().parent().attr("strategyId");
+	//var strategyId = $(obj).parent().parent().attr("strategyId");
 
 	// 执行快照策略
 	$.ajax({
-		url : ctx + "/ceph/excuteSnapStrategy?imgId="+imgId+"&strategyId=" + strategyId,
+		url : ctx + "/ceph/excuteSnapStrategy?imgId="+imgId,
 		success : function(data) {
 			var data = eval("(" + data + ")");
 			if (data.status == '200') {

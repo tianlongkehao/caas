@@ -72,7 +72,7 @@
 	                                                <td>未挂载</td>
 	                                            </c:if>
 	                                            <td>${rbd.detail }</td>
-	                                            <td class="item-operation" rbd="${rbd.name }" size="${rbd.size }" detail="${rbd.detail }" release="${rbd.releaseWhenServiceDown }">
+	                                            <td class="item-operation" rbdId=${rbd.id } rbd="${rbd.name }" size="${rbd.size }" detail="${rbd.detail }" release="${rbd.releaseWhenServiceDown }">
 	                                            	<a onclick="createSnapshoot(this)"><i class="fa fa-camera fa-opr" title="创建快照" style="margin-left:0px"></i></a>
 	                                            	<a onclick="createStrategy(this)"><i class="fa fa-tasks fa-opr" title="设置自动快照策略"></i></a>
 	                                            	<a onclick="formatStrategy(this)"><i class="fa fa-eraser fa-opr" title="重新初始化磁盘"></i></a>
@@ -190,55 +190,59 @@
 <div id="createStrategy" style="display:none">
     <ul class="popWin">
         <li class="line-h-3">
-            <span class="s-edit-name">策略名称：<font color="red">*</font></span>
-            <input id="q-storageName" class="form-control q-storage" type="text" value="">
+            <span class="s-edit-name">策略名称：</span>
+            <input id="strategyname" class="form-control q-storage" type="text" value="" style="background-color:#ddd" readonly>
         </li>
         <li class="line-h-3">
-            <span class="s-edit-name">创建时间：<font color="red">*</font></span>
+            <span class="s-edit-name">创建时间：</span>
             <ul class="createTimeInfo">
-            	<li><label><input type="checkbox">00:00</label></li>
-            	<li><label><input type="checkbox">01:00</label></li>
-            	<li><label><input type="checkbox">02:00</label></li>
-            	<li><label><input type="checkbox">03:00</label></li>
-            	<li><label><input type="checkbox">04:00</label></li>
-            	<li><label><input type="checkbox">05:00</label></li>
-            	<li><label><input type="checkbox">06:00</label></li>
-            	<li><label><input type="checkbox">07:00</label></li>
-            	<li><label><input type="checkbox">08:00</label></li>
-            	<li><label><input type="checkbox">09:00</label></li>
-            	<li><label><input type="checkbox">10:00</label></li>
-            	<li><label><input type="checkbox">11:00</label></li>
-            	<li><label><input type="checkbox">12:00</label></li>
-            	<li><label><input type="checkbox">13:00</label></li>
-            	<li><label><input type="checkbox">14:00</label></li>
-            	<li><label><input type="checkbox">15:00</label></li>
-            	<li><label><input type="checkbox">16:00</label></li>
-            	<li><label><input type="checkbox">17:00</label></li>
-            	<li><label><input type="checkbox">18:00</label></li>
-            	<li><label><input type="checkbox">19:00</label></li>
-            	<li><label><input type="checkbox">20:00</label></li>
-            	<li><label><input type="checkbox">21:00</label></li>
-            	<li><label><input type="checkbox">22:00</label></li>
-            	<li><label><input type="checkbox">23:00</label></li>
+            	<li><label><input type="checkbox" name="time" value="0">00:00</label></li>
+            	<li><label><input type="checkbox" name="time" value="1">01:00</label></li>
+            	<li><label><input type="checkbox" name="time" value="2">02:00</label></li>
+            	<li><label><input type="checkbox" name="time" value="3">03:00</label></li>
+            	<li><label><input type="checkbox" name="time" value="4">04:00</label></li>
+            	<li><label><input type="checkbox" name="time" value="5">05:00</label></li>
+            	<li><label><input type="checkbox" name="time" value="6">06:00</label></li>
+            	<li><label><input type="checkbox" name="time" value="7">07:00</label></li>
+            	<li><label><input type="checkbox" name="time" value="8">08:00</label></li>
+            	<li><label><input type="checkbox" name="time" value="9">09:00</label></li>
+            	<li><label><input type="checkbox" name="time" value="10">10:00</label></li>
+            	<li><label><input type="checkbox" name="time" value="11">11:00</label></li>
+            	<li><label><input type="checkbox" name="time" value="12">12:00</label></li>
+            	<li><label><input type="checkbox" name="time" value="13">13:00</label></li>
+            	<li><label><input type="checkbox" name="time" value="14">14:00</label></li>
+            	<li><label><input type="checkbox" name="time" value="15">15:00</label></li>
+            	<li><label><input type="checkbox" name="time" value="16">16:00</label></li>
+            	<li><label><input type="checkbox" name="time" value="17">17:00</label></li>
+            	<li><label><input type="checkbox" name="time" value="18">18:00</label></li>
+            	<li><label><input type="checkbox" name="time" value="19">19:00</label></li>
+            	<li><label><input type="checkbox" name="time" value="20">20:00</label></li>
+            	<li><label><input type="checkbox" name="time" value="21">21:00</label></li>
+            	<li><label><input type="checkbox" name="time" value="22">22:00</label></li>
+            	<li><label><input type="checkbox" name="time" value="23">23:00</label></li>
             </ul>
         </li>
         <li class="line-h-3">
-            <span class="s-edit-name">重复日期：<font color="red">*</font></span>
+            <span class="s-edit-name">重复日期：</span>
             <ul class="repeatDateInfo">
-            	<li><label><input type="checkbox">周一</label></li>
-            	<li><label><input type="checkbox">周二</label></li>
-            	<li><label><input type="checkbox">周三</label></li>
-            	<li><label><input type="checkbox">周四</label></li>
-            	<li><label><input type="checkbox">周五</label></li>
-            	<li><label><input type="checkbox">周六</label></li>
-            	<li><label><input type="checkbox">周日</label></li>
+            	<li><label><input type="checkbox" name="week" value="1">周一</label></li>
+            	<li><label><input type="checkbox" name="week" value="2">周二</label></li>
+            	<li><label><input type="checkbox" name="week" value="3">周三</label></li>
+            	<li><label><input type="checkbox" name="week" value="4">周四</label></li>
+            	<li><label><input type="checkbox" name="week" value="5">周五</label></li>
+            	<li><label><input type="checkbox" name="week" value="6">周六</label></li>
+            	<li><label><input type="checkbox" name="week" value="0">周日</label></li>
             </ul>
         </li>
         <li class="line-h-3">
-            <span class="s-edit-name">保留时间：<font color="red">*</font></span>
+            <span class="s-edit-name">保留时间：</span>
             <ul class="retainTimeInfo">
-            	<li><label><input type="radio" name="retainTime" value="">自定义时长<input type="number" class="retainTimeInput" value="30">天</label><span>保留天数取值范围：1-35536</span></li>
-            	<li><label><input type="radio" name="retainTime">永久保留</label></li>
+            	<li><label><input type="radio" name="retainTime" value="1">自定义时长<input id="keep" type="number" class="retainTimeInput" style="background-color:#ddd" readonly>天</label><span>保留天数取值范围：1-35536</span></li>
+            	<li><label><input type="radio" name="retainTime" value="2">永久保留</label></li>
+            </ul>
+        </li>
+        <li class="line-h-3">
+            <ul id="operationBtn">
             </ul>
         </li>
     </ul>

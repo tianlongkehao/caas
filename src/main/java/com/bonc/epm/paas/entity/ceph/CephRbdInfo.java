@@ -1,6 +1,7 @@
 package com.bonc.epm.paas.entity.ceph;
 
 import java.util.Date;
+import java.util.Objects;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -151,6 +152,20 @@ public class CephRbdInfo {
 
 	public void setReleaseWhenServiceDown(boolean releaseWhenServiceDown) {
 		this.releaseWhenServiceDown = releaseWhenServiceDown;
+	}
+
+	@Override
+	public int hashCode() {
+		int hash = Objects.hash(id,name,pool);
+		return hash;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if(this == o)return true;
+        if(!(o instanceof CephRbdInfo))return false;
+        CephRbdInfo obj = (CephRbdInfo)o;
+        return (this.id == obj.getId() && this.name.equals(obj.getName())&&this.pool.equals(obj.getPool()));
 	}
 
 }
