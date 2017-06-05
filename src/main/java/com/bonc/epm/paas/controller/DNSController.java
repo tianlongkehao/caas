@@ -160,7 +160,7 @@ public class DNSController {
 		KubernetesAPIClientInterface client = kubernetesClientService.getClient(KubernetesClientService.adminNameSpace);
 		// 创建Service
 		Service k8sService = kubernetesClientService.generateService(serviceName, portConfigs, null, serviceName,
-				serviceName, "", "");
+				"");
 		try {
 			k8sService = client.createService(k8sService);
 		} catch (KubernetesClientException e) {
