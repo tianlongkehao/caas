@@ -261,9 +261,8 @@ public class KubernetesClientService {
 
 	public ReplicationController generateSimpleReplicationController(String name, int replicas, Integer initialDelay,
 			Integer timeoutDetction, Integer periodDetction, String image, List<PortConfig> portConfigs, Double cpu,
-			String ram, String nginxObj, String servicePath, String proxyPath, String checkPath,
-			List<EnvVariable> envVariables, List<String> command, List<String> args,
-			List<ServiceConfigmap> serviceConfigmapList, boolean ispodmutex) {
+			String ram, String nginxObj, String servicePath, String checkPath, List<EnvVariable> envVariables,
+			List<String> command, List<String> args, List<ServiceConfigmap> serviceConfigmapList, boolean ispodmutex) {
 
 		ReplicationController replicationController = new ReplicationController();
 		ObjectMeta meta = new ObjectMeta();
@@ -279,9 +278,6 @@ public class KubernetesClientService {
 		labels.put("app", name);
 		if (StringUtils.isNotBlank(servicePath)) {
 			labels.put("servicePath", servicePath.replaceAll("/", "LINE"));
-		}
-		if (StringUtils.isNotBlank(proxyPath)) {
-			labels.put("proxyPath", proxyPath.replaceAll("/", "LINE"));
 		}
 		if (StringUtils.isNotBlank(nginxObj)) {
 			String[] proxyArray = nginxObj.split(",");
@@ -492,7 +488,7 @@ public class KubernetesClientService {
 	}
 
 	public Service generateService(String appName, List<PortConfig> portConfigs, String proxyZone, String servicePath,
-			String proxyPath, String sessionAffinity, String nodeIpAffinity) {
+			String sessionAffinity) {
 		Service service = new Service();
 		ObjectMeta meta = new ObjectMeta();
 		meta.setName(appName);
@@ -501,18 +497,12 @@ public class KubernetesClientService {
 		if (StringUtils.isNotBlank(servicePath)) {
 			labels.put("servicePath", servicePath.replaceAll("/", "LINE"));
 		}
-		if (StringUtils.isNotBlank(proxyPath)) {
-			labels.put("proxyPath", proxyPath.replaceAll("/", "LINE"));
-		}
 
 		if (StringUtils.isNotBlank(proxyZone)) {
 			String[] proxyArray = proxyZone.split(",");
 			for (int i = 0; i < proxyArray.length; i++) {
 				labels.put(proxyArray[i], proxyArray[i]);
 			}
-		}
-		if (StringUtils.isNotBlank(nodeIpAffinity)) {
-			labels.put("nodeIpAffinity", nodeIpAffinity);
 		}
 		meta.setLabels(labels);
 		service.setMetadata(meta);
@@ -701,7 +691,6 @@ public class KubernetesClientService {
 			for (int i = 0; i < ProxyZones.length; i++) {
 				controller.getMetadata().getLabels().put(ProxyZones[i].toLowerCase(), ProxyZones[i]);
 			}
-			controller.getMetadata().getLabels().put("proxyPath", service.getProxyPath());
 			controller.getMetadata().getLabels().put("servicePath", service.getServicePath());
 		}
 		if (StringUtils.isNotBlank(service.getCheckPath())) {
@@ -757,14 +746,6 @@ public class KubernetesClientService {
 			if (StringUtils.isNotBlank(service.getServicePath())) {
 				k8sService.getMetadata().getLabels().put("servicePath",
 						service.getServicePath().replaceAll("/", "LINE"));
-			}
-			if (StringUtils.isNotBlank(service.getProxyPath())) {
-				k8sService.getMetadata().getLabels().put("proxyPath", service.getProxyPath().replaceAll("/", "LINE"));
-			}
-			if (StringUtils.isNotBlank(service.getNodeIpAffinity())) {
-				k8sService.getMetadata().getLabels().put("nodeIpAffinity", service.getNodeIpAffinity());
-			} else {
-				k8sService.getMetadata().getLabels().remove("nodeIpAffinity");
 			}
 			ServiceSpec spec = new ServiceSpec();
 			spec.setType("NodePort");

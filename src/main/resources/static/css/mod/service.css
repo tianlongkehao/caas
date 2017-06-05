@@ -1205,6 +1205,26 @@ p.portLabel input{
 .ui_tpicker_time_label {
 	padding-left:20px
 }
+/* .BORDER td{
+	line-height:40px!important;
+} */
+.editSerChName{
+	float:right;
+	margin-right:10px;
+	color: #337ab7;
+	margin-top:5px;
+}
+.canclEditSerChName{
+	float:right;
+	margin-right:10px;
+	color: #337ab7;
+	margin-top:8px;
+}
+.saveSerChName{
+	float:right;
+	color:#337ab7;
+	margin-top:8px;
+}
 .autoFlexInfoInput{
 	margin-top: 10px;
 	width: 78%;
@@ -1258,4 +1278,3 @@ p.portLabel input{
 	background-color:#e8504f;
 	color:#fff;
 }
-
