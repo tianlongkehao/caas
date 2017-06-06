@@ -164,6 +164,17 @@ public class IndexController {
         return "home.jsp";
     }
 
+    /*
+     * 预留的cpu资源
+     */
+    @Value("${rest.resource.cpu}")
+    private int REST_RESOURCE_CPU;
+
+    /*
+     * 预留的memory资源
+     */
+    @Value("${rest.resource.memory}")
+    private int REST_RESOURCE_MEMORY;
 	/**
 	 * Description: <br>
 	 * 总览页面
@@ -316,8 +327,8 @@ public class IndexController {
 
         if (null != quota) {
             Map<String, String> hard = quota.getStatus().getHard();
-            model.addAttribute("servCpuNum", kubernetesClientService.transCpu(hard.get("cpu"))*RATIO_LIMITTOREQUESTCPU); // cpu个数
-            model.addAttribute("servMemoryNum", Math.ceil(Float.parseFloat(computeMemoryOut(hard))*RATIO_LIMITTOREQUESTMEMORY));// 内存个数
+            model.addAttribute("servCpuNum", kubernetesClientService.transCpu(hard.get("cpu"))*RATIO_LIMITTOREQUESTCPU - REST_RESOURCE_CPU); // cpu个数
+            model.addAttribute("servMemoryNum", Math.ceil(Float.parseFloat(computeMemoryOut(hard))*RATIO_LIMITTOREQUESTMEMORY - REST_RESOURCE_MEMORY));// 内存个数
             model.addAttribute("servPodNum", hard.get("pods"));// pod个数
             model.addAttribute("servServiceNum", hard.get("services")); // 服务个数
             model.addAttribute("servControllerNum", hard.get("replicationcontrollers"));// 副本控制数

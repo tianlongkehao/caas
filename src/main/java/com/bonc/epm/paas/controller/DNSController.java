@@ -160,7 +160,7 @@ public class DNSController {
 		KubernetesAPIClientInterface client = kubernetesClientService.getClient(KubernetesClientService.adminNameSpace);
 		// 创建Service
 		Service k8sService = kubernetesClientService.generateService(serviceName, portConfigs, null, serviceName,
-				serviceName, "", "");
+				"");
 		try {
 			k8sService = client.createService(k8sService);
 		} catch (KubernetesClientException e) {
@@ -174,7 +174,7 @@ public class DNSController {
 		// 创建ReplicationController
 		ReplicationController replicationController = kubernetesClientService.generateSimpleReplicationController(
 				serviceName, 1, null, null, null, MONITOR_IMAGE_NAME, portConfigs, 1.0, "1024.0", null, serviceName,
-				serviceName, "", new ArrayList<>(), command, args, new ArrayList<>(), false);
+				"", new ArrayList<>(), command, args, new ArrayList<>(), false);
 		try {
 			replicationController = client.createReplicationController(replicationController);
 		} catch (KubernetesClientException e) {

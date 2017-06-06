@@ -1290,14 +1290,14 @@ i.pushOrg {
 }
 /* dns */
 .timedTaskInfo table tr td{
-	text-indent: 16px;	
+	text-indent: 16px;
 }
 .timedTaskInfo table tr td i.fa-check{
 	float:right;
 	margin-right:15px;
 	font-size:16px;
 	color:#1dd2af;
-	display:none;	
+	display:none;
 }
 .domainTable{
 	max-height:240px;
@@ -1339,6 +1339,7 @@ font i.fa-question-circle{
 .tableInput input{
 	width:100%;
 	border-radius:4px;
+	background-color:#ddd;
 }
 #pingdetail,#tracedetail,#qperfdetail,#curldetail,#masterdetail,#standbydetail{
 	border:1px solid #ddd;
@@ -1350,5 +1351,8 @@ font i.fa-question-circle{
 #myTab li.active a{
 	background-color:#e8504f;
 	color:#fff;
+}
+table.table tr td textarea{
+	background-color:#ddd;
 }
 

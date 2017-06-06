@@ -1,18 +1,21 @@
 $(function(){
 
     // 全选  全选checkbox class设为 chkAll
-    $(".chkAll").click(function(){
-        $(".chkItem").prop('checked',$(".chkAll").is(":checked"));
-    });
+//    $(".chkAll").click(function(){
+//        $(".chkItem").prop('checked',$(".chkAll").is(":checked"));
+//    });
+	 $(".chkAll").click(function(){
+	        $(this).parents('table').find(".chkItem").prop('checked',$(".chkAll").is(":checked"));
+	 });
  
     // 每条数据 checkbox class设为 chkItem
     $(document).on("click",".chkItem", function(){
         if($(this).is(":checked")){
-            if ($(".chkItem:checked").length == $(".chkItem").length) {
-                $(".chkAll").prop("checked", "checked");
+            if ($(this).parents('table').find(".chkItem:checked").length == $(this).parents('table').find(".chkItem").length) {
+            	$(this).parents('table').find(".chkAll").prop("checked", "checked");
             }
         }else{
-            $(".chkAll").prop('checked', $(this).is(":checked"));
+        	$(this).parents('table').find(".chkAll").prop('checked', $(this).is(":checked"));
         }
     });
 //	// 主色调设置
@@ -142,4 +145,12 @@ function navShow(){
 	$(".navbar-downSide-show").addClass("hide");
 	$(".sideBoxBtn").css("left","185px")
 	setCookie("label",1);
+}
+//验证服务中文名称必须包含中文  只能是中文/^[\u4e00-\u9fa5]+$/
+function isChinese(temp){
+	 var re = /[\u4e00-\u9fa5]+/;  //必须包含中文
+	 if(re.test(temp)){
+		 return true;
+	 } 
+	 return false; 
 }

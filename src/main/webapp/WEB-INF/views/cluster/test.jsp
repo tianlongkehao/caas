@@ -211,7 +211,7 @@
 									<input name="item" class="checkItem" type="checkbox" value="pingitem" id="pingitem">&nbsp;ping地址：
 								</th>
 								<td>
-									<input type="text" id="pingip" placeholder="主机IP" value="192.168.0.75" />
+									<input type="text" id="pingip" placeholder="主机IP" value="" />
 								</td>
 								<th style="width: 20%">平均响应时间：</th>
 								<td>
@@ -225,7 +225,7 @@
 							<tr>
 								<th style="width: 20%"><input name="item" class="checkItem" type="checkbox" value="traceitem" id="traceitem">&nbsp;trace地址：</th>
 								<td>
-									<input type="text" id="tracepathip" placeholder="主机IP" value="192.168.0.75" />
+									<input type="text" id="tracepathip" placeholder="主机IP" value="" />
 								</td>
 								<th style="width: 20%">平均响应时间：</th>
 								<td>
@@ -271,7 +271,7 @@
 										<input name="item" class="checkItem" type="checkbox" value="dockeritem" id="dockeritem">&nbsp;docker磁盘大小：
 									</th>
 									<td colspan="3" style="width: 75%">
-										<input style="width: 80%" type="number" value="15" class="number" min="1"
+										<input style="width: 80%" type="number" value="" class="number" min="1"
 											autocomplete="off" max="" placeholder="1" id="docker"
 											onkeyup="this.value=this.value.replace(/\D/g,'')"
 											name="instanceNum"><span class="s-unit">GB</span>
@@ -288,180 +288,8 @@
 
 				<div id="detail" style="display: none; text-align: center">
 					<ul id="myTab" class="nav nav-tabs">
-						<li class="active"><a href="#pingTab" data-toggle="tab">Ping</a></li>
-						<li><a href="#traceTab" data-toggle="tab">Trace</a></li>
-						<li><a href="#qperfTab" data-toggle="tab">Qperf</a></li>
-						<li><a href="#curlTab" data-toggle="tab">Curl</a></li>
-						<li><a href="#dockerTab" data-toggle="tab">Docker</a></li>
-						<li><a href="#dnsTab" data-toggle="tab">Dns</a></li>
 					</ul>
 					<div id="myTabContent" class="tab-content">
-						<div class="tab-pane fade in active" id="pingTab">
-							<table class="table">
-								<tbody class="pingTable">
-									<tr>
-										<th style="width: 20%">ping操作：</th>
-										<td class="tableInput"><input type="text" id="pingstatus" readOnly
-											value=""></td>
-									</tr>
-									<tr>
-										<th style="width: 20%">检测状态：</th>
-										<td class="tableInput"><input type="text" id="pingpass" readOnly
-											value=""></td>
-									</tr>
-									<tr>
-										<th style="width: 20%">平均响应时间：</th>
-										<td class="tableInput"><input type="text" id="pingavg" readOnly
-											value=""></td>
-									</tr>
-									<tr>
-										<td colspan="2">
-											<textarea id="pingdetail" style="width: 100%; height: 200px;"></textarea>
-										</td>
-									</tr>
-								</tbody>
-							</table>
-						</div>
-						<div class="tab-pane fade" id="traceTab">
-							<table class="table">
-								<tbody class="traceTable">
-									<tr>
-										<th style="width: 20%">trace操作：</th>
-										<td class="tableInput"><input class="" type="text" id="tracestatus" readOnly
-											value=""></td>
-									</tr>
-									<tr>
-										<th style="width: 20%">检测状态：</th>
-										<td class="tableInput"><input class="" type="text" id="tracepass" readOnly
-											value=""></td>
-									</tr>
-									<tr>
-										<th style="width: 20%">平均响应时间：</th>
-										<td class="tableInput"><input class="" type="text" id="tracetime" readOnly
-											value=""></td>
-									</tr>
-									<tr>
-										<td colspan="2"><textarea id="tracedetail"
-												style="width: 100%; height: 200px;"></textarea></td>
-									</tr>
-								</tbody>
-							</table>
-						</div>
-						<div class="tab-pane fade" id="qperfTab">
-							<table class="table">
-								<tbody class="qperfTable">
-									<tr>
-										<th style="width: 20%">qperf操作：</th>
-										<td class="tableInput"><input class="" type="text" id="qperfstatus" readOnly
-											value=""></td>
-									</tr>
-									<tr>
-										<th style="width: 20%">检测状态：</th>
-										<td class="tableInput"><input class="" type="text" id="qperfpass" readOnly
-											value=""></td>
-									</tr>
-									<tr>
-										<th style="width: 20%">带宽：</th>
-										<td class="tableInput"><input class="" type="text" id="speed" readOnly
-											value=""></td>
-									</tr>
-									<tr>
-										<th style="width: 20%">延迟：</th>
-										<td class="tableInput"><input class="" type="text" id="latency" readOnly
-											value=""></td>
-									</tr>
-									<tr>
-										<td colspan="2"><textarea id="qperfdetail"
-												style="width: 100%; height: 160px;"></textarea></td>
-									</tr>
-								</tbody>
-							</table>
-						</div>
-						<div class="tab-pane fade" id="curlTab">
-							<table class="table">
-								<tbody class="curlTable">
-									<tr>
-										<th style="width: 20%">curl操作：</th>
-										<td class="tableInput"><input class="" type="text" id="curlstatus" readOnly
-											value=""></td>
-									</tr>
-									<tr>
-										<th style="width: 20%">检测状态：</th>
-										<td class="tableInput"><input class="" type="text" id="curlpass" readOnly
-											value=""></td>
-									</tr>
-									<tr>
-										<th style="width: 20%">响应时间：</th>
-										<td class="tableInput"><input class="" type="text" id="curlavg" readOnly
-											value=""></td>
-									</tr>
-									<tr>
-										<td colspan="2"><textarea id="curldetail"
-												style="width: 100%; height: 200px;"></textarea></td>
-									</tr>
-								</tbody>
-							</table>
-						</div>
-						<div class="tab-pane fade" id="dockerTab">
-							<table class="table">
-								<tbody class="dockerTable">
-									<tr>
-										<th style="width: 20%">docker操作：</th>
-										<td class="tableInput"><input class="" type="text" id="dockerstatus" readOnly
-											value=""></td>
-									</tr>
-									<tr>
-										<th style="width: 20%">检测状态：</th>
-										<td class="tableInput"><input class="" type="text" id="dockerpass" readOnly
-											value=""></td>
-									</tr>
-									<tr>
-										<th style="width: 20%">cpu：</th>
-										<td class="tableInput"><input class="" type="text" id="cpu" readOnly
-											value=""></td>
-									</tr>
-									<tr>
-										<th style="width: 20%">memory：</th>
-										<td class="tableInput"><input class="" type="text" id="memory" readOnly
-											value=""></td>
-									</tr>
-								</tbody>
-							</table>
-						</div>
-						<div class="tab-pane fade" id="dnsTab">
-							<table class="table">
-								<tbody class="curlTable">
-									<tr>
-										<th style="width: 20%">dns操作：</th>
-										<td class="tableInput"><input type="text" id="dnsstatus" readOnly
-											value=""></td>
-									</tr>
-								    <tr>
-										<th style="width: 20%">检测状态：</th>
-										<td class="tableInput"><input class="" type="text" id="dnspass" readOnly
-											value=""></td>
-									</tr>
-									<tr>
-										<th style="width: 20%">主dns操作：</th>
-										<td class="tableInput"><input class="" type="text" id="masterstatus" readOnly
-											value=""></td>
-									</tr>
-									<tr>
-										<td colspan="2"><textarea id="masterdetail"
-												style="width: 100%; height: 100px;"></textarea></td>
-									</tr>
-									<tr>
-										<th style="width: 20%">备dns操作：</th>
-										<td class="tableInput"><input class="" type="text" id="standbystatus" readOnly
-											value=""></td>
-									</tr>
-									<tr>
-										<td colspan="2"><textarea id="standbydetail"
-												style="width: 100%; height: 100px;"></textarea></td>
-									</tr>
-								</tbody>
-							</table>
-						</div>
 					</div>
 				</div>
 			</div>

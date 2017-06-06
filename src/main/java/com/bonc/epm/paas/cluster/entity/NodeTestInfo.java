@@ -50,8 +50,8 @@ public class NodeTestInfo {
     private int curltimetarget;
 
     private boolean docker;
-	private int cpu;
-	private long memory;
+	private int disk;
+	private String dockermsg;
 	private boolean dockerpass;
 	private int memorytarget;
 
@@ -219,17 +219,17 @@ public class NodeTestInfo {
 	public void setCurltime(double curltime) {
 		this.curltime = curltime;
 	}
-	public int getCpu() {
-		return cpu;
+	public int getDisk() {
+		return disk;
 	}
-	public void setCpu(int cpu) {
-		this.cpu = cpu;
+	public void setDisk(int disk) {
+		this.disk = disk;
 	}
-	public long getMemory() {
-		return memory;
+	public String getDockermsg() {
+		return dockermsg;
 	}
-	public void setMemory(long memory) {
-		this.memory = memory;
+	public void setDockermsg(String dockermsg) {
+		this.dockermsg = dockermsg;
 	}
 	public String getMasterdnsoutmsg() {
 		return masterdnsoutmsg;

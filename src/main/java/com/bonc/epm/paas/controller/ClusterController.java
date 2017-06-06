@@ -33,6 +33,9 @@ import com.bonc.epm.paas.cluster.api.ClusterHealthyClient;
 import com.bonc.epm.paas.cluster.api.LocalHealthyClient;
 import com.bonc.epm.paas.cluster.entity.CatalogResource;
 import com.bonc.epm.paas.cluster.entity.ClusterResources;
+import com.bonc.epm.paas.cluster.entity.Collectivity;
+import com.bonc.epm.paas.cluster.entity.DetailInfo;
+import com.bonc.epm.paas.cluster.entity.DetailResource;
 import com.bonc.epm.paas.cluster.entity.NodeInfo;
 import com.bonc.epm.paas.cluster.entity.NodeTestInfo;
 import com.bonc.epm.paas.cluster.entity.Response;
@@ -617,9 +620,21 @@ public class ClusterController {
 			List<String> xValue = influxdbSearchService.generateXValue(influxDB, timePeriod);
 			List<CatalogResource> yValue = influxdbSearchService.generateContainerMonitorYValue(influxDB, timePeriod,
 					nameSpace, podName);
+			for (CatalogResource catalogResource : yValue) {
+				for (DetailResource detailResource : catalogResource.getVal()) {
+					for (Collectivity collectivity : detailResource.getVal()) {
+						for (DetailInfo detailInfo : collectivity.getVal()) {
+							if (detailInfo.getyAxis().size() > xValue.size()) {
+								detailInfo.getyAxis().remove(0);
+							}
+						}
+					}
+				}
+			}
 			clusterResources.setxValue(xValue);
 			clusterResources.setyValue(yValue);
 		} catch (Exception e) {
+			e.printStackTrace();
 			LOG.error(e.getMessage());
 			System.out.println(e.getMessage());
 		}
@@ -1482,8 +1497,8 @@ public class ClusterController {
 	 */
 	@RequestMapping(value = { "/excutetest" }, method = RequestMethod.GET)
 	@ResponseBody
-	public String excuteTest(String nodenames, String items, String pingIp, int pingtime, String tracepathIp,
-			int tracetime, int curltime, int speed, int latency, int memory) {
+	public String excuteTest(String nodenames, String items, String pingIp, String pingtime, String tracepathIp,
+			String tracetime, String curltime, String speed, String latency, String memory) {
 
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("status", 200);
@@ -1600,16 +1615,15 @@ public class ClusterController {
 				if (pingitem) {
 					Response pingresponse = localHealthyClient.ping(pingIp);
 					nodeInfo.setPingoutmsg(pingresponse.getOutmsg());
-					// nodeInfo.setPing(pingresponse.getOutmsg().contains("Unreachable")
-					// ? false : true);
 					nodeInfo.setPing(pingitem);
 					nodeInfo.setPingIp(pingIp);
-					nodeInfo.setPingtimetarget(pingtime);
+					nodeInfo.setPingtimetarget(Integer.parseInt(pingtime));
 					if (!pingresponse.getOutmsg().contains("Unreachable")) {
 						String[] outmsg = pingresponse.getOutmsg().split("/");
 						nodeInfo.setPingtime(Double.parseDouble(outmsg[outmsg.length - 3]));
-						nodeInfo.setPingpass(nodeInfo.getPingtime() <= pingtime);// ping通过
+						nodeInfo.setPingpass(nodeInfo.getPingtime() <= Integer.parseInt(pingtime));// ping通过
 					}
+					nodeInfo.setPingoutmsg("ping -c 10 " + pingIp + "\n" + nodeInfo.getPingoutmsg());
 					allpass = allpass && nodeInfo.isPingpass();
 				}
 
@@ -1617,18 +1631,18 @@ public class ClusterController {
 					Response traceresponse = localHealthyClient.tracepath(tracepathIp);
 					nodeInfo.setTracepathoutmsg(traceresponse.getOutmsg());
 					String tracemsg = traceresponse.getOutmsg();
-					// nodeInfo.setTracepath(tracemsg.contains("hops") ? true :
-					// false);
 					nodeInfo.setTracepath(traceitem);
 					nodeInfo.setTraceIp(tracepathIp);
-					nodeInfo.setTracetimetarget(tracetime);
+					nodeInfo.setTracetimetarget(Integer.parseInt(tracetime));
 					tracemsg = tracemsg.subSequence(tracemsg.indexOf("real"), tracemsg.indexOf("user")).toString()
 							.trim();
 					tracemsg = tracemsg.split("0m")[1].split("s")[0];
 					nodeInfo.setTracetime(Double.parseDouble(tracemsg));
-					if (tracemsg.contains("hops")) {
-						nodeInfo.setTracepass(nodeInfo.getTracetime() <= tracetime);// trace通过
+					if (nodeInfo.getTracepathoutmsg().contains("hops")) {
+						nodeInfo.setTracepass(nodeInfo.getTracetime() <= Integer.parseInt(tracetime));// trace通过
 					}
+					nodeInfo.setTracepathoutmsg(
+							"time (tracepath " + tracepathIp + " -b)" + "\n" + nodeInfo.getTracepathoutmsg());
 					allpass = allpass && nodeInfo.isTracepass();
 				}
 
@@ -1636,8 +1650,6 @@ public class ClusterController {
 					Response qperfresponse = clusterHealthyClient.qperf(pod.getStatus().getPodIP());
 					String qperfmsg = qperfresponse.getOutmsg();
 					nodeInfo.setQperfoutmsg(qperfmsg);
-					// nodeInfo.setQperf(qperfmsg.contains("failed") ? false :
-					// true);
 					nodeInfo.setQperf(qperfitem);
 					if (!qperfmsg.contains("failed")) {
 						String unit = "";
@@ -1655,7 +1667,7 @@ public class ClusterController {
 							sp = sp * 1024;
 						}
 						nodeInfo.setSpeed(sp);
-						nodeInfo.setSpeedtarget(speed);
+						nodeInfo.setSpeedtarget(Integer.parseInt(speed));
 						qperfmsg = qperfresponse.getOutmsg();
 						qperfmsg = qperfmsg.split("latency")[1].split("conf")[0].split("=")[1].trim();
 						unit = qperfmsg.substring(qperfmsg.length() - 3, qperfmsg.length()).trim();
@@ -1666,9 +1678,11 @@ public class ClusterController {
 							lcy = lcy * 1000;
 						}
 						nodeInfo.setLatency(lcy);
-						nodeInfo.setLatencytarget(latency);
-						nodeInfo.setQperfpass(sp >= speed && lcy <= latency);// qperf通过
+						nodeInfo.setLatencytarget(Integer.parseInt(latency));
+						nodeInfo.setQperfpass(sp >= Integer.parseInt(speed) && lcy <= Integer.parseInt(latency));// qperf通过
 					}
+					nodeInfo.setQperfoutmsg("qperf  " + pod.getStatus().getPodIP() + " tcp_bw  tcp_lat  conf" + "\n"
+							+ nodeInfo.getQperfoutmsg());
 					allpass = allpass && nodeInfo.isQperfpass();
 				}
 
@@ -1676,15 +1690,15 @@ public class ClusterController {
 					Response curlresponse = clusterHealthyClient.curl(pod.getStatus().getPodIP() + ":8011");
 					String curlmsg = curlresponse.getOutmsg();
 					nodeInfo.setCurloutmsg(curlmsg);
-					// nodeInfo.setCurl(curlmsg.contains("Failed") ? false :
-					// true);
 					nodeInfo.setCurl(curlitem);
-					nodeInfo.setCurltimetarget(curltime);
+					nodeInfo.setCurltimetarget(Integer.parseInt(curltime));
 					curlmsg = curlmsg.split("real")[1].split("user")[0].trim().split("0m")[1].split("s")[0].trim();
 					nodeInfo.setCurltime(Double.parseDouble(curlmsg));
-					if (!curlmsg.contains("Failed")) {
-						nodeInfo.setCurlpass(nodeInfo.getCurltime() <= curltime);// curl通过
+					if (!nodeInfo.getCurloutmsg().contains("Failed")) {
+						nodeInfo.setCurlpass(nodeInfo.getCurltime() <= Integer.parseInt(curltime));// curl通过
 					}
+					nodeInfo.setCurloutmsg("curl -s -o /dev/null -w %{time_total}\"\n\" \"http://"
+							+ pod.getStatus().getPodIP() + ":8011\"" + "\n" + nodeInfo.getCurloutmsg());
 					allpass = allpass && nodeInfo.isCurlpass();
 				}
 
@@ -1693,13 +1707,24 @@ public class ClusterController {
 							.getSpecifiedDockerClientInstance(pod.getStatus().getHostIP());
 					InfoCmd infoCmd = dockerClient.infoCmd();
 					Info info = infoCmd.exec();
+					String dockermsg = "";
+					List<List<String>> list = info.getDriverStatuses();
+					for (List<String> l : list) {
+						dockermsg = dockermsg + l.toString() + "\n";
+					}
+					nodeInfo.setDockermsg(dockermsg);
 
-					long mem = info.getMemTotal() / (1024 * 1024 * 1024);// 转换成GiB
+					if (dockermsg.indexOf("Data Space Total,") != -1) {
+						dockermsg = dockermsg.substring(dockermsg.indexOf("Data Space Total,"), dockermsg.length());
+						dockermsg = dockermsg.split("]")[0].split(",")[1].trim();
+						dockermsg = convert(dockermsg);
+						int mem = Math.round(Float.parseFloat(dockermsg));
+						nodeInfo.setDisk(mem);
+						nodeInfo.setDockerpass(mem == Integer.parseInt(memory));// docker通过
+					}
+
 					nodeInfo.setDocker(dockeritem);
-					nodeInfo.setCpu(info.getNCPU());
-					nodeInfo.setMemory(mem);
-					nodeInfo.setMemorytarget(memory);
-					nodeInfo.setDockerpass(mem == memory);// docker通过
+					nodeInfo.setMemorytarget(Integer.parseInt(memory));
 					allpass = allpass && nodeInfo.isDockerpass();
 				}
 
@@ -1712,11 +1737,17 @@ public class ClusterController {
 					nodeInfo.setMasterdnsoutmsg(dnString);
 					nodeInfo.setMasterdns(dnString.contains("timed out") || dnString.contains("failed")
 							|| dnString.contains("resolved") ? false : true);
+					nodeInfo.setMasterdnsoutmsg(
+							"busybox nslookup localhealthy.kube-system.svc.cluster.local 10.245.100.100" + "\n"
+									+ nodeInfo.getMasterdnsoutmsg());
 					dnString = standbydnsresponse.getOutmsg();
 					nodeInfo.setStandbydnsoutmsg(dnString);
 					nodeInfo.setStandbydns(dnString.contains("timed out") || dnString.contains("failed")
 							|| dnString.contains("resolved") ? false : true);
 					nodeInfo.setDnspass(nodeInfo.isMasterdns() && nodeInfo.isStandbydns());
+					nodeInfo.setStandbydnsoutmsg(
+							"busybox nslookup localhealthy.kube-system.svc.cluster.local 10.245.100.101" + "\n"
+									+ nodeInfo.getStandbydnsoutmsg());
 					allpass = allpass && nodeInfo.isDnspass();
 				}
 
@@ -1740,24 +1771,29 @@ public class ClusterController {
 			NodeTestInfo nodeTestInfo = new NodeTestInfo();
 			nodeTestInfo.setNodename("all");
 
-			nodeTestInfo.setPing(pingitem);
-			nodeTestInfo.setPingIp(pingIp);
-			nodeTestInfo.setPingtimetarget(pingtime);
-
-			nodeTestInfo.setCurl(curlitem);
-			nodeTestInfo.setCurltimetarget(curltime);
-
-			nodeTestInfo.setTracepath(traceitem);
-			nodeTestInfo.setTraceIp(tracepathIp);
-			nodeTestInfo.setTracetimetarget(tracetime);
-
-			nodeTestInfo.setQperf(qperfitem);
-			nodeTestInfo.setSpeedtarget(speed);
-			nodeTestInfo.setLatencytarget(latency);
-
-			nodeTestInfo.setDocker(dockeritem);
-			nodeTestInfo.setMemorytarget(memory);
-
+			if (pingitem) {
+				nodeTestInfo.setPing(pingitem);
+				nodeTestInfo.setPingIp(pingIp);
+				nodeTestInfo.setPingtimetarget(Integer.parseInt(pingtime));
+			}
+			if (curlitem) {
+				nodeTestInfo.setCurl(curlitem);
+				nodeTestInfo.setCurltimetarget(Integer.parseInt(curltime));
+			}
+			if (traceitem) {
+				nodeTestInfo.setTracepath(traceitem);
+				nodeTestInfo.setTraceIp(tracepathIp);
+				nodeTestInfo.setTracetimetarget(Integer.parseInt(tracetime));
+			}
+			if (qperfitem) {
+				nodeTestInfo.setQperf(qperfitem);
+				nodeTestInfo.setSpeedtarget(Integer.parseInt(speed));
+				nodeTestInfo.setLatencytarget(Integer.parseInt(latency));
+			}
+			if (dockeritem) {
+				nodeTestInfo.setDocker(dockeritem);
+				nodeTestInfo.setMemorytarget(Integer.parseInt(memory));
+			}
 			nodeTestInfo.setDns(dnsitem);
 
 			nodeInfoDao.deleteByNodename("all");
@@ -1776,11 +1812,9 @@ public class ClusterController {
 
 	/**
 	 *
-	 * @param nodename 节点名称
-	 * @return 节点测试结果
-	 *        status：500 错误
-	 *                404 没有测试结果
-	 *                200 成功
+	 * @param nodename
+	 *            节点名称
+	 * @return 节点测试结果 status：500 错误 404 没有测试结果 200 成功
 	 */
 	@RequestMapping(value = { "/excutetestResult" }, method = RequestMethod.GET)
 	@ResponseBody
@@ -1790,20 +1824,20 @@ public class ClusterController {
 		String msg = "";
 
 		if (StringUtils.isEmpty(nodename)) {
-			msg="节点名称为空！";
+			msg = "节点名称为空！";
 			map.put("status", 500);
 			map.put("msg", msg);
 			return JSON.toJSONString(map);
 		}
-        List<NodeTestInfo> nodeTestInfos = nodeInfoDao.findByNodename(nodename);
-        if(CollectionUtils.isEmpty(nodeTestInfos)){
-        	msg="节点"+nodename+"没有测试结果！";
+		List<NodeTestInfo> nodeTestInfos = nodeInfoDao.findByNodename(nodename);
+		if (CollectionUtils.isEmpty(nodeTestInfos)) {
+			msg = "节点" + nodename + "没有测试结果！";
 			map.put("status", 404);
 			map.put("msg", msg);
 			return JSON.toJSONString(map);
-        }
+		}
 
-        map.put("nodetestresult", nodeTestInfos.get(0));
+		map.put("nodetestresult", nodeTestInfos.get(0));
 		return JSON.toJSONString(map);
 	}
 
@@ -1838,7 +1872,7 @@ public class ClusterController {
 
 			DNSServiceList.add(dnsService);
 		}
-		model.addAttribute("DNSServiceList", DNSServiceList );
+		model.addAttribute("DNSServiceList", DNSServiceList);
 		model.addAttribute("menu_flag", "cluster");
 		model.addAttribute("li_flag", "dns");
 		return "cluster/cluster-dns.jsp";
@@ -1924,7 +1958,6 @@ public class ClusterController {
 		NetAPIClientInterface client = netClientService.getClient();
 		List<Iptable> checkIptable = null;
 		List<Map<String, Object>> resultList = new ArrayList<>();
-
 		try {
 			checkIptable = client.checkIptable();
 			for (Iptable iptable : checkIptable) {
@@ -2064,4 +2097,16 @@ public class ClusterController {
 		return JSON.toJSONString(map);
 	}
 
+	private String convert(String val) {
+		val = val.replaceAll("i", "");
+		if (val.contains("KB")) {
+			Float a1 = Float.valueOf(val.replace("KB", "")) / 1024 / 1024;
+			return a1.toString();
+		} else if (val.contains("MB")) {
+			Float a1 = Float.valueOf(val.replace("MB", "")) / 1024;
+			return a1.toString();
+		} else {
+			return val.replace("GB", "").trim();
+		}
+	}
 }

@@ -3,7 +3,7 @@
     z-index: 95;
     width: 200px;
     min-height: 100%;
-    box-shadow: 1px 1px 15px rgba(0,0,0,0.45); 
+    box-shadow: 1px 1px 15px rgba(0,0,0,0.45);
 }
 
 /* 侧边菜单栏 */
@@ -15,9 +15,9 @@ nav.navbar-default{
     /* bottom: 60px; */
     z-index: 95;
     /* min-height: 100%; */
-	/* background-color:#fff; */ 
+	/* background-color:#fff; */
 	/* box-shadow: 1px 1px 10px #33414E; */
-	
+
 }
 #side-menu{
 	background-color:#fff;
@@ -34,12 +34,12 @@ nav.navbar-default{
 
 .nav li>a {
     display: block;
-    
+
 }
 .nav > li.active {
     /* border-left: 4px solid #e8504f; */
     /* background: #ffffff; */
-    
+
 }
 .block {
     display: block;
@@ -97,7 +97,7 @@ nav.navbar-default{
 .helpDoc input.active{
 	color: #fff;
 	outline:0;
-} 
+}
 .nav-bcm{
 	text-align: center;
 	/* background-color: #e14344; */
@@ -106,7 +106,7 @@ nav.navbar-default{
 }
 .nav-footer{
 	text-align: center;
-	/* background-color: #e8504f; */ 
+	/* background-color: #e8504f; */
 	/* margin-top:-20px; */
 	height: 70px;
 }
@@ -143,7 +143,7 @@ nav.navbar-default{
     margin-left: 7px;
 }
 .nav-title{
-	width:200px; 
+	width:200px;
 	position:fixed;
 	background-color: #e8504f;
 	z-index: 100;
@@ -152,7 +152,7 @@ nav.navbar-default{
     margin-bottom: 70px;
 }
 #nav-side{
-	height:100%; 
+	height:100%;
 	/* overflow-y: auto; */
 	height: calc(100% - 150px);
     /* overflow-x: hidden; */
@@ -284,7 +284,7 @@ i.fa-nav{
 #menu_ci.active a i.fa-nav-ci{
 	background: url(../../images/bg-nav2.png) no-repeat;
 	background-position: 0 -45px;
-}		
+}
 #menu_registry a i.fa-nav-registry{
 	background: url(../../images/bg-nav1.png) no-repeat;
 	background-position: 0 -68px;
@@ -369,9 +369,15 @@ i.fa-nav{
 	background: url(../../images/bg-nav2.png) no-repeat;
 	background-position: 0 -205px;
 }
-
-
-
-
-
-
+#menu_storage a i.fa-nav-storage{
+	background: url(../../images/bg-nav1.png) no-repeat;
+	background-position: 0 -182px;
+}
+#menu_storage a:hover i.fa-nav-storage{
+	background: url(../../images/bg-nav2.png) no-repeat;
+	background-position: 0 -183px;
+}
+#menu_storage.active a i.fa-nav-storage{
+	background: url(../../images/bg-nav2.png) no-repeat;
+	background-position: 0 -183px;
+}

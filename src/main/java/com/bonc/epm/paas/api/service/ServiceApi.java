@@ -316,8 +316,8 @@ public class ServiceApi {
 		 ***************************************/
 		try {
 			k8sService = kubernetesClientService.generateService(service.getServiceName(), portConfigs,
-					service.getProxyZone(), service.getServicePath(), service.getProxyPath(),
-					service.getSessionAffinity(), service.getNodeIpAffinity());
+					service.getProxyZone(), service.getServicePath(),
+					service.getSessionAffinity());
 			k8sService = client.createService(k8sService);
 		} catch (KubernetesClientException e) {
 			System.out.println(e.getStatus().getMessage());
@@ -356,7 +356,7 @@ public class ServiceApi {
 			rc = kubernetesClientService.generateSimpleReplicationController(service.getServiceName(),
 					service.getInstanceNum(), service.getInitialDelay(), service.getTimeoutDetction(),
 					service.getPeriodDetction(), registryImgName, portConfigs, service.getCpuNum(),
-					service.getRam(), service.getProxyZone(), service.getServicePath(), service.getProxyPath(),
+					service.getRam(), service.getProxyZone(), service.getServicePath(),
 					service.getCheckPath(), envVariables, command, args, serviceConfigmapList,service.isIspodmutex());
 			// 给rc设置卷组挂载的信息
 			if (service.getServiceType().equals("1")) {
