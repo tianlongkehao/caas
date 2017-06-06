@@ -340,6 +340,51 @@ public class CephController {
 
 	}
 
+	public void clearPool()throws RadosException{
+		String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
+		try {
+			cluster = new Rados(CEPH_NAME);
+			File f = new File(CEPH_DIR + CEPH_CONF);
+			cluster.confReadFile(f);
+			cluster.connect();
+
+			// 获取所有pool
+			String[] pools = cluster.poolList();
+			boolean poolExist = false;
+			for (String pool : pools) {
+				if (namespace.equals(pool)) {
+					poolExist = true;
+					break;
+				}
+			}
+
+			if (poolExist) {
+				//停止快照策略的执行
+				List<CephRbdInfo> cephRbdInfos = cephRbdInfoDao.findByPool(namespace);
+				if(!CollectionUtils.isEmpty(cephRbdInfos)){
+					for(CephRbdInfo cephRbdInfo:cephRbdInfos){
+						if(cephRbdInfo.isStrategyexcuting()){
+							SnapListener.removeTimer(cephRbdInfo);
+						}
+					}
+				}
+				//删除pool
+				cluster.poolDelete(namespace);
+				//删除数据库记录
+				cephRbdInfoDao.deleteByPool(namespace);
+				cephSnapDao.deleteByPool(namespace);
+				snapStrategyDao.deleteByNamespace(namespace);
+			}
+
+		} catch (RadosException e) {
+			throw e;
+		} finally {
+			if (cluster != null) {
+				cluster.shutDown();
+			}
+		}
+	}
+
 	/**
 	 * 创建Ceph块存储 rbd大小的单位是B
 	 */

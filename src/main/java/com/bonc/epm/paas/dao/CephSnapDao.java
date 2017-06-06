@@ -9,18 +9,18 @@ import org.springframework.transaction.annotation.Transactional;
 import com.bonc.epm.paas.entity.ceph.CephSnap;
 
 @Transactional
-public interface CephSnapDao extends CrudRepository<CephSnap, Long>{
+public interface CephSnapDao extends CrudRepository<CephSnap, Long> {
 
 	public List<CephSnap> findByImgname(String imgname);
 
 	@Query("select i from CephSnap i where i.pool = ?1 order by createDate desc")
 	public List<CephSnap> findByPoolDesc(String pool);
-	
+
 	public void deleteByName(String name);
 
 	public void deleteByImgname(String imgname);
 
-	public void deleteByNameAndImgname(String name,String imgname);
+	public void deleteByNameAndImgname(String name, String imgname);
 
-
+	public void deleteByPool(String pool);
 }
