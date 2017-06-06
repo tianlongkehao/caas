@@ -93,11 +93,11 @@ public class CephController {
 	public void connectCephFS() throws Exception {
 		LOGGER.info("进入方法：connectCephFS");
 		try {
-			cephMount = new CephMount(CEPH_NAME);
+			cephMount = new CephMount("admin");
 		} catch (Exception e) {
 			throw e;
 		}
-		cephMount.conf_read_file(CEPH_DIR+CEPH_CONF);
+		cephMount.conf_read_file("/etc/ceph/ceph.conf");
 		cephMount.mount("/");
 		cephMount.chmod("/", mode);
 		LOGGER.info("打印根目录下的所有目录");
