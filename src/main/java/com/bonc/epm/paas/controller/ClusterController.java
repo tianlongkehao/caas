@@ -15,7 +15,6 @@ import java.util.Properties;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.tools.ant.taskdefs.Execute;
 import org.influxdb.InfluxDB;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +33,9 @@ import com.bonc.epm.paas.cluster.api.ClusterHealthyClient;
 import com.bonc.epm.paas.cluster.api.LocalHealthyClient;
 import com.bonc.epm.paas.cluster.entity.CatalogResource;
 import com.bonc.epm.paas.cluster.entity.ClusterResources;
+import com.bonc.epm.paas.cluster.entity.Collectivity;
+import com.bonc.epm.paas.cluster.entity.DetailInfo;
+import com.bonc.epm.paas.cluster.entity.DetailResource;
 import com.bonc.epm.paas.cluster.entity.NodeInfo;
 import com.bonc.epm.paas.cluster.entity.NodeTestInfo;
 import com.bonc.epm.paas.cluster.entity.Response;
@@ -90,9 +92,6 @@ import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
-
-import retrofit.http.Streaming;
-import springfox.documentation.spring.web.json.Json;
 
 /**
  * ClusterController 集群监控控制器
@@ -624,9 +623,21 @@ public class ClusterController {
 			List<String> xValue = influxdbSearchService.generateXValue(influxDB, timePeriod);
 			List<CatalogResource> yValue = influxdbSearchService.generateContainerMonitorYValue(influxDB, timePeriod,
 					nameSpace, podName);
+			for (CatalogResource catalogResource : yValue) {
+				for (DetailResource detailResource : catalogResource.getVal()) {
+					for (Collectivity collectivity : detailResource.getVal()) {
+						for (DetailInfo detailInfo : collectivity.getVal()) {
+							if (detailInfo.getyAxis().size() > xValue.size()) {
+								detailInfo.getyAxis().remove(0);
+							}
+						}
+					}
+				}
+			}
 			clusterResources.setxValue(xValue);
 			clusterResources.setyValue(yValue);
 		} catch (Exception e) {
+			e.printStackTrace();
 			LOG.error(e.getMessage());
 			System.out.println(e.getMessage());
 		}

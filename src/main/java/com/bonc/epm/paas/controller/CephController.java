@@ -340,8 +340,12 @@ public class CephController {
 
 	}
 
-	public void clearPool()throws RadosException{
-		String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
+	/**
+	 * 删除pool，清空数据库中的相关记录
+	 * @param namespace
+	 * @throws RadosException
+	 */
+	public void clearPool(String namespace)throws RadosException{
 		try {
 			cluster = new Rados(CEPH_NAME);
 			File f = new File(CEPH_DIR + CEPH_CONF);

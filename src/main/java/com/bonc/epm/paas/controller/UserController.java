@@ -66,6 +66,7 @@ import com.bonc.epm.paas.shera.model.SonarConfig;
 import com.bonc.epm.paas.shera.util.SheraClientService;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 import com.bonc.epm.paas.util.EncryptUtils;
+import com.ceph.rados.exceptions.RadosException;
 
 /**
  *
@@ -150,6 +151,8 @@ public class UserController {
     @Autowired
     private CommonOperationLogDao commonOperationLogDao;
 
+    @Autowired
+    private CephController ceph;
 
     /**
      * CEPH_KEY ${ceph.key}
@@ -1195,7 +1198,7 @@ public class UserController {
      */
     public boolean createCeph(User user) {
         try {
-            CephController ceph = new CephController();
+           // CephController ceph = new CephController();
             ceph.connectCephFS();
             ceph.createNamespaceCephFS(user.getNamespace());
             return true;
@@ -1341,12 +1344,16 @@ public class UserController {
 
                 if (null != client.getNamespace(namespace)) {
                     try {
+                    	ceph.clearPool(namespace);//删除租户所使用的ceph块设备资源
                         client.deleteNamespace(namespace);
-						// 逻辑删除卷组信息
                     }
                     catch (javax.ws.rs.ProcessingException e) {
-                        LOG.error("delete namespace error" + e.getMessage());
-                    }
+                        LOG.error("delete namespace error:" + e.getMessage());
+                    }catch (RadosException e) {
+                    	LOG.error("delete ceph pool error:" + e.getMessage());
+					}catch (Exception e) {
+						e.printStackTrace();
+					}
                 }
             }
         }

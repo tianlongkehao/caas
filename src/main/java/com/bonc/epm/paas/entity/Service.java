@@ -107,11 +107,6 @@ public class Service {
 	private String proxyZone;
 
 	/**
-	 * nginx代理路径
-	 */
-	private String proxyPath;
-
-	/**
 	 * 服务会话黏连方式
 	 */
 	private String sessionAffinity;
@@ -130,10 +125,7 @@ public class Service {
 	 * 服务检测频率
 	 */
 	private Integer periodDetction;
-	/**
-	 * 黏连
-	 */
-	private String nodeIpAffinity;
+
 	/**
 	 * 升级用的临时名称
 	 */
@@ -340,14 +332,6 @@ public class Service {
 		this.proxyZone = proxyZone;
 	}
 
-	public String getProxyPath() {
-		return proxyPath;
-	}
-
-	public void setProxyPath(String proxyPath) {
-		this.proxyPath = proxyPath;
-	}
-
 	public String getSessionAffinity() {
 		return sessionAffinity;
 	}
@@ -378,14 +362,6 @@ public class Service {
 
 	public void setPeriodDetction(Integer periodDetction) {
 		this.periodDetction = periodDetction;
-	}
-
-	public String getNodeIpAffinity() {
-		return nodeIpAffinity;
-	}
-
-	public void setNodeIpAffinity(String nodeIpAffinity) {
-		this.nodeIpAffinity = nodeIpAffinity;
 	}
 
 	public boolean isUpdateImage() {
@@ -419,9 +395,9 @@ public class Service {
 				+ ",serviceName:" + serviceName + ",serviceChName:" + serviceChName + ",serviceType:" + serviceType
 				+ ",status:" + status + ",checkPath:" + checkPath + ",sessionAffinity:" + sessionAffinity
 				+ ",initialDelay:" + initialDelay + ",periodDetction:" + periodDetction + ",timeoutDetction:"
-				+ timeoutDetction + ",nodeIpAffinity:" + nodeIpAffinity + ",proxyPath:" + proxyPath + ",proxyZone:"
-				+ proxyZone + ",servicePath:" + servicePath + ",startCommand:" + startCommand + ",createDate:"
-				+ createDate + ",createBy:" + createBy + ",updateDate:" + updateDate + ",updateBy:" + updateBy;
+				+ timeoutDetction + ",proxyZone:" + proxyZone + ",servicePath:" + servicePath + ",startCommand:"
+				+ startCommand + ",createDate:" + createDate + ",createBy:" + createBy + ",updateDate:" + updateDate
+				+ ",updateBy:" + updateBy;
 	}
 
 	public Integer getMonitor() {

@@ -146,3 +146,11 @@ function navShow(){
 	$(".sideBoxBtn").css("left","185px")
 	setCookie("label",1);
 }
+//验证服务中文名称必须包含中文  只能是中文/^[\u4e00-\u9fa5]+$/
+function isChinese(temp){
+	 var re = /[\u4e00-\u9fa5]+/;  //必须包含中文
+	 if(re.test(temp)){
+		 return true;
+	 } 
+	 return false; 
+}
