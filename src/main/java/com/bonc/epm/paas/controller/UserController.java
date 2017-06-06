@@ -150,6 +150,8 @@ public class UserController {
     @Autowired
     private CommonOperationLogDao commonOperationLogDao;
 
+    @Autowired
+    private CephController ceph;
 
     /**
      * CEPH_KEY ${ceph.key}
@@ -1195,7 +1197,7 @@ public class UserController {
      */
     public boolean createCeph(User user) {
         try {
-            CephController ceph = new CephController();
+           // CephController ceph = new CephController();
             ceph.connectCephFS();
             ceph.createNamespaceCephFS(user.getNamespace());
             return true;
