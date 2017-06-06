@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Timer;
 
+import org.hibernate.type.descriptor.java.CalendarDateTypeDescriptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -32,23 +33,41 @@ public class SnapListener implements ApplicationListener<ContextRefreshedEvent> 
 		cephRbdInfoDao = SpringApplicationContext.getBean(CephRbdInfoDao.class);
 		Iterable<CephRbdInfo> iterable = cephRbdInfoDao.findAll();
 		Iterator<CephRbdInfo> iterator = iterable.iterator();
+		Calendar calendar = Calendar.getInstance();
+		Date now = calendar.getTime();
 		while (iterator.hasNext()) {
 			CephRbdInfo cephRbdInfo = iterator.next();
-			if (cephRbdInfo.getStrategyId() != 0&&cephRbdInfo.isStrategyexcuting()) {
+			if (cephRbdInfo.getStrategyId() != 0 && cephRbdInfo.isStrategyexcuting()) {
 				long strategyId = cephRbdInfo.getStrategyId();
 				SnapStrategy snapStrategy = snapStrategyDao.findById(strategyId);
 				if (snapStrategy != null) {
+					Date endDate = snapStrategy.getEndData();
+					if (now.after(endDate)) { // 已经到期
+						cephRbdInfo.setStrategyexcuting(false);
+						cephRbdInfoDao.save(cephRbdInfo);
+						continue;
+					}
+
 					String[] times = snapStrategy.getTime().split(",");
 					if (times.length != 0) {
 						Timer timer = new Timer();
 						for (String time : times) {
 							SnapTask snapTask = new SnapTask(cephRbdInfo, snapStrategy);
-							Calendar calendar = Calendar.getInstance();
+
 							calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(time));
 							calendar.set(Calendar.MINUTE, 0);
 							calendar.set(Calendar.SECOND, 0);
 							Date date = calendar.getTime();
-							timer.scheduleAtFixedRate(snapTask, date, 24l * 3600l * 1000l);// 第一次时间是今天某一刻，周期为一天
+
+							calendar.add(Calendar.DATE, 1);
+							Date tomorrow = calendar.getTime();
+
+							if (now.before(date)) {
+								timer.scheduleAtFixedRate(snapTask, date, 24l * 3600l * 1000l);// 第一次时间是今天某一刻，周期为一天
+							} else {
+								timer.scheduleAtFixedRate(snapTask, tomorrow, 24l * 3600l * 1000l);
+							}
+
 						}
 						map.put(cephRbdInfo, timer);
 					}
@@ -63,6 +82,7 @@ public class SnapListener implements ApplicationListener<ContextRefreshedEvent> 
 			if (map.containsKey(cephRbdInfo)) {
 				Timer timer = map.get(cephRbdInfo);
 				timer.cancel();
+				timer.purge();
 				map.remove(cephRbdInfo);
 			} else {
 				return false;
@@ -78,22 +98,37 @@ public class SnapListener implements ApplicationListener<ContextRefreshedEvent> 
 		if (map.containsKey(cephRbdInfo)) {
 			Timer timer = map.get(cephRbdInfo);
 			timer.cancel();
+			timer.purge();
 			map.remove(cephRbdInfo);
 		}
 		if (cephRbdInfo.getStrategyId() != 0) {
 			if (snapStrategy != null) {
+				Calendar calendar = Calendar.getInstance();
+				Date now = calendar.getTime();
+				Date endDate = snapStrategy.getEndData();
+				if (now.after(endDate)) { // 已经到期
+					return false;
+				}
+
 				String[] times = snapStrategy.getTime().split(",");
 				if (times.length != 0) {
 					Timer timer = new Timer();
 					for (String time : times) {
 						SnapTask snapTask = new SnapTask(cephRbdInfo, snapStrategy);
-						Calendar calendar = Calendar.getInstance();
-						
+
 						calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(time));
 						calendar.set(Calendar.MINUTE, 0);
 						calendar.set(Calendar.SECOND, 0);
 						Date date = calendar.getTime();
-						timer.scheduleAtFixedRate(snapTask, date, 24l * 3600l * 1000l);// 第一次时间是今天某一刻，周期为一天
+
+						calendar.add(Calendar.DATE, 1);
+						Date tomorrow = calendar.getTime();
+
+						if (now.before(date)) {
+							timer.scheduleAtFixedRate(snapTask, date, 24l * 3600l * 1000l);// 第一次时间是今天某一刻，周期为一天
+						} else {
+							timer.scheduleAtFixedRate(snapTask, tomorrow, 24l * 3600l * 1000l);
+						}
 					}
 					map.put(cephRbdInfo, timer);
 				} else {
@@ -108,15 +143,15 @@ public class SnapListener implements ApplicationListener<ContextRefreshedEvent> 
 		}
 	}
 
-	public static boolean containRbd(CephRbdInfo cephRbdInfo){
-		if(map==null){
+	public static boolean containRbd(CephRbdInfo cephRbdInfo) {
+		if (map == null) {
 			return false;
 		}
 		return map.containsKey(cephRbdInfo);
 	}
 
-	public static boolean containStrategy(SnapStrategy snapStrategy){
-		if(map==null){
+	public static boolean containStrategy(SnapStrategy snapStrategy) {
+		if (map == null) {
 			return false;
 		}
 		return map.containsValue(snapStrategy);

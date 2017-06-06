@@ -318,7 +318,7 @@ function changeStorageSize(obj){
 
 //释放块设备
 function releaseStorage(obj){
-	var rbd = $(obj).parent().parent().parent().parent().attr("rbd");
+	var rbdId = $(obj).parent().parent().parent().parent().attr("rbdId");
 
 	layer.open({
 			title: '释放',
@@ -328,7 +328,7 @@ function releaseStorage(obj){
 				   layer.close(index);
 				   var loading = layer.load(0, {shade : [ 0.3, '#000' ]});
 					$.ajax({
-	 					url:""+ctx+"/ceph/deleterbd?imgname="+rbd,
+	 					url:""+ctx+"/ceph/deleterbd?imgId="+rbdId,
 	 					type:"get",
 	 					success:function(data){
 

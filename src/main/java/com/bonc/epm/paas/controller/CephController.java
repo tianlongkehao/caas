@@ -746,7 +746,7 @@ public class CephController {
 		cephSnapDao.save(snap);
 		return snap;
 	}
-	
+
 	/**
 	 * 查看镜像是否存在
 	 *
@@ -832,11 +832,13 @@ public class CephController {
 	 */
 	@RequestMapping(value = { "ceph/deleterbd" }, method = RequestMethod.GET)
 	@ResponseBody
-	public String deleteCephRbd(String imgname) {
+	public String deleteCephRbd(long imgId) {
 		Map<String, String> map = new HashMap<>();
 		String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
 		map.put("status", "200");
 		String msg = "";
+		CephRbdInfo cephRbdInfo = cephRbdInfoDao.findOne(imgId);
+		String imgname = cephRbdInfo.getName();
 		try {
 			cluster = new Rados(CEPH_NAME);
 			File f = new File(CEPH_DIR + CEPH_CONF);
@@ -859,6 +861,17 @@ public class CephController {
 
 				// 删除rbd
 				if (imageExist) {
+					//停止快照策略
+					if(cephRbdInfo.isStrategyexcuting()){
+						boolean result = SnapListener.removeTimer(cephRbdInfo);
+						if (!result) {
+							msg = "镜像" + imgname + "的快照策略取消失败！";
+							map.put("msg", msg);
+							map.put("status", "500");
+							return JSON.toJSONString(map);
+						}
+					}
+
 					// 删除镜像下所有的快照
 					RbdImage rbdImage = rbd.open(imgname);
 					List<RbdSnapInfo> snapInfos = rbdImage.snapList();
@@ -874,11 +887,11 @@ public class CephController {
 					rbd.remove(imgname);
 
 					// 数据库中删除镜像
-					CephRbdInfo cephRbdInfo = cephRbdInfoDao.deleteByName(imgname);
+					cephRbdInfoDao.delete(cephRbdInfo);
 
 					// 记录日志
 					String extraInfo = "删除镜像 " + JSON.toJSONString(cephRbdInfo);
-					;
+
 					LOGGER.info(extraInfo);
 					CommonOperationLog log = CommonOprationLogUtils.getOprationLog(imgname, extraInfo,
 							CommConstant.CEPH_RBD, CommConstant.OPERATION_TYPE_DELETE);
@@ -1530,7 +1543,7 @@ public class CephController {
 		SnapStrategy snapStrategy = snapStrategyDao.findOne(strategyId);
 		boolean result = SnapListener.addTimer(cephRbdInfo, snapStrategy);
 		if (!result) {
-			msg = "快照策略执行失败!";
+			msg = "执行失败,快照策略可能已经到期!";
 			map.put("msg", msg);
 			map.put("status", "500");
 			return JSON.toJSONString(map);
@@ -1781,8 +1794,16 @@ public class CephController {
 				List<CephRbdInfo> cephRbdInfos = cephRbdInfoDao.findByStrategyId(strategy.getId());
 				if (CollectionUtils.isEmpty(cephRbdInfos)) {
 					strategy.setBindCount(0);
+					strategy.setExcutingCount(0);
 				} else {
 					strategy.setBindCount(cephRbdInfos.size());
+					int count=0;
+					for(CephRbdInfo cephRbdInfo:cephRbdInfos){
+						if(cephRbdInfo.isStrategyexcuting()){
+							count++;
+						}
+					}
+					strategy.setExcutingCount(count);
 				}
 			}
 		}

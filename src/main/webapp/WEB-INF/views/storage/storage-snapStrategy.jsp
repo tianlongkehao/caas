@@ -45,10 +45,11 @@
 									<table class="table table-stripped table-hover dataTables-example">
 										<thead>
 											<tr>
-												<th style="width: 20%;">自动快照策略名称</th>
-	                                            <th style="width: 20%;">关联磁盘数</th>
-	                                            <th style="width: 20%;">创建时间</th>
-	                                            <th style="width: 20%;">截止时间</th>
+												<th style="width: 18%;">自动快照策略名称</th>
+	                                            <th style="width: 18%;">关联磁盘数</th>
+	                                            <th style="width: 18%;">执行磁盘数</th>
+	                                            <th style="width: 18%;">创建时间</th>
+	                                            <th style="width: 18%;">截止时间</th>
 	                                            <th style="width: 10%;" class="del-operation">操作</th>
 											</tr>
 										</thead>
@@ -56,10 +57,11 @@
 										  <c:forEach items="${snapStrategies}" var="strategy">
 											<tr strategyId=${strategy.id } strategyName="${strategy.name }" bindCount="${strategy.bindCount }"
 											     keep=${strategy.keep } time="${strategy.time }" week="${strategy.week }">
-												<td style="width: 20%;">${strategy.name }</td>
-	                                            <td style="width: 20%;">${strategy.bindCount }</td>
-	                                            <td style="width: 20%;">${strategy.createDate }</td>
-	                                            <th style="width: 20%;">${strategy.endData }</th>
+												<td style="width: 18%;">${strategy.name }</td>
+	                                            <td style="width: 18%;">${strategy.bindCount }</td>
+	                                            <th style="width: 18%;">${strategy.excutingCount }</th>
+	                                            <td style="width: 18%;">${strategy.createDate }</td>
+	                                            <th style="width: 18%;">${strategy.endData }</th>
 	                                            <td style="width: 10%;class="del-operation">
 	                                            	<a onclick="snapStrategyEdit(this)" title="修改策略"><i class="fa fa-edit"></i></a>
 	                                            	<a onclick="setStorage(this)" title="设置磁盘"><i class="fa fa-cog"></i></a>

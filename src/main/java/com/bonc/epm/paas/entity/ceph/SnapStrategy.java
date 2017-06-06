@@ -30,6 +30,8 @@ public class SnapStrategy {
 
 	private int bindCount;
 
+	private int excutingCount;
+
 	/**
 	 * 创建时间
 	 */
@@ -41,6 +43,14 @@ public class SnapStrategy {
 	 */
 	@JSONField(format = "yyyy-MM-dd")
 	private Date endData;
+
+	public int getExcutingCount() {
+		return excutingCount;
+	}
+
+	public void setExcutingCount(int excutingCount) {
+		this.excutingCount = excutingCount;
+	}
 
 	public int getKeep() {
 		return keep;
