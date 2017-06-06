@@ -254,14 +254,16 @@ public class DNSController {
 			if (controller != null) {
 				controller = client.updateReplicationController(service.getServiceName(), 0);
 				if (controller != null && controller.getSpec().getReplicas() == 0) {
-					Status status = client.deleteReplicationController(service.getServiceName());
-					if (!status.getStatus().equals("Success")) {
+					try {
+						client.deleteReplicationController(service.getServiceName());
+					} catch (KubernetesClientException e) {
 						LOG.error("Delete a Replication Controller failed:DNSServiceName[" + service.getServiceName()
-								+ "]");
+						+ "]");
 						messages.add("Delete a Replication Controller failed:DNSServiceName[" + service.getServiceName()
-								+ "]");
+						+ "]");
 						map.put("status", "400");
 						map.put("messages", messages);
+						e.printStackTrace();
 						return JSON.toJSONString(map);
 					}
 				} else {
