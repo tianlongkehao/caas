@@ -43,7 +43,7 @@
 									</h5>
 									<div class="ibox-tools">
 										<a id="deployBtn" style="cursor: pointer"><i>部署</i></a>
-										<a id="excuteBtn" style="cursor: pointer"><i>执行</i></a>
+										<a onclick="testNodes()" style="cursor: pointer"><i>执行</i></a>
 										<a id="deleteBtn" style="cursor: pointer"><i>清除部署</i></a>
 										<a href="javascript:window.location.reload(true);" title="刷新"><i
 											class="fa fa-repeat"></i></a>
@@ -69,7 +69,9 @@
 									</tr>
 								</thead>
 								<tbody id="routeList">
-									
+									<tr>
+										<td>数据加载中...</td>
+									</tr>
 										<tr class="thisTr hide">
 											<td style="width:5%;text-indent:20px">
 												<input class="chkItem" name="node" type="checkbox" value="${node.nodename }" testStatus="${node.teststatus }" deployStatus="${node.deploystatus }">
@@ -210,12 +212,12 @@
 									<input name="item" class="checkItem" type="checkbox" value="pingitem" id="ping">&nbsp;ping地址：
 								</th>
 								<td>
-									<input type="text" id="pingip" placeholder="主机IP" value="192.168.0.1" />
+									<input type="text" id="pingip" placeholder="主机IP" value="" />
 								</td>
 								<th style="width: 20%">平均响应时间：</th>
 								<td>
 									<input type="number" style="width: 80%"
-									value="10" class="number" min="1" autocomplete="off" max=""
+									value="" class="number" min="1" autocomplete="off" max=""
 									 id="pingtime"
 									onkeyup="this.value=this.value.replace(/\D/g,'')"
 									name="instanceNum"><span class="s-unit">ms</span>
@@ -229,7 +231,7 @@
 								<th style="width: 20%">平均响应时间：</th>
 								<td>
 									<input style="width: 80%"
-									type="number" value="2" class="number" min="1"
+									type="number" value="" class="number" min="1"
 									autocomplete="off" max=""  id="tracepathtime"
 									onkeyup="this.value=this.value.replace(/\D/g,'')"
 									name="instanceNum"><span class="s-unit">s</span>
@@ -240,7 +242,7 @@
 									<input name="item" class="checkItem" type="checkbox" value="curlitem" id="curl">&nbsp;curl响应时间：
 								</th>
 								<td colspan="3" style="width: 80%">
-									<input type="number" style="width: 80%;" value="2" class="number"
+									<input type="number" style="width: 80%;" value="" class="number"
 									min="1" autocomplete="off" max=""  id="curltime"
 									onkeyup="this.value=this.value.replace(/\D/g,'')"
 									name="instanceNum"><span class="s-unit">s</span>
@@ -251,15 +253,15 @@
 									<input name="item" class="checkItem" type="checkbox" value="qperfitem" id="qperf">&nbsp;qperf带宽：
 								</th>
 								<td>
-									<input style="width: 80%" type="number" value="2000" class="number"
-											min="1" autocomplete="off" max=""  id="qperf"
+									<input style="width: 80%" type="number" value="" class="number"
+											min="1" autocomplete="off" max=""  id="speed"
 											onkeyup="this.value=this.value.replace(/\D/g,'')"
 											name="instanceNum"><span class="s-unit">MB</span>
 								</td>
 								<th style="width: 20%">延迟：</th>
 								<td>
 									<input style="width: 80%"
-										type="number" value="10" class="number" min="1"
+										type="number" value="" class="number" min="1"
 										autocomplete="off" max=""  id="qperftime"
 										onkeyup="this.value=this.value.replace(/\D/g,'')"
 										name="instanceNum"><span class="s-unit">ms</span>
@@ -271,7 +273,7 @@
 									</th>
 									<td colspan="3" style="width: 75%">
 										<input style="width: 80%" type="number" value="" class="number" min="1"
-											autocomplete="off" max="" id="docker"
+											autocomplete="off" max="" id="dockerCon"
 											onkeyup="this.value=this.value.replace(/\D/g,'')"
 											name="instanceNum"><span class="s-unit">GB</span>
 									</td>
@@ -295,12 +297,7 @@
 		</article>
 	</div>
 <script type="text/javascript">
-	$('.dataTables-example').dataTable({
-	    "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0,4] }],
-	    //"searching":false
-	    //"aaSorting": [[ 2, "desc" ]]
-	});
-	$("#checkallbox").parent().removeClass("sorting_asc");
+	
 </script>
 </body>
 </html>
