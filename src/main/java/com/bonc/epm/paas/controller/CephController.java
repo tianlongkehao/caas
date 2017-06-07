@@ -16,6 +16,7 @@ import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.engine.jdbc.internal.DDLFormatterImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +50,7 @@ import com.ceph.rados.exceptions.RadosException;
 import com.ceph.rbd.Rbd;
 import com.ceph.rbd.RbdException;
 import com.ceph.rbd.RbdImage;
+import com.ceph.rbd.jna.RbdImageInfo;
 import com.ceph.rbd.jna.RbdSnapInfo;
 
 /**
@@ -382,6 +384,62 @@ public class CephController {
 
 		} catch (RadosException e) {
 			throw e;
+		} finally {
+			if (cluster != null) {
+				cluster.shutDown();
+			}
+		}
+	}
+
+	/**
+	 * 清空cephrbd
+	 * @return
+	 */
+	@RequestMapping(value = { "ceph/clearcephrbd" }, method = RequestMethod.GET)
+	@ResponseBody
+	public String clearRbd(){
+		Map<String, String> map = new HashMap<>();
+		String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
+		String msg = "";
+		try {
+			cluster = new Rados(CEPH_NAME);
+			File f = new File(CEPH_DIR + CEPH_CONF);
+			cluster.confReadFile(f);
+			cluster.connect();
+
+			// 获取所有pool
+			String[] pools = cluster.poolList();
+			boolean poolExist = false;
+			for (String pool : pools) {
+				if (namespace.equals(pool)) {
+					poolExist = true;
+					break;
+				}
+			}
+
+			if (!poolExist) {
+				cluster.poolCreate(namespace);
+			}
+
+			IoCTX ioctx = cluster.ioCtxCreate(namespace);
+			try {
+				Rbd rbd = new Rbd(ioctx); // RBD
+
+
+				map.put("status", "200");
+				return JSON.toJSONString(map);
+			} finally {
+				if (cluster != null) {
+					cluster.ioCtxDestroy(ioctx);
+				}
+			}
+
+		} catch (RadosException e) {
+			LOGGER.error(e.getMessage());
+			msg = "pool" + namespace + "创建失败!";
+			map.put("msg", msg);
+			map.put("status", "500");
+			return JSON.toJSONString(map);
 		} finally {
 			if (cluster != null) {
 				cluster.shutDown();
