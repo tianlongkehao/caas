@@ -1,4 +1,12 @@
 $(document).ready(function () {
+	$('#collapseOne').collapse('show');
+	$('#collapseTwo').collapse('show');
+	$('#collapseThree').collapse('show');
+	$('#collapseFour').collapse('show');
+	$('#collapseFive').collapse('show');
+	$('#collapseSix').collapse('show');
+	
+	 
     document.onkeydown = function () {
         var a = window.event.keyCode;
         if (a == 9) {
@@ -56,50 +64,50 @@ $(document).ready(function () {
     $(".installBtn").click(function () {
         $(".radius_step").removeClass("action").eq(3).addClass("action");
         $(".step-inner").css("left", "-300%");
-        var rowHosts = document.getElementsByName("rowHost");
-        var allRowsChecked = true;
-        var rowsHostType = [];
-        for (var i = 0; i < rowHosts.length; i++) {
-            var rowHost = rowHosts[0];
-            var host = rowHost.innerHTML;
-            var rootName = $('#rootName').val().trim();
-            var password = $('#password').val().trim();
-            var port = $('#port').val().trim();
-            var rowMaster = rowHost.nextElementSibling;
-            var masterChecked = rowMaster.childNodes[0].checked;
-            var rowSlave = rowMaster.nextElementSibling;
-            var slaveChecked = rowSlave.childNodes[0].checked;
-            /*var rowEtcd = rowSlave.nextElementSibling;
-             var etcdChecked = rowEtcd.childNodes[0].checked;*/
-            if (masterChecked == false && slaveChecked == false) {
-                layer.alert(host + "没有设置节点类型");
-                allRowsChecked = false;
-                return;
-            }
-            var hostType = {};
-            hostType.host = host;
-            hostType.password = password;
-            hostType.rootName = rootName;
-            hostType.port = port;
-            if (masterChecked == true) {
-                hostType.type = "master";
-            } else if (slaveChecked == true) {
-                hostType.type = "slave";
-            }
-            /*else if (etcdChecked == true) {
-             hostType.type = "etcd";
-             }*/
-            rowsHostType.push(hostType);
-        }
-        if (allRowsChecked == true) {
-            var rowsLength = rowsHostType.length;
-            var rowNum = 0;
-            var hostType = rowsHostType[rowNum];
-            installEnv(hostType.host, hostType.type,hostType.rootName,hostType.password,hostType.port, rowNum, rowsLength, rowsHostType);
-            layer.load(0, {shade: [0.3, '#000']});
-        }
-
-        return false
+//        var rowHosts = document.getElementsByName("rowHost");
+//        var allRowsChecked = true;
+//        var rowsHostType = [];
+//        for (var i = 0; i < rowHosts.length; i++) {
+//            var rowHost = rowHosts[0];
+//            var host = rowHost.innerHTML;
+//            var rootName = $('#rootName').val().trim();
+//            var password = $('#password').val().trim();
+//            var port = $('#port').val().trim();
+//            var rowMaster = rowHost.nextElementSibling;
+//            var masterChecked = rowMaster.childNodes[0].checked;
+//            var rowSlave = rowMaster.nextElementSibling;
+//            var slaveChecked = rowSlave.childNodes[0].checked;
+//            /*var rowEtcd = rowSlave.nextElementSibling;
+//             var etcdChecked = rowEtcd.childNodes[0].checked;*/
+//            if (masterChecked == false && slaveChecked == false) {
+//                layer.alert(host + "没有设置节点类型");
+//                allRowsChecked = false;
+//                return;
+//            }
+//            var hostType = {};
+//            hostType.host = host;
+//            hostType.password = password;
+//            hostType.rootName = rootName;
+//            hostType.port = port;
+//            if (masterChecked == true) {
+//                hostType.type = "master";
+//            } else if (slaveChecked == true) {
+//                hostType.type = "slave";
+//            }
+//            /*else if (etcdChecked == true) {
+//             hostType.type = "etcd";
+//             }*/
+//            rowsHostType.push(hostType);
+//        }
+//        if (allRowsChecked == true) {
+//            var rowsLength = rowsHostType.length;
+//            var rowNum = 0;
+//            var hostType = rowsHostType[rowNum];
+//            installEnv(hostType.host, hostType.type,hostType.rootName,hostType.password,hostType.port, rowNum, rowsLength, rowsHostType);
+//            layer.load(0, {shade: [0.3, '#000']});
+//        }
+//
+//        return false
 
     });
     $(".last_step").click(function () {
@@ -208,3 +216,16 @@ function installEnv(host, type,rootName,password,port, rowNum, rowsLength, rowsH
         }
     });
 }
+function deleteOneNode(obj){
+	$(obj).parent().remove();
+}
+function addOneEtcdNode(obj){
+	var thisIp = $(obj).attr("nodeIp");
+	var thisStr = '<span class="noEditIp">'+thisIp+'<i class="fa fa-times-circle-o" onclick="deleteOneNode(this)"></i></span>';
+	$(".etcdNodes").append(thisStr);
+}
+
+
+
+
+

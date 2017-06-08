@@ -1355,4 +1355,72 @@ font i.fa-question-circle{
 table.table tr td textarea{
 	background-color:#ddd;
 }
+/* cluster-manager */
+.clusterNodesTable{
+	height: 300px;
+	min-height: 300px;
+	overflow-y: auto;
+}
+.clusterNodesTable tr td{
+	text-align:left;
+}
+#collapseTwo .m-panel{
+	width:100%;
+	float:left;
+}
+#collapseTwo .m-panel label{
+	float:left;
+	line-height:34px;
+	width:15%;
+	text-align:right;
+}
+.host_step3 .testResultInfo{
+	margin-bottom:10px;
+}
+.noEditIp{
+	padding: 7px 12px;
+    border-radius: 2px;
+    line-height:36px;
+    background:#ddd;
+    margin-right:10px;
+   	position:relative;
+}
+.panel-body .fa-times-circle-o{
+	position: absolute;
+    right: -4px;
+    top: -5px;
+    color: #e8504f;
+    font-size: 16px;
+    cursor:pointer;
+    z-index:9999;
+}
+.panel-body .fa-times-circle-o:hover{
+	font-size:18px;
+}
+.float-left{
+	float:left;
+}
+.addEtcdNodeBtn{
+	margin-left:10px;
+}
+.yumCon{
+	width:100%;
+	margin-bottom:6px;
+}
+.yumCon label{
+	width:9%;
+	float:left;
+	line-height:34px;
+	text-align:right;
+	padding-right:12px;
+}
+.yumCon input{
+	width:91%;
+}
+#divResult tr td{
+	text-align:left;
+}
+.progressCon .progress{
+	margin: 0 auto;
+}
 
