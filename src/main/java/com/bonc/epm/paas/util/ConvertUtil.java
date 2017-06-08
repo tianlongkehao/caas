@@ -78,7 +78,7 @@ public class ConvertUtil {
 	 * @param memory
 	 * @return double
 	 */
-	public static double ParseMemory(String memory) {
+	public static double parseMemory(String memory) {
 		if (StringUtils.isEmpty(memory)) {
 			return 0d;
 		}

@@ -174,7 +174,7 @@ public class KubernetesClientService {
 	}
 
 	public Long transMemory(String memory) {
-		return (long) (ConvertUtil.ParseMemory(memory) / Math.pow(2, 20));
+		return (long) (ConvertUtil.parseMemory(memory) / Math.pow(2, 20));
 	}
 
 	public boolean isNumeric(String str) {
