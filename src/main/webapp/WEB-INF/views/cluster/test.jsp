@@ -63,79 +63,14 @@
 											<input type="checkbox" class="chkAll" id="checkallbox" />
 										</th>
 										<th style="width:12%;">集群节点</th>
-										<th style="width:55%;">测试进度</th>
+										<th style="width:70%;">测试进度</th>
 										<th style="width:12%;text-indent:20px">测试结果</th>
-										<th>操作</th>
 									</tr>
 								</thead>
 								<tbody id="routeList">
 									<tr>
 										<td>数据加载中...</td>
 									</tr>
-										<tr class="thisTr hide">
-											<td style="width:5%;text-indent:20px">
-												<input class="chkItem" name="node" type="checkbox" value="${node.nodename }" testStatus="${node.teststatus }" deployStatus="${node.deploystatus }">
-											</td>
-											<td style="width:12%;">${node.nodename }</td>
-											<td style="width:55%;" nodeName="${node.nodename }" class="nodeProgressBar">
-									        	<div id="progress_${node.nodename }" class="progress nodeProgress" style="margin:0 auto">
-									        		<div class="progress-bar" role="progressbar"
-														 aria-valuenow="60" aria-valuemin="0" aria-valuemax="100">
-													</div>
-													<c:if test="${node.deploystatus ==true}">
-														<div class="progress-bar progress-bar-warning" role="progressbar"
-															 aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"
-															 style="width: 40%;">
-															<span >部署完成</span>
-														</div>
-														<c:if test="${node.teststatus == true}">
-															<c:if test="${node.nodeTestInfo.allpass == true}">
-																<div class="progress-bar progress-bar-success" role="progressbar"
-																	 aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"
-																	 style="width: 85%;">
-																	<span>执行完成</span>
-																</div>
-															</c:if>
-															<c:if test="${node.nodeTestInfo.allpass == false}">
-																<div class="progress-bar progress-bar-danger" role="progressbar"
-																	 aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"
-																	 style="width: 85%;">
-																	<span>执行失败</span>
-																</div>
-															</c:if>
-														</c:if>
-													</c:if>
-													<c:if test="${node.deploystatus ==false}">
-														<div class="progress-bar progress-bar-warning" role="progressbar"
-															 aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"
-															 style="width: 0%;">
-														</div>
-													</c:if>
-												</div>
-									        </td>
-
-											<td class="clusterTestOpr" style="width:12%;text-indent:20px">
-												<a id="${node.nodename }"  nodename="${node.nodename }"
-													onclick="detail(this)" title="查看详细信息">
-													<c:if test="${node.deploystatus == true}">
-														<c:if test="${node.teststatus == true}">
-															<c:if test="${node.nodeTestInfo.allpass == true}">
-																<font color="#33CC33" style="font-weight:bold;cursor:pointer" id="nodeTestInfo" nodeTestInfo="${node.nodeTestInfo}">通过<i class="fa fa-question-circle"></i></font>
-															</c:if>
-															<c:if test="${node.nodeTestInfo.allpass == false}">
-																<font color="#FF0033" style="font-weight:bold;cursor:pointer">未通过<i class="fa fa-question-circle"></i></font>
-															</c:if>
-														</c:if>
-													</c:if>
-												</a>
-											</td>
-											<td class="clusterTestOprBtns" nodeName="${node.nodename }" testStatus="${node.teststatus }" deployStatus="${node.deploystatus }">
-												<a onclick="deployOneNode(this)"><i>部署</i></a>
-												<a onclick="testOneNode(this)"><i>执行</i></a>
-												<a onclick="clearOneNode(this)"><i>清理部署</i></a>
-											</td>
-										</tr>
-									
 								</tbody>
 							</table>
 						</div>

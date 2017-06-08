@@ -909,7 +909,7 @@ $(document).ready(function() {
 	$("#deployBtn").click(function() {
 		var flag = true;
 		var selectednodes = new Array();
-		$("input:checkbox[name='node']:checked").each(function(i) {
+		$("input:checkbox[name='node']").each(function(i) {
 			selectednodes.push($(this).val());
 			if($(this).attr("teststatus") == "true"){
 				layer.msg('所选节点中有执行测试完成节点，若重新部署请先清理该节点！',{icon: 5});
@@ -917,13 +917,6 @@ $(document).ready(function() {
 				return;
 			}
 		});
-		if (selectednodes == "") {
-			layer.tips('请选择至少一个集群节点','#checkallbox', {
-				tips : [ 1, '#3595CC' ]
-			});
-			$('#checkallbox').focus();
-			return;
-		}
 		if(flag == true){
 			var deployLoading = layer.load(0, {
 				shade : [ 0.3, '#000' ]
@@ -939,7 +932,7 @@ $(document).ready(function() {
 			$.each(selectednodes,function(i,e){  
 				
 				defer = defer.then(function () {  
-					var checkNode = $('input:checkbox[id="'+e+'"]:checked');
+					var checkNode = $('input:checkbox[id="'+e+'"]');
 					checkNode.parent().parent().find(".nodeProgress").empty().append(deployingHtml);
 				  return $.ajax({  
 			      url:ctx + "/cluster/deploypodfortest?nodenames="+e,  
@@ -1035,7 +1028,7 @@ function showTestList(){
 			var testHtml = showTestListData(data);
 			$("#routeList").empty().append(testHtml);
 			$('.dataTables-example').dataTable({
-			    "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0,4] }],
+			    "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0,3] }],
 			});
 			$("#checkallbox").parent().removeClass("sorting_asc");
 		}
@@ -1079,11 +1072,6 @@ function showTestListData(data){
 			testListHtml +='</div>'
 					+'</td>'
 					+'<td class="clusterTestOpr" style="width:12%;text-indent:20px">'
-					+'</td>'
-					+'<td class="clusterTestOprBtns" nodeName="'+nodename+'" testStatus="'+teststatus+'" deployStatus="'+deploystatus+'">'
-					+'<a onclick="deployOneNode(this)"><i>部署</i></a>'
-					+'<a onclick="testNodes(this)" style="margin-left:8px"><i>执行</i></a>'
-					+'<a onclick="clearOneNode(this)" style="margin-left:8px"><i>清理部署</i></a>'
 					+'</td>'
 					+'</tr>';
 		}else{
@@ -1238,11 +1226,6 @@ function showTestListData(data){
 					testListHtml +='<font color="#FF0033" style="font-weight:bold;cursor:pointer">未通过<i class="fa fa-question-circle"></i></font>';
 				}
 				testListHtml +='</a>'
-						+'</td>'
-						+'<td class="clusterTestOprBtns" nodeName="'+nodename+'" testStatus="'+teststatus+'" deployStatus="'+deploystatus+'">'
-						+'<a onclick="deployOneNode(this)"><i>部署</i></a>'
-						+'<a onclick="testNodes(this)" style="margin-left:8px"><i>执行</i></a>'
-						+'<a onclick="clearOneNode(this)" style="margin-left:8px"><i>清理部署</i></a>'
 						+'</td>'
 						+'</tr>';	
 			}else{
