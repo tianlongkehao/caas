@@ -109,17 +109,17 @@ public class MonitorController {
      * @param minionName String
      * @return sql String
      */
-    private String joinClusterSQL(String selCol, String tabName, String minionName) {
-        //根据查询时间段取得间隔时间
-        String timeGroup = getTimeGroup(timePeriod);
-        StringBuilder sqlSb = new StringBuilder();
-        sqlSb.append("SELECT " + selCol + " FROM " + tabName + " WHERE \"container_name\" = 'influxdb' ");
-        if (StringUtils.isNotBlank(minionName)){
-            sqlSb.append(" AND \"hostname\" =~ /" + minionName + "/");
-        }
-        sqlSb.append(" AND time > now() - " + timePeriod + " GROUP BY time(" + timeGroup + ")");
-        return sqlSb.toString();
-    }
+	private String joinClusterSQL(String selCol, String tabName, String minionName) {
+		// 根据查询时间段取得间隔时间
+		String timeGroup = getTimeGroup(timePeriod);
+		StringBuilder sqlSb = new StringBuilder();
+		sqlSb.append("SELECT " + selCol + " FROM " + tabName + " WHERE 1 = 1 ");
+		if (StringUtils.isNotBlank(minionName)) {
+			sqlSb.append(" AND \"nodename\" =~ /" + minionName + "/ and  \"type\" = 'node' ");
+		}
+		sqlSb.append(" AND time > now() - " + timePeriod + " - " + timeGroup + " GROUP BY time(" + timeGroup + ")");
+		return sqlSb.toString();
+	}
 
     /**
      * 根据Container条件拼接SQL
@@ -239,26 +239,26 @@ public class MonitorController {
      * @param timePeriod
      * @return List
      */
-    public List<String> getXValue(InfluxDB influxDB,String dbName, String timePeriod){
-    	this.influxDB = influxDB;
-    	this.timePeriod = timePeriod;
-    	this.dbName = dbName;
-    	List<String> listString = new ArrayList<>();
-    	try {
-            String sql = joinClusterSQL(MonitorConstant.SUN_VALUE, MonitorConstant.MEMORY_LIMIT, "");
-            Query sqlQuery = new Query(sql, dbName);
-            QueryResult result_mem_limit = influxDB.query(sqlQuery);
-            List<List<Object>> listObject = result_mem_limit.getResults().get(0).getSeries().get(0).getValues();
-            for (List<Object> aListObject : listObject) {
-                listString.add(aListObject.get(0).toString().replace("T", " ").replace("Z", ""));
-            }
-        }
-        catch (Exception e) {
-            LOG.error("obtain X axis failed. the error message:-"+e.getMessage());
-            LOG.info("the reason perhaps is that time isnot enough.");
-        }
-        return listString;
-    }
+	public List<String> getXValue(InfluxDB influxDB, String dbName, String timePeriod) {
+		this.influxDB = influxDB;
+		this.timePeriod = timePeriod;
+		this.dbName = dbName;
+		List<String> listString = new ArrayList<>();
+		try {
+			String sql = "SELECT  sum(\"value\")  FROM  " + MonitorConstant.MEMORY_LIMIT + "  WHERE  time > now() - "
+					+ timePeriod + " GROUP BY time(" + getTimeGroup(timePeriod) + ")";
+			Query sqlQuery = new Query(sql, dbName);
+			QueryResult result_mem_limit = influxDB.query(sqlQuery);
+			List<List<Object>> listObject = result_mem_limit.getResults().get(0).getSeries().get(0).getValues();
+			for (List<Object> aListObject : listObject) {
+				listString.add(aListObject.get(0).toString().replace("T", " ").replace("Z", ""));
+			}
+		} catch (Exception e) {
+			LOG.error("obtain X axis failed. the error message:-" + e.getMessage());
+			LOG.info("the reason perhaps is that time isnot enough.");
+		}
+		return listString;
+	}
 
     /**
      * 取得CLUSTER监控数据
