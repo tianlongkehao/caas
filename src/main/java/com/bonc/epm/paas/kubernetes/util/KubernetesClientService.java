@@ -57,6 +57,7 @@ import com.bonc.epm.paas.kubernetes.model.ServiceSpec;
 import com.bonc.epm.paas.kubernetes.model.Volume;
 import com.bonc.epm.paas.kubernetes.model.VolumeMount;
 import com.bonc.epm.paas.rest.util.RestFactory;
+import com.bonc.epm.paas.util.ConvertUtil;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 
 @org.springframework.stereotype.Service
@@ -173,35 +174,7 @@ public class KubernetesClientService {
 	}
 
 	public Long transMemory(String memory) {
-		if (memory.endsWith("M")) {
-			memory = memory.replace("M", "");
-		} else if (memory.endsWith("Mi")) {
-			memory = memory.replace("Mi", "");
-		} else if (memory.endsWith("G")) {
-			memory = memory.replace("G", "");
-			//long memoryG = Long.valueOf(memory) * 1024;
-			long memoryG = Long.valueOf(memory) * 1000;
-			return memoryG;
-		} else if (memory.endsWith("Gi")) {
-			memory = memory.replace("Gi", "");
-			//long memoryG = Long.valueOf(memory) * 1024;
-			long memoryG = Long.valueOf(memory) * 1000;
-			return memoryG;
-		} else if (isNumeric(memory)) {
-			//long memoryBit = Long.valueOf(memory) / (1024 * 1024);
-			long memoryBit = Long.valueOf(memory) / (1000 * 1000);
-			return memoryBit;
-		} else if (memory.endsWith("k")) {
-			memory = memory.replace("k", "");
-			//long memoryk = Long.valueOf(memory) / 1024;
-			long memoryk = Long.valueOf(memory) / 1000;
-			return memoryk;
-		} else if (memory.endsWith("m")) {
-			memory = memory.replace("m", "");
-			long memoryk = Long.valueOf(memory) / (1000 * 1000);
-			return memoryk;
-		}
-		return Long.valueOf(memory);
+		return (long) (ConvertUtil.parseMemory(memory) / Math.pow(2, 20));
 	}
 
 	public boolean isNumeric(String str) {
