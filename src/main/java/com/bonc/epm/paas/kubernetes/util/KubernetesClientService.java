@@ -42,6 +42,7 @@ import com.bonc.epm.paas.kubernetes.model.LimitRangeSpec;
 import com.bonc.epm.paas.kubernetes.model.Namespace;
 import com.bonc.epm.paas.kubernetes.model.ObjectMeta;
 import com.bonc.epm.paas.kubernetes.model.Pod;
+import com.bonc.epm.paas.kubernetes.model.PodCondition;
 import com.bonc.epm.paas.kubernetes.model.PodSpec;
 import com.bonc.epm.paas.kubernetes.model.PodTemplateSpec;
 import com.bonc.epm.paas.kubernetes.model.Probe;
@@ -196,19 +197,25 @@ public class KubernetesClientService {
 	}
 
 	public boolean isRunning(Pod pod) {
-		if (pod.getStatus().getPhase().equals("Running")
-				&& pod.getStatus().getConditions().get(0).getType().equals("Ready")
-				&& pod.getStatus().getConditions().get(0).getStatus().equals("True")
-				&& pod.getStatus().getContainerStatuses().get(0).getState().getRunning() != null) {
-			for (ContainerStatus containerStatus : pod.getStatus().getContainerStatuses()) {
-				if (containerStatus.getState().getRunning() == null) {
-					return false;
+		boolean podRunning = false;
+		boolean containerRunning = true;
+		if (pod.getStatus().getPhase().equals("Running")) {
+			for(PodCondition podCondition : pod.getStatus().getConditions()){
+				if (podCondition.getType().equals("Ready") && podCondition.getStatus().equals("True")) {
+					podRunning = true;
+					break;
 				}
 			}
-			return true;
-		} else {
-			return false;
 		}
+
+		for (ContainerStatus containerStatus : pod.getStatus().getContainerStatuses()) {
+			if (containerStatus.getState().getRunning() == null) {
+				containerRunning=false;
+				break;
+			}
+		}
+
+		return podRunning && containerRunning;
 	}
 
 
