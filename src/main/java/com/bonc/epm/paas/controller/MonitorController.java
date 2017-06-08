@@ -55,6 +55,16 @@ public class MonitorController {
     private Integer cpuDivisor = 1;
 
     /**
+     * socketsDivisor
+     */
+    private Integer socketsDivisor = 1;
+
+    /**
+     * threadsDivisor
+     */
+    private Integer threadsDivisor = 1;
+
+    /**
      * diskDivisor
      */
     private Integer diskDivisor = 1024*1024*1024;
@@ -222,8 +232,14 @@ public class MonitorController {
                 //cpu_limit
                 return dbSearch(joinContainerSQL(MonitorConstant.LAST_VALUE, MonitorConstant.CPU_LIMIT, namespace, podName, containerName), cpuDivisor);
             case "getCpuUse":
-                //cpu_use
-                return dbSearch(joinContainerSQL(MonitorConstant.MAX_VALUE, MonitorConstant.CPU_USAGE, namespace, podName, containerName), cpuDivisor);
+            	//cpu_use
+            	return dbSearch(joinContainerSQL(MonitorConstant.MAX_VALUE, MonitorConstant.CPU_USAGE, namespace, podName, containerName), cpuDivisor);
+            case "getSocketsUse":
+            	//sockets_use
+            	return dbSearch(joinContainerSQL(MonitorConstant.MAX_VALUE, MonitorConstant.SOCKETS_USAGE, namespace, podName, containerName), socketsDivisor);
+            case "getThreadsUse":
+                //threads_use
+                return dbSearch(joinContainerSQL(MonitorConstant.MAX_VALUE, MonitorConstant.THREADS_USAGE, namespace, podName, containerName), threadsDivisor);
             default:
                 return new ArrayList<String>();
         }
