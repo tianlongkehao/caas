@@ -135,89 +135,212 @@
 				</div>
 
                 <div id="chkitem" style="display: none; text-align: center">
-					<table class="table clusterTestTable" style="width: 580px; padding: 5px; margin: 10px">
+					<table class="table clusterTestTable" style="width: 570px; padding: 5px; margin: 10px">
 						<tbody>
 							<tr>
-								<th colspan="4" style="padding-left:5px">
+								<th colspan="2" style="padding-left:5px">
 									<label style="float:left"><input id="selectitem" type="checkbox" value="" style="float:left">全选</label>
 								</th>
 							</tr>
 							<tr>
-								<th style="width: 20%">
+								<th class="testItemTit">
 									<input name="item" class="checkItem" type="checkbox" value="pingitem" id="ping">&nbsp;ping地址：
 								</th>
 								<td>
-									<input type="text" id="pingip" placeholder="主机IP" value="" />
+									<input type="text" style="width: 80%" id="pingip" placeholder="主机IP" value="" />
 								</td>
-								<th style="width: 20%">平均响应时间：</th>
+							</tr>
+							<tr>
+								<th class="testItemTit testItemTitNoCheckbox">平均响应时间：</th>
 								<td>
-									<input type="number" style="width: 80%"
-									value="" class="number" min="1" autocomplete="off" max=""
+									<input type="number" class="testItemCon"
+									value="10" class="number" min="1" autocomplete="off" max=""
 									 id="pingtime"
 									onkeyup="this.value=this.value.replace(/\D/g,'')"
 									name="instanceNum"><span class="s-unit">ms</span>
 								</td>
 							</tr>
 							<tr>
-								<th style="width: 20%"><input name="item" class="checkItem" type="checkbox" value="traceitem" id="trace">&nbsp;trace地址：</th>
+								<th class="testItemTit"><input name="item" class="checkItem" type="checkbox" value="traceitem" id="trace">&nbsp;trace地址：</th>
 								<td>
-									<input type="text" id="tracepathip" placeholder="主机IP" value="" />
+									<input type="text" class="testItemCon" id="tracepathip" placeholder="主机IP" value="" />
 								</td>
-								<th style="width: 20%">平均响应时间：</th>
+							</tr>
+							<tr>
+								<th class="testItemTit testItemTitNoCheckbox">平均响应时间：</th>
 								<td>
-									<input style="width: 80%"
-									type="number" value="" class="number" min="1"
+									<input type="number" value="2" class="number testItemCon" min="1"
 									autocomplete="off" max=""  id="tracepathtime"
 									onkeyup="this.value=this.value.replace(/\D/g,'')"
 									name="instanceNum"><span class="s-unit">s</span>
 								</td>
 							</tr>
 							<tr>
-								<th style="width: 20%">
+								<th class="testItemTit">
 									<input name="item" class="checkItem" type="checkbox" value="curlitem" id="curl">&nbsp;curl响应时间：
 								</th>
-								<td colspan="3" style="width: 80%">
-									<input type="number" style="width: 80%;" value="" class="number"
+								<td style="width: 80%">
+									<input type="number" value="2" class="number testItemCon"
 									min="1" autocomplete="off" max=""  id="curltime"
 									onkeyup="this.value=this.value.replace(/\D/g,'')"
 									name="instanceNum"><span class="s-unit">s</span>
 								</td>
 							</tr>
 							<tr>
-								<th style="width: 20%">
+								<th class="testItemTit">
 									<input name="item" class="checkItem" type="checkbox" value="qperfitem" id="qperf">&nbsp;qperf带宽：
 								</th>
 								<td>
-									<input style="width: 80%" type="number" value="" class="number"
+									<input type="number" value="2000" class="number testItemCon"
 											min="1" autocomplete="off" max=""  id="speed"
 											onkeyup="this.value=this.value.replace(/\D/g,'')"
 											name="instanceNum"><span class="s-unit">MB</span>
 								</td>
-								<th style="width: 20%">延迟：</th>
+							</tr>
+							<tr>
+								<th class="testItemTit testItemTitNoCheckbox">延迟：</th>
 								<td>
-									<input style="width: 80%"
-										type="number" value="" class="number" min="1"
+									<input type="number" value="10" class="number testItemCon" min="1"
 										autocomplete="off" max=""  id="qperftime"
 										onkeyup="this.value=this.value.replace(/\D/g,'')"
 										name="instanceNum"><span class="s-unit">ms</span>
 								</td>
+							</tr>
+								<tr>
+									<th colspan="2" class="testItemTit">
+										<input name="item" class="checkItem" type="checkbox" value="dockeritem" id="docker">&nbsp;Docker
+									</th>
 								</tr>
 								<tr>
-									<th style="width: 25%">
-										<input name="item" class="checkItem" type="checkbox" value="dockeritem" id="docker">&nbsp;docker磁盘大小：
-									</th>
-									<td colspan="3" style="width: 75%">
-										<input style="width: 80%" type="number" value="" class="number" min="1"
-											autocomplete="off" max="" id="dockerCon"
+									<th class="testItemTit testItemTitNoCheckbox">Pool Blocksize：</th>
+									<td>
+										<input type="number" value="60" class="number testItemCon" min="1"
+											autocomplete="off" max="" id="PoolBlocksize"
+											onkeyup="this.value=this.value.replace(/\D/g,'')"
+											name="instanceNum"><span class="s-unit">KB</span>
+									</td>
+								</tr>
+								<tr>
+									<th class="testItemTit testItemTitNoCheckbox">Base Device Size：</th>
+									<td>
+										<input type="number" value="100" class="number testItemCon" min="1"
+											autocomplete="off" max="" id="BaseDeviceSize"
 											onkeyup="this.value=this.value.replace(/\D/g,'')"
 											name="instanceNum"><span class="s-unit">GB</span>
 									</td>
 								</tr>
 								<tr>
-									<th colspan="4" style="width: 25%">
-										<input name="item" class="checkItem" type="checkbox" value="dnsitem" id="dns">&nbsp;dns
-									</th>
+									<th class="testItemTit testItemTitNoCheckbox">Backing Filesystem：</th>
+									<td>
+										<input type="text" value="xfs" class="number testItemCon" min="1"
+											autocomplete="off" max="" id="BackingFilesystem"
+											name="instanceNum">
+									</td>
 								</tr>
+								<tr>
+									<th class="testItemTit testItemTitNoCheckbox">Data file：</th>
+									<td>
+										<input type="text" value="/dev/loop0" class="number testItemCon" min="1"
+											autocomplete="off" max="" id="Datafile"
+											name="instanceNum">
+									</td>
+								</tr>
+								<tr>
+									<th class="testItemTit testItemTitNoCheckbox">Data Space Used：</th>
+									<td>
+										<input type="number" value="0" class="number testItemCon" min="1"
+											autocomplete="off" max="" id="DataSpaceUsed"
+											name="instanceNum"><span class="s-unit">GB</span>
+									</td>
+								</tr>
+								<tr>
+									<th class="testItemTit testItemTitNoCheckbox">Data Space Total：</th>
+									<td>
+										<input type="number" value="100" class="number testItemCon" min="1"
+											autocomplete="off" max="" id="DataSpaceTotal"
+											name="instanceNum"><span class="s-unit">GB</span>
+									</td>
+								</tr>
+								<tr>
+									<th class="testItemTit testItemTitNoCheckbox">Data Space Available：</th>
+									<td>
+										<input type="number" value="100" class="number testItemCon" min="1"
+											autocomplete="off" max="" id="DataSpaceAvailable"
+											name="instanceNum"><span class="s-unit">GB</span>
+									</td>
+								</tr>
+								<tr>
+									<th class="testItemTit testItemTitNoCheckbox">Metadata file：</th>
+									<td>
+										<input type="text" value="/dev/loop1" class="number testItemCon" min="1"
+											autocomplete="off" max="" id="Metadatafile"
+											name="instanceNum">
+									</td>
+								</tr>
+								<tr>
+									<th class="testItemTit testItemTitNoCheckbox">Meta Space Used：</th>
+									<td>
+										<input type="number" value="0" class="number testItemCon" min="1"
+											autocomplete="off" max="" id="MetaSpaceUsed"
+											name="instanceNum"><span class="s-unit">MB</span>
+									</td>
+								</tr>
+								<tr>
+									<th class="testItemTit testItemTitNoCheckbox">Meta Space Total：</th>
+									<td>
+										<input type="number" value="2" class="number testItemCon" min="1"
+											autocomplete="off" max="" id="MetaSpaceTotal"
+											name="instanceNum"><span class="s-unit">GB</span>
+									</td>
+								</tr>
+								<tr>
+									<th class="testItemTit testItemTitNoCheckbox">Meta Space Available：</th>
+									<td>
+										<input type="number" value="2" class="number testItemCon" min="1"
+											autocomplete="off" max="" id="MetaSpaceAvailable"
+											name="instanceNum"><span class="s-unit">GB</span>
+									</td>
+								</tr>
+								<tr>
+									<th class="testItemTit testItemTitNoCheckbox">Deferred Removal Enable：</th>
+									<td>
+										<select id="DeferredRemovalEnable" class="testItemCon">
+											<option value="1">false</option>
+											<option value="2">true</option>
+										</select>
+									</td>
+								</tr>
+								<tr>
+									<th class="testItemTit testItemTitNoCheckbox">Udev Sync Supported：</th>
+									<td>
+										<select id="UdevSyncSupported" class="testItemCon">
+											<option value="1">false</option>
+											<option value="2">true</option>
+										</select>
+									</td>
+								</tr>
+								<tr>
+									<th class="testItemTit testItemTitNoCheckbox">Deferred Deletion Enable：</th>
+									<td>
+										<select id="DeferredDeletionEnable" class="testItemCon">
+											<option value="1">false</option>
+											<option value="2">true</option>
+										</select>
+									</td>
+								</tr>
+								<tr>
+									<th class="testItemTit testItemTitNoCheckbox">Deferred Deleted Device Count：</th>
+									<td>
+										<input type="number" value="0" class="number testItemCon" min="1"
+											autocomplete="off" max="" id="MetaSpaceAvailable"
+											name="instanceNum">
+									</td>
+								</tr>
+							<tr>
+								<th colspan="2" style="width: 25%">
+									<input name="item" class="checkItem" type="checkbox" value="dnsitem" id="dns">&nbsp;dns
+								</th>
+							</tr>
 						</tbody>
 					</table>
                 </div>
