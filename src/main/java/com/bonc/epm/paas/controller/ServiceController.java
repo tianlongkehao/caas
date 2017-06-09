@@ -1657,6 +1657,23 @@ public class ServiceController {
 				}
 				client.deleteReplicationController(serviceName);
 				LOG.info("Deleting old controller:" + serviceName);
+				/*
+				 * 增加此段代码确认rc是否已经被删除
+				 */
+				while (true) {
+					try {
+						if (client.getReplicationController(serviceName) == null) {
+							break;
+						}
+						try {
+							Thread.sleep(3000);
+						} catch (InterruptedException e) {
+							LOG.error(e.getMessage());
+						}
+					} catch (Exception e) {
+						break;
+					}
+				}
 
 				// 将新RC的名字重命名为旧RC名字
 				if (serviceDao.getServiceStatus(id) != ServiceConstant.CONSTRUCTION_STATUS_UPDATE) {
