@@ -186,15 +186,6 @@ public class KubernetesClientService {
 		return true;
 	}
 
-	public Double transCpu(String cpu) {
-		if (cpu.endsWith("m")) {
-			cpu = cpu.replace("m", "");
-			double icpu = Double.valueOf(cpu) / 1000;
-			return icpu;
-		}
-		return Double.valueOf(cpu);
-	}
-
 	public boolean isRunning(Pod pod) {
 		if (pod.getStatus().getPhase().equals("Running")
 				&& pod.getStatus().getConditions().get(0).getType().equals("Ready")
@@ -208,24 +199,6 @@ public class KubernetesClientService {
 			return true;
 		} else {
 			return false;
-		}
-	}
-
-
-	/**
-	 * Description: computeMemoryOut
-	 *
-	 * @param val
-	 *            Map<String, String>
-	 * @return memVal String
-	 * @see
-	 */
-	public String computeMemoryOut(String mem) {
-		if (mem.contains("Mi")) {
-			Float a1 = Float.valueOf(mem.replace("Mi", "")) / 1024;
-			return a1.toString();
-		} else {
-			return mem.replace("G", "").replace("i", "");
 		}
 	}
 
