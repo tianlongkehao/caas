@@ -67,6 +67,7 @@ import com.bonc.epm.paas.kubernetes.model.ResourceQuota;
 import com.bonc.epm.paas.kubernetes.model.ResourceQuotaList;
 import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
 import com.bonc.epm.paas.sso.casclient.CasClientConfigurationProperties;
+import com.bonc.epm.paas.util.ConvertUtil;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 import com.bonc.epm.paas.util.EncryptUtils;
 import com.bonc.epm.paas.util.ServiceException;
@@ -220,8 +221,8 @@ public class IndexController {
 				double memoryCount = 0;
 				for (Node node : allNodes.getItems()) {
 					Map<String, String> capacity = node.getStatus().getCapacity();
-					cpuCount += Float.valueOf(this.computeCpuOut(capacity)) ;
-					memoryCount += Float.valueOf(Float.parseFloat(this.computeMemoryOut(capacity)));
+					cpuCount += Float.valueOf(ConvertUtil.computeCpuOut(capacity)) ;
+					memoryCount += Float.valueOf(Float.parseFloat(ConvertUtil.computeMemoryOut(capacity)));
 				}
 				//获取所有quota
 				double usedCpuCount = 0;
@@ -230,8 +231,8 @@ public class IndexController {
 				ResourceQuotaList allResourceQuotas = client.getAllResourceQuotas();
 				for (ResourceQuota resourceQuota : allResourceQuotas.getItems()) {
 					Map<String, String> used = resourceQuota.getStatus().getUsed();
-					usedCpuCount += Float.valueOf(this.computeCpuOut(used));
-					usedMemoryCount += Float.valueOf(this.computeMemoryOut(used));
+					usedCpuCount += Float.valueOf(ConvertUtil.computeCpuOut(used));
+					usedMemoryCount += Float.valueOf(ConvertUtil.computeMemoryOut(used));
 				}
 				model.addAttribute("cpuCount", df.format(cpuCount));
 				model.addAttribute("memoryCount", df.format(memoryCount));
@@ -328,7 +329,7 @@ public class IndexController {
         if (null != quota) {
             Map<String, String> hard = quota.getStatus().getHard();
             model.addAttribute("servCpuNum", kubernetesClientService.transCpu(hard.get("cpu"))*RATIO_LIMITTOREQUESTCPU - REST_RESOURCE_CPU); // cpu个数
-            model.addAttribute("servMemoryNum", Math.ceil(Float.parseFloat(computeMemoryOut(hard))*RATIO_LIMITTOREQUESTMEMORY - REST_RESOURCE_MEMORY));// 内存个数
+            model.addAttribute("servMemoryNum", Math.ceil(Float.parseFloat(ConvertUtil.computeMemoryOut(hard))*RATIO_LIMITTOREQUESTMEMORY - REST_RESOURCE_MEMORY));// 内存个数
             model.addAttribute("servPodNum", hard.get("pods"));// pod个数
             model.addAttribute("servServiceNum", hard.get("services")); // 服务个数
             model.addAttribute("servControllerNum", hard.get("replicationcontrollers"));// 副本控制数
@@ -336,8 +337,8 @@ public class IndexController {
             Map<String, String> used = quota.getStatus().getUsed();
             ReplicationControllerList rcList = client.getAllReplicationControllers();
             PodList podList = client.getAllPods();
-            model.addAttribute("usedCpuNum", Double.parseDouble(this.computeCpuOut(used))*RATIO_LIMITTOREQUESTCPU); // 已使用CPU个数
-            model.addAttribute("usedMemoryNum", Double.parseDouble(this.computeMemoryOut(used))*RATIO_LIMITTOREQUESTMEMORY);// 已使用内存
+            model.addAttribute("usedCpuNum", Double.parseDouble(ConvertUtil.computeCpuOut(used))*RATIO_LIMITTOREQUESTCPU); // 已使用CPU个数
+            model.addAttribute("usedMemoryNum", Double.parseDouble(ConvertUtil.computeMemoryOut(used))*RATIO_LIMITTOREQUESTMEMORY);// 已使用内存
             model.addAttribute("usedPodNum", (null != podList) ? podList.size() : 0); // 已经使用的POD个数
             model.addAttribute("usedServiceNum", (null !=rcList) ? rcList.size() : 0);// 已经使用的服务个数
             // model.addAttribute("usedControllerNum", usedControllerNum);
@@ -345,48 +346,6 @@ public class IndexController {
             LOG.info("用户 " + user.getUserName() + " 没有定义名称为 " + user.getNamespace() + " 的Namespace ");
         }
     }
-    /**
-     *
-     * Description:
-     * computeCpuOut
-     * @param val Map<String, String> val
-     * @return cpuVal String
-     * @see
-     */
-    private String computeCpuOut(Map<String, String> val) {
-        String cpuVal = val.get("cpu");
-        if (cpuVal.contains("m")) {
-            Float a1 = Float.valueOf(cpuVal.replace("m", "")) / 1000;
-            return a1.toString();
-        }
-        else {
-            return cpuVal;
-        }
-    }
-    /**
-     *
-     * Description:
-     * computeMemoryOut
-     * @param val Map<String, String>
-     * @return memVal String
-     * @see
-     */
-	private String computeMemoryOut(Map<String, String> val) {
-		String memVal = val.get("memory");
-		memVal = memVal.replaceAll("i", "");
-		if (memVal.contains("K")) {
-			//Float a1 = Float.valueOf(memVal.replace("K", "")) / 1024 / 1024;
-			Float a1 = Float.valueOf(memVal.replace("K", "")) / 1000 / 1000;
-			return a1.toString();
-		} else if (memVal.contains("M")) {
-			//Kubernetes采用的进制为1000
-			//Float a1 = Float.valueOf(memVal.replace("M", ""))/ 1024;
-			Float a1 = Float.valueOf(memVal.replace("M", ""))/ 1000;
-			return a1.toString();
-		} else {
-			return memVal.replace("G", "");
-		}
-	}
 
     /**
      * Description: <br>
@@ -665,9 +624,10 @@ public class IndexController {
 
 		userInfo.setImageCount(imageCount);
 
-		Namespace ns = client.getNamespace(user.getNamespace());
-		if (null == ns) {
-			LOG.info("用户 " + user.getUserName() + " 还没有定义服务！");
+		try {
+			Namespace ns = client.getNamespace(user.getNamespace());
+		} catch (Exception e) {
+			LOG.error(user.getUserName()+"没有命名空间！");
 			return userInfo;
 		}
 
@@ -675,7 +635,7 @@ public class IndexController {
 		try {
 			quota = client.getResourceQuota(user.getNamespace());
 		} catch (KubernetesClientException e) {
-			e.printStackTrace();
+			LOG.error(user.getUserName()+"没有分配Quota资源！");
 			return userInfo;
 		}
 
@@ -690,8 +650,8 @@ public class IndexController {
 			Map<String, String> used = quota.getStatus().getUsed();
 			ReplicationControllerList rcList = client.getAllReplicationControllers();
 			PodList podList = client.getAllPods();
-			userInfo.setUsedCpuNum(Float.valueOf(this.computeCpuOut(used))); // 已使用CPU个数
-			userInfo.setUsedMemoryNum(Float.valueOf(this.computeMemoryOut(used)));// 已使用内存
+			userInfo.setUsedCpuNum(Float.valueOf(ConvertUtil.computeCpuOut(used))); // 已使用CPU个数
+			userInfo.setUsedMemoryNum(Float.valueOf(ConvertUtil.computeMemoryOut(used)));// 已使用内存
 			userInfo.setUsedPodNum((null != podList) ? podList.size() : 0); // 已经使用的POD个数
 			userInfo.setUsedServiceNum((null != rcList) ? rcList.size() : 0);// 已经使用的服务个数
 			double usedstorage = 0;
