@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.bonc.epm.paas.cluster.api.ClusterHealthyClient;
 import com.bonc.epm.paas.cluster.api.LocalHealthyClient;
@@ -1193,6 +1194,8 @@ public class ClusterController {
 					podSpec.setNodeName(names[i]);
 					pod.setSpec(podSpec);
 					client.createPodOfNamespace("kube-system", pod);
+					Object object = JSON.toJSON(pod);
+					System.out.println(object.toString());
 					LOG.info("Pod:" + names[i] + "被创建！");
 				}
 			}
@@ -1299,7 +1302,7 @@ public class ClusterController {
 		} catch (Exception e) {
 			// e.printStackTrace();
 			LOG.info("******************************部署失败************************************");
-			deletePodsForTest();
+			//deletePodsForTest();
 			map.put("msg", "部署失败！");
 			map.put("status", 500);
 			return JSON.toJSONString(map);
@@ -1323,7 +1326,7 @@ public class ClusterController {
 				long end = System.currentTimeMillis();
 				if ((end - start) > 60000) {// 1分钟即为超时
 					LOG.info("******************************部署超时************************************");
-					deletePodsForTest();
+					//deletePodsForTest();
 					map.put("msg", "部署超时！");
 					map.put("status", 500);
 					return JSON.toJSONString(map);
@@ -1332,7 +1335,7 @@ public class ClusterController {
 
 			} catch (InterruptedException e) {
 				LOG.info("******************************部署失败************************************");
-				deletePodsForTest();
+				//deletePodsForTest();
 				// e.printStackTrace();
 				map.put("msg", "部署失败！");
 				map.put("status", 500);
@@ -1905,12 +1908,6 @@ public class ClusterController {
 		try {
 			Pod pod = client.getPodOfNamespace("kube-system", nodeTestInfo.getNodename());
 
-			/*NodeTestInfo nodeInfo = nodeInfoDao.findByNodename(nodename);
-			if(nodeInfo == null){
-				nodeInfo = new NodeTestInfo();
-				nodeInfo.setNodename(nodename);
-			}*/
-
 			List<NodeTestInfo> nodeInfos = nodeInfoDao.findByNodename(nodeTestInfo.getNodename());
 			NodeTestInfo nodeInfo =null;
 			if(CollectionUtils.isEmpty(nodeInfos)){
@@ -1923,24 +1920,51 @@ public class ClusterController {
 			DockerClient dockerClient = dockerClientService.getSpecifiedDockerClientInstance(pod.getStatus().getHostIP());
 			InfoCmd infoCmd = dockerClient.infoCmd();
 			Info info = infoCmd.exec();
-			nodeInfo.setDocker(true);
-			nodeInfo.setMemorytarget(nodeTestInfo.getMemorytarget());
 
+			nodeInfo.setDocker(true);
+			nodeInfo.setDockerDataSpaceTotalTarget(nodeTestInfo.getDockerDataSpaceTotalTarget());
+			nodeInfo.setDocekrDeferredDeletionEnableTarget(nodeTestInfo.isDockerDeferredRemovalEnableTarget());
+			nodeInfo.setDockerBackingFilesystemTarget(nodeTestInfo.getDockerBackingFilesystemTarget());
+			nodeInfo.setDockerBaseDeviceSizeTarget(nodeTestInfo.getDockerBaseDeviceSizeTarget());
+			nodeInfo.setDockerDatafileTarget(nodeTestInfo.getDockerDatafileTarget());
+			nodeInfo.setDockerDataSpaceAvailableTarget(nodeTestInfo.getDockerDataSpaceAvailableTarget());
+			nodeInfo.setDockerDataSpaceUsedTarget(nodeTestInfo.getDockerDataSpaceUsedTarget());
+			nodeInfo.setDockerDeferredRemovalEnableTarget(nodeTestInfo.isDockerDeferredRemovalEnableTarget());
+			nodeInfo.setDockerMetadatafileTarget(nodeTestInfo.getDockerMetadatafileTarget());
+			nodeInfo.setDockerMetaSpaceAvailableTarget(nodeTestInfo.getDockerMetaSpaceAvailableTarget());
+			nodeInfo.setDockerMetaSpaceTotalTarget(nodeTestInfo.getDockerMetaSpaceTotalTarget());
+			nodeInfo.setDockerMetaSpaceUsedTarget(nodeTestInfo.getDockerMetaSpaceUsedTarget());
+			nodeInfo.setDockerPoolBlocksizeTarget(nodeTestInfo.getDockerPoolBlocksizeTarget());
+			nodeInfo.setDockerUdevSyncSupportedTarget(nodeTestInfo.isDockerUdevSyncSupportedTarget());
+			nodeInfo.setDockerDeferredDeletedDeviceCountTarget(nodeTestInfo.getDockerDeferredDeletedDeviceCountTarget());
+
+			Map<String, Object> dockermap = new HashMap<String,Object>();
 			String dockermsg = "";
 			List<List<String>> list = info.getDriverStatuses();
 			for (List<String> l : list) {
+				String[] temp = l.toString().replace("[", "").replace("]", "").split(",");
+				dockermap.put(temp[0], temp[1]);
 				dockermsg = dockermsg + l.toString() + "\n";
 			}
 			nodeInfo.setDockermsg(dockermsg);
-			if (dockermsg.indexOf("Data Space Total,") != -1) {
+
+			boolean pass = true;
+			/*if (dockermsg.indexOf("Data Space Total,") != -1) {
 				dockermsg = dockermsg.substring(dockermsg.indexOf("Data Space Total,"), dockermsg.length());
 				dockermsg = dockermsg.split("]")[0].split(",")[1].trim();
 				dockermsg = convert(dockermsg);
 				int mem = Math.round(Float.parseFloat(dockermsg));
-				nodeInfo.setDisk(mem);
-				nodeInfo.setDockerpass(mem == nodeTestInfo.getMemorytarget());// docker通过
-			}
+				nodeInfo.setDockerDataSpaceTotal(mem);
+				pass = pass && mem == nodeTestInfo.getDockerDataSpaceTotalTarget();
+			}*/
 
+			//Data Space Total
+            String dockerDataSpaceTotal =dockermap.get("Data Space Total").toString();
+            dockerDataSpaceTotal= convert(dockerDataSpaceTotal);
+            nodeInfo.setDockerDataSpaceTotal(Math.round(Float.parseFloat(dockerDataSpaceTotal)));
+            pass = pass &&  nodeInfo.getDockerDataSpaceTotal()== nodeTestInfo.getDockerDataSpaceTotalTarget();
+
+			nodeInfo.setDockerpass(pass);// docker通过
 			nodeInfoDao.save(nodeInfo);
 			map.put("nodeInfo", nodeInfo);
 		} catch (KubernetesClientException e) {
