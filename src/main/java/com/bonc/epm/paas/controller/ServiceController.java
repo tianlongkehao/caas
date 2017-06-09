@@ -1921,6 +1921,11 @@ public class ServiceController {
 				 * object has been modified; please apply your changes to the
 				 * latest version and try again】所以这里设置为如果发生异常则再次尝试一次修改副本数
 				 */
+				try {
+					Thread.sleep(10000);
+				} catch (InterruptedException e1) {
+					LOG.error(e1.getMessage());
+				}
 				nextController = client.updateReplicationController(nextControllerName, i);
 			}
 			boolean podStatus = true;
@@ -2741,6 +2746,7 @@ public class ServiceController {
 
 		} catch (Exception e) {
 			LOG.error("服务查询错误：" + e);
+			e.printStackTrace();
 		}
 		map.put("service", service);
 		map.put("containerList", containerList);
