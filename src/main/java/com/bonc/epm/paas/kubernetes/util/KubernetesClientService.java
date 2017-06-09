@@ -42,6 +42,7 @@ import com.bonc.epm.paas.kubernetes.model.LimitRangeSpec;
 import com.bonc.epm.paas.kubernetes.model.Namespace;
 import com.bonc.epm.paas.kubernetes.model.ObjectMeta;
 import com.bonc.epm.paas.kubernetes.model.Pod;
+import com.bonc.epm.paas.kubernetes.model.PodCondition;
 import com.bonc.epm.paas.kubernetes.model.PodSpec;
 import com.bonc.epm.paas.kubernetes.model.PodTemplateSpec;
 import com.bonc.epm.paas.kubernetes.model.Probe;
@@ -57,6 +58,7 @@ import com.bonc.epm.paas.kubernetes.model.ServiceSpec;
 import com.bonc.epm.paas.kubernetes.model.Volume;
 import com.bonc.epm.paas.kubernetes.model.VolumeMount;
 import com.bonc.epm.paas.rest.util.RestFactory;
+import com.bonc.epm.paas.util.ConvertUtil;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 
 @org.springframework.stereotype.Service
@@ -173,31 +175,7 @@ public class KubernetesClientService {
 	}
 
 	public Long transMemory(String memory) {
-		if (memory.endsWith("M")) {
-			memory = memory.replace("M", "");
-		} else if (memory.endsWith("Mi")) {
-			memory = memory.replace("Mi", "");
-		} else if (memory.endsWith("G")) {
-			memory = memory.replace("G", "");
-			//long memoryG = Long.valueOf(memory) * 1024;
-			long memoryG = Long.valueOf(memory) * 1000;
-			return memoryG;
-		} else if (memory.endsWith("Gi")) {
-			memory = memory.replace("Gi", "");
-			//long memoryG = Long.valueOf(memory) * 1024;
-			long memoryG = Long.valueOf(memory) * 1000;
-			return memoryG;
-		} else if (isNumeric(memory)) {
-			//long memoryBit = Long.valueOf(memory) / (1024 * 1024);
-			long memoryBit = Long.valueOf(memory) / (1000 * 1000);
-			return memoryBit;
-		} else if (memory.endsWith("k")) {
-			memory = memory.replace("k", "");
-			//long memoryk = Long.valueOf(memory) / 1024;
-			long memoryk = Long.valueOf(memory) / 1000;
-			return memoryk;
-		}
-		return Long.valueOf(memory);
+		return (long) (ConvertUtil.parseMemory(memory) / Math.pow(2, 20));
 	}
 
 	public boolean isNumeric(String str) {
@@ -219,19 +197,26 @@ public class KubernetesClientService {
 	}
 
 	public boolean isRunning(Pod pod) {
-		if (pod.getStatus().getPhase().equals("Running")
-				&& pod.getStatus().getConditions().get(0).getType().equals("Ready")
-				&& pod.getStatus().getConditions().get(0).getStatus().equals("True")
-				&& pod.getStatus().getContainerStatuses().get(0).getState().getRunning() != null) {
-			for (ContainerStatus containerStatus : pod.getStatus().getContainerStatuses()) {
-				if (containerStatus.getState().getRunning() == null) {
-					return false;
+		boolean podRunning = false;
+		boolean containerRunning = true;
+		if (pod.getStatus().getPhase().equals("Running")) {
+			for(PodCondition podCondition : pod.getStatus().getConditions()){
+				if (podCondition.getType().equals("Ready") && podCondition.getStatus().equals("True")) {
+					podRunning = true;
+					break;
 				}
 			}
-			return true;
-		} else {
-			return false;
 		}
+		if (podRunning) {
+			for (ContainerStatus containerStatus : pod.getStatus().getContainerStatuses()) {
+				if (containerStatus.getState().getRunning() == null) {
+					containerRunning=false;
+					break;
+				}
+			}
+		}
+
+		return podRunning && containerRunning;
 	}
 
 
