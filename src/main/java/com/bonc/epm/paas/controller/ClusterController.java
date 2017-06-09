@@ -1964,6 +1964,24 @@ public class ClusterController {
             nodeInfo.setDockerDataSpaceTotal(Math.round(Float.parseFloat(dockerDataSpaceTotal)));
             pass = pass &&  nodeInfo.getDockerDataSpaceTotal()== nodeTestInfo.getDockerDataSpaceTotalTarget();
 
+            //Data Space Used
+            String dockerDataSpaceUsed =dockermap.get("Data Space Used").toString();
+            dockerDataSpaceUsed= convert(dockerDataSpaceUsed);
+            nodeInfo.setDockerDataSpaceUsed(Math.round(Float.parseFloat(dockerDataSpaceUsed)));
+            pass = pass &&  nodeInfo.getDockerDataSpaceUsed()== nodeTestInfo.getDockerDataSpaceUsedTarget();
+
+            //Data Space Available
+            String dockerDataSpaceAvailable =dockermap.get("Data Space Available").toString();
+            dockerDataSpaceAvailable= convert(dockerDataSpaceAvailable);
+            nodeInfo.setDockerDataSpaceAvailable(Math.round(Float.parseFloat(dockerDataSpaceAvailable)));
+            pass = pass &&  nodeInfo.getDockerDataSpaceAvailable() == nodeTestInfo.getDockerDataSpaceAvailableTarget();
+
+            //Metadata Space Used
+            String dockerMetadataSpaceUsed =dockermap.get("Metadata Space Used").toString();
+            dockerMetadataSpaceUsed= convert(dockerMetadataSpaceUsed);
+            nodeInfo.setDockerMetaSpaceUsed(Math.round(Float.parseFloat(dockerMetadataSpaceUsed)));
+            pass = pass &&  nodeInfo.getDockerMetaSpaceUsed() == nodeTestInfo.getDockerMetaSpaceUsedTarget();
+
 			nodeInfo.setDockerpass(pass);// docker通过
 			nodeInfoDao.save(nodeInfo);
 			map.put("nodeInfo", nodeInfo);
