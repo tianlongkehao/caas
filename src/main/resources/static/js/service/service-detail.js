@@ -223,44 +223,48 @@ $(document).ready(function() {
 			$('#checkSerStatus_input').focus();
 			return;
 		}
-
-		//服务路径的判断
-		var servicePath = $("#webPath").val();
-		if (!servicePath || servicePath.length < 1) {
-			layer.tips('服务路径不能为空', '#webPath', {
-				tips : [1, '#3595CC']
-			});
-			$('#webPath').focus();
-			return;
-		}
-		if (servicePath.search(/^[a-zA-Z\/][a-zA-Z0-9-\/]*$/) === -1) {
-			layer.tips('服务路径只能由字母、数字、斜线及横线组成，且首字母不能为数字及横线。', '#webPath', {
-				tips : [1, '#3595CC'],
-				time : 3000
-			});
-			$('#webPath').focus();
-			return;
-		}
-		//nginx代理路径的判断
-		var proxyPath = $("#nginxPath").val();
-		if (!proxyPath || proxyPath.length < 1) {
-			layer.tips('nginx代理路径不能为空', '#nginxPath', {
-				tips : [1, '#3595CC']
-			});
-			$('#nginxPath').focus();
-			return;
-		}
-		if (proxyPath.search(/^[a-zA-Z\/][a-zA-Z0-9-\/]*$/) === -1) {
-			layer.tips('nginx代理路径只能由字母、数字、斜线及横线组成，且首字母不能为数字及横线。', '#nginxPath', {
-				tips : [1, '#3595CC'],
-				time : 3000
-			});
-			$('#nginxPath').focus();
-			return;
-		}
 		var commitFlag = true;
+		//服务路径的判断
+		var servicePath = $("#servicePath").val();
+		if($("#oldServicePath").text() != servicePath){
+			if (!servicePath || servicePath.length < 1) {
+				layer.tips('服务路径不能为空', '#webPath', {
+					tips : [1, '#3595CC']
+				});
+				$('#webPath').focus();
+				return;
+			}
+			if (servicePath.search(/^[a-zA-Z\/][a-zA-Z0-9-\/]*$/) === -1) {
+				layer.tips('服务路径只能由字母、数字、斜线及横线组成，且首字母不能为数字及横线。', '#webPath', {
+					tips : [1, '#3595CC'],
+					time : 3000
+				});
+				$('#webPath').focus();
+				return;
+			}
+			$.ajax({
+				url : ctx + "/service/matchServicePath.do",
+				type : "POST",
+				async : false,
+				data : {
+					"servicePath" : servicePath,
+				},
+				success : function(data) {
+					data = eval("(" + data + ")");
+					if (data.status != "200") {
+						layer.tips('服务访问路径重复，请重新输入！', '#servicePath', {
+							tips : [1, '#3595CC'],
+							time : 3000
+						});
+						$('#servicePath').focus();
+						commitFlag = false;
+						return;
+					}
+				}
+			});
+		}
 		//判断是否已存在该服务名
-		if ($("#oldSerName").text() != name) {
+		if (commitFlag && $("#oldSerName").text() != name) {
 			$.ajax({
 				url : ctx + "/service/matchServiceName.do",
 				type : "POST",
@@ -282,36 +286,13 @@ $(document).ready(function() {
 				}
 			});
 		}
-		//判断是否已存在该代理路径
-		if ($("#oldProxyPath").text() != proxyPath) {
-			$.ajax({
-				url : ctx + "/service/matchProxyPath.do",
-				type : "POST",
-				async : false,
-				data : {
-					"proxyPath" : proxyPath,
-				},
-				success : function(data) {
-					data = eval("(" + data + ")");
-					if (data.status != "200") {
-						layer.tips('nginx路径名称重复，请重新输入！', '#nginxPath', {
-							tips : [1, '#3595CC'],
-							time : 3000
-						});
-						$('#nginxPath').focus();
-						commitFlag = false;
-						return;
-					}
-				}
-			});
-		}
 
 		//Pod调度方式
-	    if($("#podmutex").prop("checked")==true){
-	    	$("#ispodmutex").val("true");
-	    } else {
-	    	$("#ispodmutex").val("false");
-	    }
+		if ($("#podmutex").prop("checked") == true) {
+			$("#ispodmutex").val("true");
+		} else {
+			$("#ispodmutex").val("false");
+		}
 
 		if (commitFlag) {
 			commBaseSerForm();
@@ -342,11 +323,6 @@ $(document).ready(function() {
 	//可编辑的服务地址
 	$(".editCon").hide();
 	$("#editServiceAddrBtn").click(function() {
-		/*
-		 // $('#addrPrex').html("http://");
-		 // var addr = $('#editServiceAddrValue').val().substr(7);
-		 // $('#editServiceAddr').val(addr);*/
-
 		$("#editServiceAddrBtn").hide();
 		$(".editCon").show();
 		$(".oldCon").hide();
@@ -359,7 +335,7 @@ $(document).ready(function() {
 		$(".editCon").hide();
 		editSerAddr();
 		$(".oldCon").show();
-		var newHref = $("#editServiceAddr").val()+'/'+$("#editProxyPath").val();
+		var newHref = $("#editServiceAddr").val()+'/'+$("#editServicePath").val();
 		$("#openService").attr("href",newHref);
 	});
 	$("#canclEdit").click(function() {
@@ -396,8 +372,63 @@ $(document).ready(function() {
 	//可编辑的环境变量
 	$(".editEnv").hide();
 
-});
-/*ready*/
+	//编辑服务中文名称
+	$(".editSerChName").click(function(){
+		$(this).parent().hide();
+		$(this).parent().next().show();
+	});
+	//取消编辑
+	$(".canclEditSerChName").click(function(){
+		$(this).parent().hide();
+		$(this).parent().prev().show();
+	});
+	//保存编辑后的服务中文名称
+	$(".saveSerChName").click(function() {
+		//		$(this).parent().hide();
+		//		$(this).parent().prev().show();
+
+		var serChName = $('#serChName').val();
+		if(isChinese(serChName)==false){
+			layer.tips('服务中文名称必须包含中文', '#serChName', {
+				tips : [1, '#3595CC'],
+				time : 3000
+			});
+			$('#serChName').focus();
+			return;
+		}else if (serChName.length > 24 || serChName.length < 1) {
+			layer.tips('服务中文名称为1~24个字符', '#serChName', {
+				tips : [1, '#3595CC'],
+				time : 3000
+			});
+			$('#serChName').focus();
+			return;
+		}
+
+		var serId = $("#serId").val();
+		$.ajax({
+			type : "GET",
+			url : ctx + "/service/modifyServiceChName.do?serviceId=" + serId + "&serviceChName=" + serChName,
+			success : function(data) {
+				data = eval("(" + data + ")");
+				if (data.status == "200") {
+					$('.editAfter').html("服务中文名称：" + serChName);
+					layer.msg("修改成功", {
+						icon : 1
+					}, function() {
+						location.reload();
+					});
+				} else if (data.status == "400") {
+					$('#serChName').focus();
+					layer.msg("服务中文名不能为空", {
+						icon : 2
+					});
+				}
+			}
+		});
+	});
+
+
+});/*ready*/
 
 function editPortComm(portConfigId, containerPort) {
 	alert(portConfigId);
@@ -535,17 +566,17 @@ function getprex() {
 function editSerAddr() {
 
 	var editServiceAddr = $('#editServiceAddr').val();
-	var editProxyPath = $('#editProxyPath').val();
+	var editServicePath = $('#editServicePath').val();
 	var serId = $('#serId').val();
 	editServiceAddr = editServiceAddr;
 	$.ajax({
 		type : "GET",
-		url : ctx + "/service/detail/editSerAddr.do?serviceAddr=" + editServiceAddr + "&proxyPath=" + editProxyPath + "&serId=" + serId,
+		url : ctx + "/service/detail/editSerAddr.do?serviceAddr=" + editServiceAddr + "&servicePath=" + editServicePath + "&serId=" + serId,
 		success : function(data) {
 			data = eval("(" + data + ")");
 			if (data.status == "200") {
 				$('#oldServiceAddr').html(editServiceAddr);
-				$('#oldProxyPath').html(editProxyPath);
+				$('#oldServicePath').html(editServicePath);
 				layer.msg("修改成功", {
 					icon : 1
 				}, function() {
@@ -570,11 +601,11 @@ function checkSerAddr() {
 		$('#editServiceAddr').focus();
 		return false;
 	}
-	if ($('#editProxyPath').val() === '') {
-		layer.tips('代理不能为空', $('#editProxyPath'), {
+	if ($('#editServicePath').val() === '') {
+		layer.tips('代理不能为空', $('#editServicePath'), {
 			tips : [1, '#EF6578']
 		});
-		$('#editProxyPath').focus();
+		$('#editServicePath').focus();
 		return false;
 	}
 }
@@ -833,7 +864,7 @@ function addPortCfgClick(obj) {
 				success : function(data) {
 					portConfig = eval("(" + data + ")");
 					var portTr = '';
-					portTr += '<tr>' + '<td style="width:10%;text-indent: 15px;">' + portConfig.service.serviceName + '</td>' + '<td style="width:10%;" class="portConfig"><span class="oldPortConfig">' + portConfig.pCfg.containerPort + '</span>' + '<span class="editPortConfig"><input class="containerPort" type="text" value="' + portConfig.pCfg.containerPort + '" name="containerPort"/></span>' + '<input class="portId" hidden="true" value="' + portConfig.pCfg.portId + '"/>' + '</td>' + '<td style="width:10%;">' + portConfig.pCfg.protocol + '</td>' + '<td style="width:10%;">' + portConfig.pCfg.mapPort + '</td>' + '<td style="width:50%;"><a href="' + portConfig.service.serviceAddr + '/' + portConfig.service.proxyPath + '" target="_blank">' + portConfig.service.serviceAddr + '/' + portConfig.service.proxyPath + '</a></td>' + '<td style="width:10%;" class="editBtn">' + '<i onclick="editPortAddrBtn(this)"  type="button" value="修改"  class="fa fa-edit oldPortConfig editPortAddrBtn"></i>' + '<i onclick="savePortEdit(this)" hidden=true type="button" value="提交"  class="fa fa-save editPortConfig savePortEdit"></i>' + '<i onclick="canclPortEdit(this)" hidden=true type="button" value="取消"  class="fa fa-times editPortConfig"></i>' + ' <i onclick="delPortEdit(this)" type="button" value="删除"  class="fa fa-trash editPortBtn"></i>  ' + '</td></tr>';
+					portTr += '<tr>' + '<td style="width:10%;text-indent: 15px;">' + portConfig.service.serviceName + '</td>' + '<td style="width:10%;" class="portConfig"><span class="oldPortConfig">' + portConfig.pCfg.containerPort + '</span>' + '<span class="editPortConfig"><input class="containerPort" type="text" value="' + portConfig.pCfg.containerPort + '" name="containerPort"/></span>' + '<input class="portId" hidden="true" value="' + portConfig.pCfg.portId + '"/>' + '</td>' + '<td style="width:10%;">' + portConfig.pCfg.protocol + '</td>' + '<td style="width:10%;">' + portConfig.pCfg.mapPort + '</td>' + '<td style="width:50%;"><a href="' + portConfig.service.serviceAddr + '/' + portConfig.service.servicePath + '" target="_blank">' + portConfig.service.serviceAddr + '/' + portConfig.service.servicePath + '</a></td>' + '<td style="width:10%;" class="editBtn">' + '<i onclick="editPortAddrBtn(this)"  type="button" value="修改"  class="fa fa-edit oldPortConfig editPortAddrBtn"></i>' + '<i onclick="savePortEdit(this)" hidden=true type="button" value="提交"  class="fa fa-save editPortConfig savePortEdit"></i>' + '<i onclick="canclPortEdit(this)" hidden=true type="button" value="取消"  class="fa fa-times editPortConfig"></i>' + ' <i onclick="delPortEdit(this)" type="button" value="删除"  class="fa fa-trash editPortBtn"></i>  ' + '</td></tr>';
 					$("#editPortCfgBody").append(portTr);
 					$(".editPortConfig").hide();
 					$(".editPortCfgBtn").show();
@@ -1020,4 +1051,3 @@ function checkRepPortCfg(obj, id, port) {
 	});
 	return flag;
 }
-

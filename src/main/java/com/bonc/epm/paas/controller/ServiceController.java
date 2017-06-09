@@ -84,7 +84,6 @@ import com.bonc.epm.paas.kubernetes.apis.KubernetesAPISClientInterface;
 import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
 import com.bonc.epm.paas.kubernetes.exceptions.Status;
 import com.bonc.epm.paas.kubernetes.model.CephFSVolumeSource;
-import com.bonc.epm.paas.kubernetes.model.ContainerStatus;
 import com.bonc.epm.paas.kubernetes.model.EventList;
 import com.bonc.epm.paas.kubernetes.model.LocalObjectReference;
 import com.bonc.epm.paas.kubernetes.model.Pod;
@@ -101,6 +100,7 @@ import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
 import com.bonc.epm.paas.shera.api.SheraAPIClientInterface;
 import com.bonc.epm.paas.shera.model.ChangeGit;
 import com.bonc.epm.paas.shera.util.SheraClientService;
+import com.bonc.epm.paas.util.ConvertUtil;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 import com.bonc.epm.paas.util.PoiUtils;
 import com.bonc.epm.paas.util.RandomString;
@@ -855,8 +855,8 @@ public class ServiceController {
 				long hard = kubernetesClientService.transMemory(quota.getStatus().getHard().get("memory"));
 				long used = kubernetesClientService.transMemory(quota.getStatus().getUsed().get("memory"));
 
-				double leftCpu = kubernetesClientService.transCpu(quota.getStatus().getHard().get("cpu"))
-						- kubernetesClientService.transCpu(quota.getStatus().getUsed().get("cpu"));
+				double leftCpu = ConvertUtil.convertCpu(quota.getStatus().getHard().get("cpu"))
+						- ConvertUtil.convertCpu(quota.getStatus().getUsed().get("cpu"));
 
 				long leftmemory = hard - used;
 
@@ -981,8 +981,7 @@ public class ServiceController {
 		if (k8sService == null) {
 			try {
 				k8sService = kubernetesClientService.generateService(service.getServiceName(), portConfigs,
-						service.getProxyZone(), service.getServicePath(), service.getProxyPath(),
-						service.getSessionAffinity(), service.getNodeIpAffinity());
+						service.getProxyZone(), service.getServicePath(), service.getSessionAffinity());
 				k8sService = client.createService(k8sService);
 			} catch (KubernetesClientException e) {
 				e.printStackTrace();
@@ -1030,8 +1029,8 @@ public class ServiceController {
 				controller = kubernetesClientService.generateSimpleReplicationController(service.getServiceName(),
 						service.getInstanceNum(), service.getInitialDelay(), service.getTimeoutDetction(),
 						service.getPeriodDetction(), registryImgName, portConfigs, service.getCpuNum(),
-						service.getRam(), service.getProxyZone(), service.getServicePath(), service.getProxyPath(),
-						service.getCheckPath(), envVariables, command, args,serviceConfigmapList,service.isIspodmutex());
+						service.getRam(), service.getProxyZone(), service.getServicePath(), service.getCheckPath(),
+						envVariables, command, args, serviceConfigmapList, service.isIspodmutex());
 				// 给controller设置卷组挂载的信息
 				LOG.debug("给rc添加存储卷信息");
 				if (service.getServiceType().equals("1")) {
@@ -1295,19 +1294,20 @@ public class ServiceController {
 	}
 
 	/**
-	 * 当前用户修改服务时服务名称不重复
+	 * matchServiceName:服务名称不可重复. <br/>
 	 *
+	 * @author longkaixiang
 	 * @param serviceName
 	 * @return String
 	 */
 	@RequestMapping("service/matchServiceName.do")
 	@ResponseBody
-	public String matchServicePath(String serviceName) {
+	public String matchServiceName(String serviceName) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		long createBy = CurrentUserUtils.getInstance().getUser().getId();
 		int refsize = refServiceDao.findByCreateByAndSerName(createBy, serviceName).size();
 		int serSize = serviceDao.findByNameOf(createBy, serviceName).size();
-		if (0 < refsize | 0 < serSize) {
+		if (0 < refsize || 0 < serSize) {
 			map.put("status", "500");
 		} else {
 			map.put("status", "200");
@@ -1316,43 +1316,20 @@ public class ServiceController {
 	}
 
 	/**
-	 * 当前用户创建服务时nginx路径不重复
+	 * matchServicePath:服务访问路径不可重复. <br/>
 	 *
-	 * @param proxyPath
+	 * @author longkaixiang
+	 * @param servicePath
 	 * @return String
 	 */
-	@RequestMapping("service/matchProxyPath.do")
+	@RequestMapping("service/matchServicePath.do")
 	@ResponseBody
-	public String matchProxyPath(String proxyPath) {
+	public String matchServicePath(String servicePath) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		long createBy = CurrentUserUtils.getInstance().getUser().getId();
-		int proxySize = serviceDao.findByCreateByAndProxyPath(createBy, proxyPath).size();
-		if (0 < proxySize) {
-			map.put("status", "400");
-		} else {
-			map.put("status", "200");
-		}
-		return JSON.toJSONString(map);
-	}
-
-	/**
-	 * 当前用户创建服务时匹配服务路径和nginx路径 和服务名称不重复
-	 *
-	 * @param proxyPath
-	 * @param serviceName
-	 * @return String
-	 */
-	@RequestMapping("service/matchPath.do")
-	@ResponseBody
-	public String matchServicePathAndProxyPath(String proxyPath, String serviceName) {
-		Map<String, Object> map = new HashMap<String, Object>();
-		long createBy = CurrentUserUtils.getInstance().getUser().getId();
-		int refsize = refServiceDao.findByCreateByAndSerName(createBy, serviceName).size();
-		int serSize = serviceDao.findByNameOf(createBy, serviceName).size();
-		int proxySize = serviceDao.findByCreateByAndProxyPath(createBy, proxyPath).size();
-		if (0 < refsize | 0 < serSize) {
-			map.put("status", "500");
-		} else if (0 < proxySize) {
+		int refsize = refServiceDao.findByCreateByAndSerName(createBy, servicePath).size();
+		int size = serviceDao.findByCreateByAndServicePath(createBy, servicePath).size();
+		if (0 < refsize || 0 < size) {
 			map.put("status", "400");
 		} else {
 			map.put("status", "200");
@@ -1681,6 +1658,23 @@ public class ServiceController {
 				}
 				client.deleteReplicationController(serviceName);
 				LOG.info("Deleting old controller:" + serviceName);
+				/*
+				 * 增加此段代码确认rc是否已经被删除
+				 */
+				while (true) {
+					try {
+						if (client.getReplicationController(serviceName) == null) {
+							break;
+						}
+						try {
+							Thread.sleep(3000);
+						} catch (InterruptedException e) {
+							LOG.error(e.getMessage());
+						}
+					} catch (Exception e) {
+						break;
+					}
+				}
 
 				// 将新RC的名字重命名为旧RC名字
 				if (serviceDao.getServiceStatus(id) != ServiceConstant.CONSTRUCTION_STATUS_UPDATE) {
@@ -1718,34 +1712,6 @@ public class ServiceController {
 				map.put("status", "200");
 				LOG.info("replicationController:" + serviceName + " rolling updated.");
 
-				// 服务版本升级 使用 kubectl rolling-update 命令行
-				/*
-				 * KubernetesAPIClientInterface client =
-				 * kubernetesClientService.getClient(); ReplicationController
-				 * controller = client.getReplicationController(serviceName);
-				 * String NS = controller.getMetadata().getNamespace(); String
-				 * cmd = "kubectl rolling-update " + serviceName +
-				 * " --namespace=" + NS + " --update-period=10s --image=" +
-				 * dockerClientService.generateRegistryImageName(imgName,
-				 * imgVersion); boolean flag = cmdexec(cmd); if (flag) {
-				 * service.setImgVersion(imgVersion); //取得对应的imageid Image image
-				 * = imageDao.findByNameAndVersion(service.getImgName(),
-				 * imgVersion); service.setImgID(image.getId());
-				 *
-				 * Date currentDate = new Date(); User currentUser =
-				 * CurrentUserUtils.getInstance().getUser();
-				 * service.setUpdateDate(currentDate);
-				 * service.setUpdateBy(currentUser.getId()); service =
-				 * serviceDao.save(service); // 保存服务操作信息
-				 * serviceOperationLogDao.save(service.getServiceName(),
-				 * service.toString(),
-				 * ServiceConstant.OPERATION_TYPE_ROLLINGUPDATE);
-				 *
-				 * map.put("status", "200"); } else { String rollBackCmd =
-				 * "kubectl rolling-update " + serviceName + " --namespace="+ NS
-				 * + " --rollback"; cmdexec(rollBackCmd); map.put("status",
-				 * "400"); }
-				 */
 			}
 		} catch (KubernetesClientException e) {
 			map.put("status", "400");
@@ -1965,7 +1931,21 @@ public class ServiceController {
 			if (serviceDao.getServiceStatus(id) != ServiceConstant.CONSTRUCTION_STATUS_UPDATE) {
 				return true;
 			}
-			nextController = client.updateReplicationController(nextControllerName, i);
+			try {
+				nextController = client.updateReplicationController(nextControllerName, i);
+			} catch (Exception e) {
+				/*
+				 * 解释下异常后再次调用原因：在测试环境中 发生了一个修改副本数时出现的异常【 cannot be updated: the
+				 * object has been modified; please apply your changes to the
+				 * latest version and try again】所以这里设置为如果发生异常则再次尝试一次修改副本数
+				 */
+				try {
+					Thread.sleep(10000);
+				} catch (InterruptedException e1) {
+					LOG.error(e1.getMessage());
+				}
+				nextController = client.updateReplicationController(nextControllerName, i);
+			}
 			boolean podStatus = true;
 			PodList podList = client.getLabelSelectorPods(nextController.getSpec().getSelector());
 			while (podStatus) {
@@ -1979,25 +1959,8 @@ public class ServiceController {
 				}
 				if (null != podList && null != podList.getItems() && podList.getItems().size() == i) {
 					for (Pod pod : podList.getItems()) {
-						if (pod.getStatus().getPhase().equals("Running")) {
-							List<ContainerStatus> containerStatuses = pod.getStatus().getContainerStatuses();
-							if (CollectionUtils.isNotEmpty(containerStatuses)) {
-								boolean conStatus = true;
-								for (ContainerStatus containerStatus : containerStatuses) {
-									if (null != containerStatus.getState().getRunning()) {
-										conStatus = false;
-									} else {
-										conStatus = true;
-										break;
-									}
-								}
-								if (conStatus) {
-									podStatus = true;
-									break;
-								} else {
-									podStatus = false;
-								}
-							}
+						if (kubernetesClientService.isRunning(pod)) {
+							podStatus = false;
 						} else {
 							podStatus = true;
 							break;
@@ -2749,18 +2712,10 @@ public class ServiceController {
 								.setContainerName(service.getServiceName() + "-" + service.getImgVersion() + "-" + i++);
 						container.setServiceAddr(pod.getMetadata().getName());
 						container.setServiceid(service.getId());
-						// 默认状态为0
-						container.setContainerStatus(0);
-						// pod状态不是Running时候
-						if (!pod.getStatus().getPhase().equals("Running")) {
-							container.setContainerStatus(1);
+						if (kubernetesClientService.isRunning(pod)) {
+							container.setContainerStatus(0);
 						} else {
-							// container状态
-							for (ContainerStatus status : pod.getStatus().getContainerStatuses()) {
-								if (status.getState().getRunning() == null) {
-									container.setContainerStatus(1);
-								}
-							}
+							container.setContainerStatus(1);
 						}
 
 						containerList.add(container);
@@ -2795,18 +2750,10 @@ public class ServiceController {
 									.setContainerName(service.getServiceName() + "-" + version + "-" + i++);
 							container.setServiceAddr(pod.getMetadata().getName());
 							container.setServiceid(service.getId());
-							// 默认状态为0
-							container.setContainerStatus(0);
-							// pod状态不是Running时候
-							if (!pod.getStatus().getPhase().equals("Running")) {
-								container.setContainerStatus(1);
+							if (kubernetesClientService.isRunning(pod)) {
+								container.setContainerStatus(0);
 							} else {
-								// container状态
-								for (ContainerStatus status : pod.getStatus().getContainerStatuses()) {
-									if (status.getState().getRunning() == null) {
-										container.setContainerStatus(1);
-									}
-								}
+								container.setContainerStatus(1);
 							}
 
 							containerList.add(container);
@@ -2817,6 +2764,7 @@ public class ServiceController {
 
 		} catch (Exception e) {
 			LOG.error("服务查询错误：" + e);
+			e.printStackTrace();
 		}
 		map.put("service", service);
 		map.put("containerList", containerList);
@@ -3119,16 +3067,16 @@ public class ServiceController {
 	 * 修改服务地址
 	 *
 	 * @param serviceAddr
-	 * @param proxyPath
+	 * @param servicePath
 	 * @param serId
 	 * @return status
 	 * @see
 	 */
 	@RequestMapping("service/detail/editSerAddr.do")
 	@ResponseBody
-	public String editSerAddr(String serviceAddr, String proxyPath, Long serId) {
+	public String editSerAddr(String serviceAddr, String servicePath, Long serId) {
 		Map<String, Object> map = new HashMap<String, Object>();
-		if (serviceDao.findByServiceAddrAndProxyPath(serviceAddr, proxyPath).size() > 0) {
+		if (serviceDao.findByServiceAddrAndServicePath(serviceAddr, servicePath).size() > 0) {
 			map.put("status", "500");
 		} else {
 			Service service = serviceDao.findOne(serId);
@@ -3138,7 +3086,7 @@ public class ServiceController {
 				return JSON.toJSONString(map);
 			}
 			service.setServiceAddr(serviceAddr);
-			service.setProxyPath(proxyPath);
+			service.setServicePath(servicePath);
 			try {
 				Date currentDate = new Date();
 				User currentUser = CurrentUserUtils.getInstance().getUser();
@@ -3146,7 +3094,8 @@ public class ServiceController {
 				service.setUpdateBy(currentUser.getId());
 				service = serviceDao.save(service);
 				// 保存服务操作信息
-				serviceOperationLogDao.save(service.getServiceName(), service.toString(),
+				serviceOperationLogDao.save(service.getServiceName(),
+						"editSerAddr:[serviceAddr:" + serviceAddr + ",servicePath:" + servicePath + "]",
 						ServiceConstant.OPERATION_TYPE_UPDATE);
 				map.put("status", "200");
 			} catch (Exception e) {
@@ -3233,12 +3182,8 @@ public class ServiceController {
 		ser.setServicePath(service.getServicePath());
 		// nginx代理区域
 		ser.setProxyZone(service.getProxyZone());
-		// nginx代理路径
-		ser.setProxyPath(service.getProxyPath());
 		// 服务会话黏连方式
 		ser.setSessionAffinity(service.getSessionAffinity());
-		// 黏连
-		ser.setNodeIpAffinity(service.getNodeIpAffinity());
 		// 检查服务状态填写的路径
 		ser.setCheckPath(service.getCheckPath());
 		// Pod互斥
@@ -3622,7 +3567,7 @@ public class ServiceController {
 			}
 			String[] service = { serviceObj.getServiceName(), serviceObj.getServiceChName(),
 					mapStatus(serviceObj.getStatus()), serviceObj.getImgName(),
-					new StringBuffer(serviceAddr).append("/").append(serviceObj.getProxyPath()).toString(),
+					new StringBuffer(serviceAddr).append("/").append(serviceObj.getServicePath()).toString(),
 					serviceObj.getCreateDate().toString(), serviceObj.getCreatorName() };
 			context.add(service);
 		}
@@ -3797,6 +3742,34 @@ public class ServiceController {
 		}
 		return true;
 	}
+
+	/**
+	 * modifyServiceChName:修改服务的中文名. <br/>
+	 *
+	 * @author longkaixiang
+	 * @param serviceId
+	 * @param serviceChName
+	 * @return String
+	 */
+	@RequestMapping(value = "service/modifyServiceChName.do",method = RequestMethod.GET)
+	@ResponseBody
+	public String modifyServiceChName(long serviceId, String serviceChName) {
+		Map<String, String> map = new HashMap<>();
+		if (StringUtils.isBlank(serviceChName)) {
+			map.put("status", "400");
+			return JSON.toJSONString(map);
+		}
+		Service service = serviceDao.findOne(serviceId);
+		if (null == service) {
+			map.put("status", "500");
+			return JSON.toJSONString(map);
+		}
+		service.setServiceChName(serviceChName);
+		serviceDao.save(service);
+		map.put("status", "200");
+		return JSON.toJSONString(map);
+	}
+
 	//终端
 	@RequestMapping(value = { "service/cmd/{id}/{podName}" }, method = RequestMethod.GET)
 	public String serviceCmd(Model model, @PathVariable long id, @PathVariable String podName) {

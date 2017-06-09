@@ -25,6 +25,7 @@ import com.bonc.epm.paas.kubernetes.model.ConfigMap;
 import com.bonc.epm.paas.kubernetes.model.ConfigMapTemplate;
 import com.bonc.epm.paas.kubernetes.model.Container;
 import com.bonc.epm.paas.kubernetes.model.ContainerPort;
+import com.bonc.epm.paas.kubernetes.model.ContainerStatus;
 import com.bonc.epm.paas.kubernetes.model.CrossVersionObjectReference;
 import com.bonc.epm.paas.kubernetes.model.EndpointAddress;
 import com.bonc.epm.paas.kubernetes.model.EndpointPort;
@@ -40,6 +41,8 @@ import com.bonc.epm.paas.kubernetes.model.LimitRangeItem;
 import com.bonc.epm.paas.kubernetes.model.LimitRangeSpec;
 import com.bonc.epm.paas.kubernetes.model.Namespace;
 import com.bonc.epm.paas.kubernetes.model.ObjectMeta;
+import com.bonc.epm.paas.kubernetes.model.Pod;
+import com.bonc.epm.paas.kubernetes.model.PodCondition;
 import com.bonc.epm.paas.kubernetes.model.PodSpec;
 import com.bonc.epm.paas.kubernetes.model.PodTemplateSpec;
 import com.bonc.epm.paas.kubernetes.model.Probe;
@@ -55,6 +58,7 @@ import com.bonc.epm.paas.kubernetes.model.ServiceSpec;
 import com.bonc.epm.paas.kubernetes.model.Volume;
 import com.bonc.epm.paas.kubernetes.model.VolumeMount;
 import com.bonc.epm.paas.rest.util.RestFactory;
+import com.bonc.epm.paas.util.ConvertUtil;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 
 @org.springframework.stereotype.Service
@@ -171,31 +175,7 @@ public class KubernetesClientService {
 	}
 
 	public Long transMemory(String memory) {
-		if (memory.endsWith("M")) {
-			memory = memory.replace("M", "");
-		} else if (memory.endsWith("Mi")) {
-			memory = memory.replace("Mi", "");
-		} else if (memory.endsWith("G")) {
-			memory = memory.replace("G", "");
-			//long memoryG = Long.valueOf(memory) * 1024;
-			long memoryG = Long.valueOf(memory) * 1000;
-			return memoryG;
-		} else if (memory.endsWith("Gi")) {
-			memory = memory.replace("Gi", "");
-			//long memoryG = Long.valueOf(memory) * 1024;
-			long memoryG = Long.valueOf(memory) * 1000;
-			return memoryG;
-		} else if (isNumeric(memory)) {
-			//long memoryBit = Long.valueOf(memory) / (1024 * 1024);
-			long memoryBit = Long.valueOf(memory) / (1000 * 1000);
-			return memoryBit;
-		} else if (memory.endsWith("k")) {
-			memory = memory.replace("k", "");
-			//long memoryk = Long.valueOf(memory) / 1024;
-			long memoryk = Long.valueOf(memory) / 1000;
-			return memoryk;
-		}
-		return Long.valueOf(memory);
+		return (long) (ConvertUtil.parseMemory(memory) / Math.pow(2, 20));
 	}
 
 	public boolean isNumeric(String str) {
@@ -207,30 +187,27 @@ public class KubernetesClientService {
 		return true;
 	}
 
-	public Double transCpu(String cpu) {
-		if (cpu.endsWith("m")) {
-			cpu = cpu.replace("m", "");
-			double icpu = Double.valueOf(cpu) / 1000;
-			return icpu;
+	public boolean isRunning(Pod pod) {
+		boolean podRunning = false;
+		boolean containerRunning = true;
+		if (pod.getStatus().getPhase().equals("Running")) {
+			for(PodCondition podCondition : pod.getStatus().getConditions()){
+				if (podCondition.getType().equals("Ready") && podCondition.getStatus().equals("True")) {
+					podRunning = true;
+					break;
+				}
+			}
 		}
-		return Double.valueOf(cpu);
-	}
+		if (podRunning) {
+			for (ContainerStatus containerStatus : pod.getStatus().getContainerStatuses()) {
+				if (containerStatus.getState().getRunning() == null) {
+					containerRunning=false;
+					break;
+				}
+			}
+		}
 
-	/**
-	 * Description: computeMemoryOut
-	 *
-	 * @param val
-	 *            Map<String, String>
-	 * @return memVal String
-	 * @see
-	 */
-	public String computeMemoryOut(String mem) {
-		if (mem.contains("Mi")) {
-			Float a1 = Float.valueOf(mem.replace("Mi", "")) / 1024;
-			return a1.toString();
-		} else {
-			return mem.replace("G", "").replace("i", "");
-		}
+		return podRunning && containerRunning;
 	}
 
 	public ReplicationController updateResource(String name, Double cpu, String ram) {
@@ -242,9 +219,8 @@ public class KubernetesClientService {
 
 	public ReplicationController generateSimpleReplicationController(String name, int replicas, Integer initialDelay,
 			Integer timeoutDetction, Integer periodDetction, String image, List<PortConfig> portConfigs, Double cpu,
-			String ram, String nginxObj, String servicePath, String proxyPath, String checkPath,
-			List<EnvVariable> envVariables, List<String> command, List<String> args,
-			List<ServiceConfigmap> serviceConfigmapList, boolean ispodmutex) {
+			String ram, String nginxObj, String servicePath, String checkPath, List<EnvVariable> envVariables,
+			List<String> command, List<String> args, List<ServiceConfigmap> serviceConfigmapList, boolean ispodmutex) {
 
 		ReplicationController replicationController = new ReplicationController();
 		ObjectMeta meta = new ObjectMeta();
@@ -260,9 +236,6 @@ public class KubernetesClientService {
 		labels.put("app", name);
 		if (StringUtils.isNotBlank(servicePath)) {
 			labels.put("servicePath", servicePath.replaceAll("/", "LINE"));
-		}
-		if (StringUtils.isNotBlank(proxyPath)) {
-			labels.put("proxyPath", proxyPath.replaceAll("/", "LINE"));
 		}
 		if (StringUtils.isNotBlank(nginxObj)) {
 			String[] proxyArray = nginxObj.split(",");
@@ -473,7 +446,7 @@ public class KubernetesClientService {
 	}
 
 	public Service generateService(String appName, List<PortConfig> portConfigs, String proxyZone, String servicePath,
-			String proxyPath, String sessionAffinity, String nodeIpAffinity) {
+			String sessionAffinity) {
 		Service service = new Service();
 		ObjectMeta meta = new ObjectMeta();
 		meta.setName(appName);
@@ -482,18 +455,12 @@ public class KubernetesClientService {
 		if (StringUtils.isNotBlank(servicePath)) {
 			labels.put("servicePath", servicePath.replaceAll("/", "LINE"));
 		}
-		if (StringUtils.isNotBlank(proxyPath)) {
-			labels.put("proxyPath", proxyPath.replaceAll("/", "LINE"));
-		}
 
 		if (StringUtils.isNotBlank(proxyZone)) {
 			String[] proxyArray = proxyZone.split(",");
 			for (int i = 0; i < proxyArray.length; i++) {
 				labels.put(proxyArray[i], proxyArray[i]);
 			}
-		}
-		if (StringUtils.isNotBlank(nodeIpAffinity)) {
-			labels.put("nodeIpAffinity", nodeIpAffinity);
 		}
 		meta.setLabels(labels);
 		service.setMetadata(meta);
@@ -682,7 +649,6 @@ public class KubernetesClientService {
 			for (int i = 0; i < ProxyZones.length; i++) {
 				controller.getMetadata().getLabels().put(ProxyZones[i].toLowerCase(), ProxyZones[i]);
 			}
-			controller.getMetadata().getLabels().put("proxyPath", service.getProxyPath());
 			controller.getMetadata().getLabels().put("servicePath", service.getServicePath());
 		}
 		if (StringUtils.isNotBlank(service.getCheckPath())) {
@@ -738,14 +704,6 @@ public class KubernetesClientService {
 			if (StringUtils.isNotBlank(service.getServicePath())) {
 				k8sService.getMetadata().getLabels().put("servicePath",
 						service.getServicePath().replaceAll("/", "LINE"));
-			}
-			if (StringUtils.isNotBlank(service.getProxyPath())) {
-				k8sService.getMetadata().getLabels().put("proxyPath", service.getProxyPath().replaceAll("/", "LINE"));
-			}
-			if (StringUtils.isNotBlank(service.getNodeIpAffinity())) {
-				k8sService.getMetadata().getLabels().put("nodeIpAffinity", service.getNodeIpAffinity());
-			} else {
-				k8sService.getMetadata().getLabels().remove("nodeIpAffinity");
 			}
 			ServiceSpec spec = new ServiceSpec();
 			spec.setType("NodePort");
