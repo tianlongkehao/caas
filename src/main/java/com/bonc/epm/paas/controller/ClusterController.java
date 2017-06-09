@@ -2110,7 +2110,9 @@ public class ClusterController {
 		Iterable<NodeTestInfo> iterable = nodeInfoDao.findAll();
 		if(iterable!=null){
 			Iterator<NodeTestInfo> iterator = iterable.iterator();
-				map.put("testparam", iterator.next());// 执行过批量测试，则返回测试参数信息
+			  if(iterator.hasNext()){
+				  map.put("testparam", iterator.next());// 执行过批量测试，则返回测试参数信息
+			  }
 		}
 
 		map.put("nodetestresult", nodeInfos);
