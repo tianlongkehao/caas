@@ -82,6 +82,7 @@ import com.bonc.epm.paas.net.model.RouteTable;
 import com.bonc.epm.paas.net.model.ServiceProblems;
 import com.bonc.epm.paas.net.util.NetClientService;
 import com.bonc.epm.paas.rest.util.RestFactory;
+import com.bonc.epm.paas.util.ConvertUtil;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 import com.bonc.epm.paas.util.SshConnect;
 import com.github.dockerjava.api.DockerClient;
@@ -1961,38 +1962,81 @@ public class ClusterController {
 			nodeInfo.setDockermsg(dockermsg);
 
 			boolean pass = true;
-			/*if (dockermsg.indexOf("Data Space Total,") != -1) {
-				dockermsg = dockermsg.substring(dockermsg.indexOf("Data Space Total,"), dockermsg.length());
-				dockermsg = dockermsg.split("]")[0].split(",")[1].trim();
-				dockermsg = convert(dockermsg);
-				int mem = Math.round(Float.parseFloat(dockermsg));
-				nodeInfo.setDockerDataSpaceTotal(mem);
-				pass = pass && mem == nodeTestInfo.getDockerDataSpaceTotalTarget();
-			}*/
 
 			//Data Space Total
             String dockerDataSpaceTotal =dockermap.get("Data Space Total").toString();
-            dockerDataSpaceTotal= convert(dockerDataSpaceTotal);
-            nodeInfo.setDockerDataSpaceTotal(Math.round(Float.parseFloat(dockerDataSpaceTotal)));
+            nodeInfo.setDockerDataSpaceTotal(Math.round((float)ConvertUtil.convertMemoryBy2(dockerDataSpaceTotal)));
             pass = pass &&  nodeInfo.getDockerDataSpaceTotal()== nodeTestInfo.getDockerDataSpaceTotalTarget();
 
             //Data Space Used
             String dockerDataSpaceUsed =dockermap.get("Data Space Used").toString();
-            dockerDataSpaceUsed= convert(dockerDataSpaceUsed);
-            nodeInfo.setDockerDataSpaceUsed(Math.round(Float.parseFloat(dockerDataSpaceUsed)));
+            nodeInfo.setDockerDataSpaceUsed(Math.round((float)ConvertUtil.convertMemoryBy2(dockerDataSpaceUsed)));
             pass = pass &&  nodeInfo.getDockerDataSpaceUsed()== nodeTestInfo.getDockerDataSpaceUsedTarget();
 
             //Data Space Available
             String dockerDataSpaceAvailable =dockermap.get("Data Space Available").toString();
-            dockerDataSpaceAvailable= convert(dockerDataSpaceAvailable);
-            nodeInfo.setDockerDataSpaceAvailable(Math.round(Float.parseFloat(dockerDataSpaceAvailable)));
+            nodeInfo.setDockerDataSpaceAvailable(Math.round((float)ConvertUtil.convertMemoryBy2(dockerDataSpaceAvailable)));
             pass = pass &&  nodeInfo.getDockerDataSpaceAvailable() == nodeTestInfo.getDockerDataSpaceAvailableTarget();
 
             //Metadata Space Used
             String dockerMetadataSpaceUsed =dockermap.get("Metadata Space Used").toString();
-            dockerMetadataSpaceUsed= convert(dockerMetadataSpaceUsed);
-            nodeInfo.setDockerMetaSpaceUsed(Math.round(Float.parseFloat(dockerMetadataSpaceUsed)));
+            nodeInfo.setDockerMetaSpaceUsed(Math.round((float)ConvertUtil.convertMemoryBy2(dockerMetadataSpaceUsed)*1024f));
             pass = pass &&  nodeInfo.getDockerMetaSpaceUsed() == nodeTestInfo.getDockerMetaSpaceUsedTarget();
+
+            //Metadata Space Total
+            String dockerMetadataSpaceTotal =dockermap.get("Metadata Space Total").toString();
+            nodeInfo.setDockerMetaSpaceTotal(Math.round((float)ConvertUtil.convertMemoryBy2(dockerMetadataSpaceTotal)));
+            pass = pass &&  nodeInfo.getDockerMetaSpaceTotal() == nodeTestInfo.getDockerMetaSpaceTotalTarget();
+
+            //Metadata Space Available
+            String dockerMetadataSpaceAvailable =dockermap.get("Metadata Space Available").toString();
+            nodeInfo.setDockerMetaSpaceAvailable(Math.round((float)ConvertUtil.convertMemoryBy2(dockerMetadataSpaceAvailable)));
+            pass = pass &&  nodeInfo.getDockerMetaSpaceAvailable() == nodeTestInfo.getDockerMetaSpaceAvailableTarget();
+
+            //Pool Blocksize
+            String dockerPoolBlocksize =dockermap.get("Pool Blocksize").toString();
+            nodeInfo.setDockerPoolBlocksize(Math.round((float)ConvertUtil.convertMemoryBy2(dockerPoolBlocksize)*1024f*1024f));
+            pass = pass &&  nodeInfo.getDockerPoolBlocksize() == nodeTestInfo.getDockerPoolBlocksizeTarget();
+
+            //Base Device Size
+            String dockerBaseDeviceSize =dockermap.get("Base Device Size").toString();
+            nodeInfo.setDockerBaseDeviceSize(Math.round((float)ConvertUtil.convertMemoryBy2(dockerBaseDeviceSize)));
+            pass = pass &&  nodeInfo.getDockerBaseDeviceSize() == nodeTestInfo.getDockerBaseDeviceSizeTarget();
+
+            //Backing Filesystem
+            String dockerBackingFilesystem =dockermap.get("Backing Filesystem").toString();
+            nodeInfo.setDockerBackingFilesystem(dockerBackingFilesystem);
+            pass = pass &&  nodeInfo.getDockerBackingFilesystem().equals(nodeTestInfo.getDockerBackingFilesystemTarget());
+
+            //Data file
+            String dockerDatafile =dockermap.get("Data file").toString();
+            nodeInfo.setDockerDatafile(dockerDatafile);
+            pass = pass &&  nodeInfo.getDockerDatafile().equals(nodeTestInfo.getDockerDatafileTarget());
+
+            //Metadata file
+            String dockerMetadatafile =dockermap.get("Metadata file").toString();
+            nodeInfo.setDockerMetadatafile(dockerMetadatafile);
+            pass = pass &&  nodeInfo.getDockerMetadatafile().equals(nodeTestInfo.getDockerMetadatafileTarget());
+
+            //Udev Sync Supported
+            boolean dockerUdevSyncSupported =Boolean.parseBoolean(dockermap.get("Udev Sync Supported").toString());
+            nodeInfo.setDockerUdevSyncSupported(dockerUdevSyncSupported);
+            pass = pass && nodeInfo.isDockerUdevSyncSupported()&&nodeTestInfo.isDockerUdevSyncSupportedTarget();
+
+            //Deferred Removal Enabled
+            boolean dockerDeferredRemovalEnabled =Boolean.parseBoolean(dockermap.get("Deferred Removal Enabled").toString());
+            nodeInfo.setDockerDeferredRemovalEnable(dockerDeferredRemovalEnabled);
+            pass = pass && nodeInfo.isDockerDeferredRemovalEnable()&&nodeTestInfo.isDockerDeferredRemovalEnableTarget();
+
+            //Deferred Deletion Enabled
+            boolean dockerDeferredDeletionEnabled =Boolean.parseBoolean(dockermap.get("Deferred Deletion Enabled").toString());
+            nodeInfo.setDocekrDeferredDeletionEnable(dockerDeferredDeletionEnabled);
+            pass = pass && nodeInfo.isDocekrDeferredDeletionEnable()&&nodeTestInfo.isDocekrDeferredDeletionEnableTarget();
+
+            //Deferred Deleted Device Count
+            int dockerDeferredDeletedDeviceCount = Integer.parseInt(dockermap.get("Deferred Deleted Device Count").toString().trim());
+            nodeInfo.setDockerDeferredDeletedDeviceCount(dockerDeferredDeletedDeviceCount);
+            pass = pass && nodeInfo.getDockerDeferredDeletedDeviceCount()==nodeTestInfo.getDockerDeferredDeletedDeviceCountTarget();
 
 			nodeInfo.setDockerpass(pass);// docker通过
 			nodeInfoDao.save(nodeInfo);

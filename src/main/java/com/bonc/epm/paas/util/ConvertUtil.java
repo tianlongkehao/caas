@@ -102,6 +102,8 @@ public class ConvertUtil {
 			ret = Double.parseDouble(memory.replace("Pi", "")) * Math.pow(2, 50);
 		} else if (memory.endsWith("Ei")) {
 			ret = Double.parseDouble(memory.replace("Ei", "")) * Math.pow(2, 60);
+		} else if (memory.endsWith("kB")) {
+			ret = Double.parseDouble(memory.replace("kB", "")) * Math.pow(2, 10);
 		} else if (memory.endsWith("KB")) {
 			ret = Double.parseDouble(memory.replace("KB", "")) * Math.pow(2, 10);
 		} else if (memory.endsWith("MB")) {
