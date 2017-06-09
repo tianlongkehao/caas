@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
+import com.bonc.epm.paas.constant.CommConstant;
 import com.bonc.epm.paas.dao.DNSServiceDao;
 import com.bonc.epm.paas.dao.PingResultDao;
 import com.bonc.epm.paas.dao.PortConfigDao;
@@ -189,14 +190,11 @@ public class DNSController {
 
 		// 持久化
 		DNSService service = new DNSService();
-		service.setServiceName(serviceName);
+		service.setAddress(address);
+		service.setIsMonitor(CommConstant.TYPE_NO_VALUE);
 		service.setCreateBy(user.getId());
 		service.setCreateDate(new Date());
-		service.setAddress(address);
 		service = dnsServiceDao.save(service);
-
-		portCon.setDnsServiceId(service.getId());
-		portConfigDao.save(portCon);
 
 		if (CollectionUtils.isEmpty(messages)) {
 			map.put("status", "200");
