@@ -207,11 +207,12 @@ public class KubernetesClientService {
 				}
 			}
 		}
-
-		for (ContainerStatus containerStatus : pod.getStatus().getContainerStatuses()) {
-			if (containerStatus.getState().getRunning() == null) {
-				containerRunning=false;
-				break;
+		if (podRunning) {
+			for (ContainerStatus containerStatus : pod.getStatus().getContainerStatuses()) {
+				if (containerStatus.getState().getRunning() == null) {
+					containerRunning=false;
+					break;
+				}
 			}
 		}
 
