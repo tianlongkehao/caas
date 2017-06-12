@@ -1355,4 +1355,24 @@ font i.fa-question-circle{
 table.table tr td textarea{
 	background-color:#ddd;
 }
+#chkitem span.s-unit{
+	margin-left:6px;
+}
+#chkitem input{
+	border-radius: 2px;
+	text-indent:6px;
+}
+#chkitem select{
+	border-radius: 2px;
+	border:1px solid #ddd;
+}
+#chkitem .testItemTit{
+	width:44%;
+}
+#chkitem .testItemTitNoCheckbox{
+	padding-left:17px;
+}
+#chkitem .testItemCon{
+	width:80%;
+}
 
