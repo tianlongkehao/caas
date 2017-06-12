@@ -365,13 +365,14 @@ public class DNSController2 {
 					if (kubernetesClientService.isRunning(pod)) {
 						for (DNSService dnsService : dnsServices) {
 							String checkResult = checkDns(pod, dnsService.getAddress());
-							PingResult pingResult = parsePingResult(checkResult);
+							PingResult pingResult = parsePingResult(dnsService.getAddress(), checkResult);
 							pingResultList.add(pingResult);
 						}
 					}
 				}
 			}
 		}
+		map.put("status", "200");
 		return JSON.toJSONString(map);
 	}
 
@@ -386,10 +387,10 @@ public class DNSController2 {
 		String containerID = pod.getStatus().getContainerStatuses().get(0).getContainerID().replace("docker://", "");
 		String hostIP = pod.getStatus().getHostIP();
 		DockerClient dockerClient = dockerClientService.getSpecifiedDockerClientInstance(hostIP);
-		ExecCreateCmdResponse exec = dockerClient.execCreateCmd(containerID).withCmd("nslookup", address).exec();
+		ExecCreateCmdResponse exec = dockerClient.execCreateCmd(containerID).withAttachStdout(true).withAttachStderr(true).withCmd("nslookup", address).exec();
 		ExecStartStringResultCallback execStartStringResultCallback = new ExecStartStringResultCallback();
 		try {
-			dockerClient.execStartCmd(exec.getId()).exec(execStartStringResultCallback).awaitCompletion();
+			dockerClient.execStartCmd(exec.getId()).withDetach(false).exec(execStartStringResultCallback).awaitCompletion();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 			return "";
@@ -403,14 +404,15 @@ public class DNSController2 {
 	 * @param checkResult
 	 * @return PingResult
 	 */
-	private PingResult parsePingResult(String checkResult) {
+	private PingResult parsePingResult(String address, String checkResult) {
 		PingResult pingResult = new PingResult();
+		pingResult.setHost(address);
 		pingResult.setPingResult(checkResult);
 		pingResult.setCreateDate(new Date());
 		pingResult.setCreateBy(1);
-		if (checkResult.contains("Address 1: ")) {
-			int addressIndex = checkResult.indexOf("Address 1: ");
-			pingResult.setIp(checkResult.substring(addressIndex + 11));
+		if (checkResult.contains("Address 1: ") && !checkResult.contains("can't resolve")) {
+			int addressIndex = checkResult.lastIndexOf("Address 1: ");
+			pingResult.setIp(checkResult.substring(addressIndex + 11).replace("\n", ""));
 			pingResult.setSuccess(true);
 		} else {
 			pingResult.setSuccess(false);
