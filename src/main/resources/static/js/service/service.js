@@ -1502,7 +1502,7 @@ function oneSetAutoFlexInfo(id, containerName, minReplicas, maxReplicas, targetC
 			var minReplicasChange = $("#minReplicas").val();
 			var maxReplicasChange = $("#maxReplicas").val();
 			var targetCPUUtilizationPercentageChange = $("#targetCPUUtilizationPercentage").val();
-			if (minReplicasChange >= maxReplicasChange) {
+			if (parseInt(minReplicasChange) >= parseInt(maxReplicasChange)) {
 				layer.alert("最小副本数不能大于最大副本数");
 				return;
 			}

@@ -34,6 +34,7 @@
 										<i class="fa fa-map-marker" style="margin-right: 6px;"></i>路由监控
 									</h5>
 									<div class="ibox-tools">
+										<a title="测试" onclick="testRoutes()"><i>测试</i></a>
 										<a href="javascript:window.location.reload(true);" title="刷新"><i
 											class="fa fa-repeat"></i></a>
 									</div>

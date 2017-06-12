@@ -1,6 +1,8 @@
 var loading = "";
 $(document).ready(function () {
-	loading = layer.load(0, {shade: false});
+	loading = layer.load(0, {
+		shade : [ 0.3, '#000' ]
+	});
 	loadRoute();
 	/*var nodeIP = $("#search_routeNode").val();
 	$('.dataTables-example').dataTable({
@@ -57,7 +59,7 @@ function loadRoute() {
 		 url : ctx + "/cluster/checkRoute.do",
 		 type : "get",
 		 success : function(data){
-			 layer.close(loading);
+			 layer.closeAll();
 			 var data = eval("(" + data + ")");
 			 var status = data.status;
 			 if(status == '200'){
@@ -87,7 +89,7 @@ function loadRoute() {
 						+'</td>'
 						+'</tr>';
 				 }
-				 $("#routeList").append(routeHtmlTr);
+				 $("#routeList").empty().append(routeHtmlTr);
 				 $('.dataTables-example').dataTable({
 					    "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0,2,3,5] }],
 					    "aaSorting": [[ 1, "desc" ]]
@@ -183,4 +185,12 @@ function recoverOneRoute(obj){
 			layer.close(loading);
 		}
 	})
+}
+//批量测试路由
+function testRoutes(){
+	var loading = layer.load(0, {
+		shade : [ 0.3, '#000' ]
+	});
+	
+	loadRoute();
 }
