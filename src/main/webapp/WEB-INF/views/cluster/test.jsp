@@ -305,8 +305,8 @@
 									<th class="testItemTit testItemTitNoCheckbox">Deferred Removal Enable：</th>
 									<td>
 										<select id="DeferredRemovalEnable" class="testItemCon">
-											<option value="1">false</option>
-											<option value="2">true</option>
+											<option value="false">false</option>
+											<option value="true">true</option>
 										</select>
 									</td>
 								</tr>
@@ -314,8 +314,8 @@
 									<th class="testItemTit testItemTitNoCheckbox">Udev Sync Supported：</th>
 									<td>
 										<select id="UdevSyncSupported" class="testItemCon">
-											<option value="1">false</option>
-											<option value="2">true</option>
+											<option value="false">false</option>
+											<option value="true">true</option>
 										</select>
 									</td>
 								</tr>
@@ -323,8 +323,8 @@
 									<th class="testItemTit testItemTitNoCheckbox">Deferred Deletion Enable：</th>
 									<td>
 										<select id="DeferredDeletionEnable" class="testItemCon">
-											<option value="1">false</option>
-											<option value="2">true</option>
+											<option value="false">false</option>
+											<option value="true">true</option>
 										</select>
 									</td>
 								</tr>
@@ -332,7 +332,7 @@
 									<th class="testItemTit testItemTitNoCheckbox">Deferred Deleted Device Count：</th>
 									<td>
 										<input type="number" value="0" class="number testItemCon" min="1"
-											autocomplete="off" max="" id="MetaSpaceAvailable"
+											autocomplete="off" max="" id="DeferredDeletedDeviceCount"
 											name="instanceNum">
 									</td>
 								</tr>

@@ -125,7 +125,7 @@ function detail(obj) {
 				}
 				if(nodetestresult.docker){
 					tabHtml += '<li id="tab'+count+'"><a href="#dockerTab" data-toggle="tab">Docker</a></li>';
-					var memory=nodetestresult.disk;
+					var memory=nodetestresult.dockerDataSpaceTotal;
 					var dockerpass=nodetestresult.dockerpass ? '通过' : '未通过';
 					var dockerdetail=nodetestresult.dockermsg;
 					tabInfoHtml += '<div class="tab-pane fade tabInfo'+count+'" id="dockerTab">'
@@ -916,6 +916,7 @@ function times(selectednodes,j){
 	if(j >= selectednodes.length){
 		return; 
 	}
+	debugger;
 	var pingIp = $("#pingip").val();
 	var tracepathIp = $("#tracepathip").val();
 	var pingtime = $("#pingtime").val()=="" ? 0 : $("#pingtime").val();
@@ -923,7 +924,23 @@ function times(selectednodes,j){
 	var curltime = $("#curltime").val()=="" ? 0 : $("#curltime").val();
 	var speed = $("#speed").val()=="" ? 0 : $("#speed").val();
 	var latency = $("#qperftime").val()=="" ? 0 : $("#qperftime").val();
-	var memory = $("#dockerCon").val()=="" ? 0 : $("#dockerCon").val();
+	
+	var dockerPoolBlocksize = $("#PoolBlocksize").val()=="" ? 0 : $("#PoolBlocksize").val();
+	var dockerBaseDeviceSize  = $("#BaseDeviceSize").val()=="" ? 0 : $("#BaseDeviceSize").val();
+	var dockerBackingFilesystem = $("#BackingFilesystem").val();
+	var dockerDatafile = $("#Datafile").val();
+	var dockerMetaSpaceUsed  = $("#MetaSpaceUsed").val()=="" ? 0 : $("#MetaSpaceUsed").val();
+	var dockerMetaSpaceAvailable = $("#MetaSpaceAvailable").val()=="" ? 0 : $("#MetaSpaceAvailable").val();
+	var dockerDeferredRemovalEnable = $("#DeferredRemovalEnable").val();
+	var dockerMetadatafile = $("#Metadatafile").val();
+	var dockerDataSpaceUsed = $("#DataSpaceUsed").val()=="" ? 0 : $("#DataSpaceUsed").val();
+	var dockerDataSpaceTotal = $("#DataSpaceTotal").val()=="" ? 0 : $("#DataSpaceTotal").val();
+	var dockerDataSpaceAvailable = $("#DataSpaceAvailable").val()=="" ? 0 : $("#DataSpaceAvailable").val();
+	var dockerMetaSpaceTotal = $("#MetaSpaceTotal").val()=="" ? 0 : $("#MetaSpaceTotal").val();
+	var dockerUdevSyncSupported = $("#UdevSyncSupported").val();
+	var docekrDeferredDeletionEnable = $("#DeferredDeletionEnable").val();
+	var dockerDeferredDeletedDeviceCount = $("#DeferredDeletedDeviceCount").val()=="" ? 0 : $("#DeferredDeletedDeviceCount").val();
+	
 	var thisNodeName = selectednodes[j];
 	var nodeTestInfo = {
 			"nodename":thisNodeName,
@@ -934,7 +951,21 @@ function times(selectednodes,j){
 			"curltimetarget":curltime,
 			"speedtarget":speed,
 			"latencytarget":latency,
-			"memorytarget":memory
+			"dockerPoolBlocksizeTarget": dockerPoolBlocksize, //0
+			"dockerBaseDeviceSizeTarget":dockerBaseDeviceSize, //0
+			"dockerBackingFilesystemTarget":dockerBackingFilesystem,
+			"dockerDatafileTarget":dockerDatafile,
+			"dockerMetaSpaceUsedTarget":dockerMetaSpaceUsed, //0
+			"dockerMetaSpaceAvailableTarget":dockerMetaSpaceAvailable, //0
+			"dockerDeferredRemovalEnableTarget":dockerDeferredRemovalEnable,
+			"dockerMetadatafileTarget":dockerMetadatafile,
+			"dockerDataSpaceUsedTarget":dockerDataSpaceUsed, //0
+			"dockerDataSpaceTotalTarget":dockerDataSpaceTotal, //0
+			"dockerDataSpaceAvailableTarget":dockerDataSpaceAvailable, //0
+			"dockerMetaSpaceTotalTarget":dockerMetaSpaceTotal, //0
+			"dockerUdevSyncSupportedTarget":dockerUdevSyncSupported,
+			"docekrDeferredDeletionEnableTarget":docekrDeferredDeletionEnable,
+			"dockerDeferredDeletedDeviceCountTarget":dockerDeferredDeletedDeviceCount //0
 		};
 	
 	var successInfoBtn = '<a id="'+thisNodeName+'"  nodename="'+thisNodeName+'" onclick="detail(this)" title="查看详细信息">'
@@ -957,298 +988,304 @@ function times(selectednodes,j){
 	var nodeProgressDiv = $('input:checkbox[id="'+thisNodeName+'"]:checked').parents(".thisTr").find(".nodeProgress");
 	//测试结果
 	var nodeTestOpr = $('input:checkbox[id="'+thisNodeName+'"]:checked').parents(".thisTr").find(".clusterTestOpr");
-	nodeTestOpr.empty();
-	nodeProgressDiv.empty();
-	console.log("节点测试"+j+"==="+thisNodeName);//TODO
-	//1
-	var testHtmlResule = '<div class="progress-bar progress-bar-warning" role="progressbar"'
-		 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
-		 +'style="width: 40%;">'
-		 +'<span >部署完成</span>'
-		 +'</div>';
-	var testPingHtml = testHtmlResule+'<div class="progress-bar progress-bar-striped active progress-bar-success" role="progressbar"'
-		 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
-		 +'style="width: '+testprogressWidth+';">'
-		 +'<span>'+ids[count]+'测试中</span>'
-		 +'</div>';
-	nodeProgressDiv.empty().append(testPingHtml);
+	
 	$.ajax({
 		url : ctx+"/cluster/test"+ids[count],
 		//type:'get',
 		data:nodeTestInfo,
 		success : function(data) {
 			var data = eval("(" + data + ")");
-			var passStatus = passStatusFun(ids[count],data.nodeInfo);
-			if (passStatus == true) {
-				testHtmlResule = testHtmlResule
-					 +'<div class="progress-bar progress-bar-success" role="progressbar"'
-					 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
-					 +'style="width: '+progressWidth+'">'
-					 +'<span>'+ids[count]+'成功</span>'
-					 +'</div>';
-			}else{
-				testHtmlResule = testHtmlResule
-					 +'<div class="progress-bar progress-bar-danger" role="progressbar"'
-					 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
-					 +'style="width: '+progressWidth+'">'
-					 +'<span>'+ids[count]+'失败</span>'
-					 +'</div>';
-				failNum++;
-			}
-			console.log("节点==="+thisNodeName+"的"+ids[count]+"测试完成");//TODO
-			count++;
-			nodeProgressDiv.empty().append(testHtmlResule);
-			if(count == progressLength){
-				times(selectednodes,j+1);
-				if(failNum == 0){
-					nodeTestOpr.empty().append(successInfoBtn);
-				}else{
-					nodeTestOpr.empty().append(failInfoBtn);
-				}
-				if(j == selectednodes.length-1){
-					layer.closeAll();
-					console.log("关闭遮挡层");
-				}
+			if(data.status == '500'){
+				layer.msg(data.msg,{icon:2});
+				setTimeout("layer.closeAll()",2000);
 				return;
-			}
-			//2
-			var testTraceHtml = '<div class="progress-bar progress-bar-striped active progress-bar-success" role="progressbar"'
+			}else{
+				nodeTestOpr.empty();
+				nodeProgressDiv.empty();
+				console.log("节点测试"+j+"==="+thisNodeName);//TODO
+				//1
+				var testHtmlResule = '<div class="progress-bar progress-bar-warning" role="progressbar"'
 					 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
-					 +'style="width: '+testprogressWidth+'">'
+					 +'style="width: 40%;">'
+					 +'<span >部署完成</span>'
+					 +'</div>';
+				var testPingHtml = testHtmlResule+'<div class="progress-bar progress-bar-striped active progress-bar-success" role="progressbar"'
+					 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
+					 +'style="width: '+testprogressWidth+';">'
 					 +'<span>'+ids[count]+'测试中</span>'
 					 +'</div>';
-			nodeProgressDiv.append(testTraceHtml);
-			$.ajax({
-				url : ctx+"/cluster/test"+ids[count],
-				data:nodeTestInfo,
-				success : function(data) {
-					var data = eval("(" + data + ")");
-					var passStatus = passStatusFun(ids[count],data.nodeInfo);
-					if (passStatus == true) {
-						testHtmlResule = testHtmlResule
-							 +'<div class="progress-bar progress-bar-success" role="progressbar"'
-							 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
-							 +'style="width: '+progressWidth+'">'
-							 +'<span>'+ids[count]+'成功</span>'
-							 +'</div>';
-					}else{
-						testHtmlResule = testHtmlResule
-							 +'<div class="progress-bar progress-bar-danger" role="progressbar"'
-							 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
-							 +'style="width: '+progressWidth+'">'
-							 +'<span>'+ids[count]+'失败</span>'
-							 +'</div>';
-						failNum++;
-					}
-					console.log("节点==="+thisNodeName+"的"+ids[count]+"测试完成");//TODO
-					count++;
-					nodeProgressDiv.empty().append(testHtmlResule);
-					if(count == progressLength){
-						times(selectednodes,j+1);
-						if(failNum == 0){
-							nodeTestOpr.empty().append(successInfoBtn);
-						}else{
-							nodeTestOpr.empty().append(failInfoBtn);
-						}
-						if(j == selectednodes.length-1){
-							layer.closeAll();
-							console.log("关闭遮挡层");
-						}
-						return;
-					}
-					//3
-					var testCurlHtml = '<div class="progress-bar progress-bar-striped active progress-bar-success" role="progressbar"'
-							 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
-							 +'style="width: '+testprogressWidth+'">'
-							 +'<span>'+ids[count]+'测试中</span>'
-							 +'</div>';
-					nodeProgressDiv.append(testCurlHtml);
-					$.ajax({
-						url : ctx+"/cluster/test"+ids[count],
-						data:nodeTestInfo,
-						success : function(data) {
-							var data = eval("(" + data + ")");
-							
-							var passStatus = passStatusFun(ids[count],data.nodeInfo);
-							if (passStatus == true) {
-								testHtmlResule = testHtmlResule
-									 +'<div class="progress-bar progress-bar-success" role="progressbar"'
-									 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
-									 +'style="width: '+progressWidth+'">'
-									 +'<span>'+ids[count]+'成功</span>'
-									 +'</div>';
-							}else{
-								testHtmlResule = testHtmlResule
-									 +'<div class="progress-bar progress-bar-danger" role="progressbar"'
-									 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
-									 +'style="width: '+progressWidth+'">'
-									 +'<span>'+ids[count]+'失败</span>'
-									 +'</div>';
-								failNum++;
-							}
-							console.log("节点==="+thisNodeName+"的"+ids[count]+"测试完成");//TODO	
-							count++;
-							nodeProgressDiv.empty().append(testHtmlResule);
-							if(count == progressLength){
-								times(selectednodes,j+1);
-								if(failNum == 0){
-									nodeTestOpr.empty().append(successInfoBtn);
-								}else{
-									nodeTestOpr.empty().append(failInfoBtn);
-								}
-								if(j == selectednodes.length-1){
-									layer.closeAll();
-									console.log("关闭遮挡层");
-								}
-								return;
-							}
-							//4
-							var testQperfHtml = '<div class="progress-bar progress-bar-striped active progress-bar-success" role="progressbar"'
-									 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
-									 +'style="width: '+testprogressWidth+'">'
-									 +'<span>'+ids[count]+'测试中</span>'
-									 +'</div>';
-							nodeProgressDiv.append(testQperfHtml);
-							$.ajax({
-								url : ctx+"/cluster/test"+ids[count],
-								data:nodeTestInfo,
-								success : function(data) {
-									var data = eval("(" + data + ")");
-									var passStatus = passStatusFun(ids[count],data.nodeInfo);
-									if (passStatus == true) {
-										testHtmlResule = testHtmlResule
-											 +'<div class="progress-bar progress-bar-success" role="progressbar"'
-											 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
-											 +'style="width: '+progressWidth+'">'
-											 +'<span>'+ids[count]+'成功</span>'
-											 +'</div>';
-									}else{
-										testHtmlResule = testHtmlResule
-											 +'<div class="progress-bar progress-bar-danger" role="progressbar"'
-											 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
-											 +'style="width: '+progressWidth+'">'
-											 +'<span>'+ids[count]+'失败</span>'
-											 +'</div>';
-										failNum++;
-									}
-									console.log("节点==="+thisNodeName+"的"+ids[count]+"测试完成");//TODO	
-									count++;
-									nodeProgressDiv.empty().append(testHtmlResule);
-									if(count == progressLength){
-										times(selectednodes,j+1);
-										if(failNum == 0){
-											nodeTestOpr.empty().append(successInfoBtn);
-										}else{
-											nodeTestOpr.empty().append(failInfoBtn);
-										}
-										if(j == selectednodes.length-1){
-											layer.closeAll();
-											console.log("关闭遮挡层");
-										}
-										return;
-									}
-									//5
-									var testDockerHtml = '<div class="progress-bar progress-bar-striped active progress-bar-success" role="progressbar"'
-											 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
-											 +'style="width: '+testprogressWidth+'">'
-											 +'<span>'+ids[count]+'测试中</span>'
-											 +'</div>';
-									nodeProgressDiv.append(testDockerHtml);
-									$.ajax({
-										url : ctx+"/cluster/test"+ids[count],
-										data:nodeTestInfo,
-										success : function(data) {
-											var data = eval("(" + data + ")");
-											var passStatus = passStatusFun(ids[count],data.nodeInfo);
-											if (passStatus == true) {
-												testHtmlResule = testHtmlResule
-													 +'<div class="progress-bar progress-bar-success" role="progressbar"'
-													 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
-													 +'style="width: '+progressWidth+'">'
-													 +'<span>'+ids[count]+'成功</span>'
-													 +'</div>';
-											}else{
-												testHtmlResule = testHtmlResule
-													 +'<div class="progress-bar progress-bar-danger" role="progressbar"'
-													 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
-													 +'style="width: '+progressWidth+'">'
-													 +'<span>'+ids[count]+'失败</span>'
-													 +'</div>';
-												failNum++;
-											}
-											console.log("节点==="+thisNodeName+"的"+ids[count]+"测试完成");//TODO
-											count++;
-											nodeProgressDiv.empty().append(testHtmlResule);
-											if(count == progressLength){
-												times(selectednodes,j+1);
-												if(failNum == 0){
-													nodeTestOpr.empty().append(successInfoBtn);
-												}else{
-													nodeTestOpr.empty().append(failInfoBtn);
-												}
-												if(j == selectednodes.length-1){
-													layer.closeAll();
-													console.log("关闭遮挡层");
-												}
-												return;
-											}
-											//6
-											var testDnsHtml = '<div class="progress-bar progress-bar-striped active progress-bar-success" role="progressbar"'
-													 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
-													 +'style="width: '+testprogressWidth+'">'
-													 +'<span>'+ids[count]+'测试中</span>'
-													 +'</div>';
-											nodeProgressDiv.append(testDnsHtml);
-											$.ajax({
-												url : ctx+"/cluster/test"+ids[count],
-												data:nodeTestInfo,
-												success : function(data) {
-													var data = eval("(" + data + ")");
-													var passStatus = passStatusFun(ids[count],data.nodeInfo);
-													if (passStatus == true) {
-														testHtmlResule = testHtmlResule
-															 +'<div class="progress-bar progress-bar-success" role="progressbar"'
-															 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
-															 +'style="width: '+progressWidth+'">'
-															 +'<span>'+ids[count]+'成功</span>'
-															 +'</div>';
-													}else{
-														testHtmlResule = testHtmlResule
-															 +'<div class="progress-bar progress-bar-danger" role="progressbar"'
-															 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
-															 +'style="width: '+progressWidth+'">'
-															 +'<span>'+ids[count]+'失败</span>'
-															 +'</div>';
-														failNum++;
-													}
-													console.log("节点==="+thisNodeName+"的"+ids[count]+"测试完成");//TODO	
-													count++;
-													nodeProgressDiv.empty().append(testHtmlResule);
-													if(count == progressLength){
-														times(selectednodes,j+1);
-														if(failNum == 0){
-															nodeTestOpr.empty().append(successInfoBtn);
-														}else{
-															nodeTestOpr.empty().append(failInfoBtn);
-														}
-														if(j == selectednodes.length-1){
-															layer.closeAll();
-															console.log("关闭遮挡层");
-														}
-														return;
-													}
-													
-												}
-											})
-										}
-									})
-								}
-							})
-						}
-					})
+				nodeProgressDiv.empty().append(testPingHtml);
+				var passStatus = passStatusFun(ids[count],data.nodeInfo);
+				if (passStatus == true) {
+					testHtmlResule = testHtmlResule
+						 +'<div class="progress-bar progress-bar-success" role="progressbar"'
+						 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
+						 +'style="width: '+progressWidth+'">'
+						 +'<span>'+ids[count]+'成功</span>'
+						 +'</div>';
+				}else{
+					testHtmlResule = testHtmlResule
+						 +'<div class="progress-bar progress-bar-danger" role="progressbar"'
+						 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
+						 +'style="width: '+progressWidth+'">'
+						 +'<span>'+ids[count]+'失败</span>'
+						 +'</div>';
+					failNum++;
 				}
-			})
+				console.log("节点==="+thisNodeName+"的"+ids[count]+"测试完成");//TODO
+				count++;
+				nodeProgressDiv.empty().append(testHtmlResule);
+				if(count == progressLength){
+					times(selectednodes,j+1);
+					if(failNum == 0){
+						nodeTestOpr.empty().append(successInfoBtn);
+					}else{
+						nodeTestOpr.empty().append(failInfoBtn);
+					}
+					if(j == selectednodes.length-1){
+						layer.closeAll();
+						console.log("关闭遮挡层");
+					}
+					return;
+				}
+				//2
+				var testTraceHtml = '<div class="progress-bar progress-bar-striped active progress-bar-success" role="progressbar"'
+						 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
+						 +'style="width: '+testprogressWidth+'">'
+						 +'<span>'+ids[count]+'测试中</span>'
+						 +'</div>';
+				nodeProgressDiv.append(testTraceHtml);
+				$.ajax({
+					url : ctx+"/cluster/test"+ids[count],
+					data:nodeTestInfo,
+					success : function(data) {
+						var data = eval("(" + data + ")");
+						var passStatus = passStatusFun(ids[count],data.nodeInfo);
+						if (passStatus == true) {
+							testHtmlResule = testHtmlResule
+								 +'<div class="progress-bar progress-bar-success" role="progressbar"'
+								 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
+								 +'style="width: '+progressWidth+'">'
+								 +'<span>'+ids[count]+'成功</span>'
+								 +'</div>';
+						}else{
+							testHtmlResule = testHtmlResule
+								 +'<div class="progress-bar progress-bar-danger" role="progressbar"'
+								 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
+								 +'style="width: '+progressWidth+'">'
+								 +'<span>'+ids[count]+'失败</span>'
+								 +'</div>';
+							failNum++;
+						}
+						console.log("节点==="+thisNodeName+"的"+ids[count]+"测试完成");//TODO
+						count++;
+						nodeProgressDiv.empty().append(testHtmlResule);
+						if(count == progressLength){
+							times(selectednodes,j+1);
+							if(failNum == 0){
+								nodeTestOpr.empty().append(successInfoBtn);
+							}else{
+								nodeTestOpr.empty().append(failInfoBtn);
+							}
+							if(j == selectednodes.length-1){
+								layer.closeAll();
+								console.log("关闭遮挡层");
+							}
+							return;
+						}
+						//3
+						var testCurlHtml = '<div class="progress-bar progress-bar-striped active progress-bar-success" role="progressbar"'
+								 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
+								 +'style="width: '+testprogressWidth+'">'
+								 +'<span>'+ids[count]+'测试中</span>'
+								 +'</div>';
+						nodeProgressDiv.append(testCurlHtml);
+						$.ajax({
+							url : ctx+"/cluster/test"+ids[count],
+							data:nodeTestInfo,
+							success : function(data) {
+								var data = eval("(" + data + ")");
+								
+								var passStatus = passStatusFun(ids[count],data.nodeInfo);
+								if (passStatus == true) {
+									testHtmlResule = testHtmlResule
+										 +'<div class="progress-bar progress-bar-success" role="progressbar"'
+										 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
+										 +'style="width: '+progressWidth+'">'
+										 +'<span>'+ids[count]+'成功</span>'
+										 +'</div>';
+								}else{
+									testHtmlResule = testHtmlResule
+										 +'<div class="progress-bar progress-bar-danger" role="progressbar"'
+										 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
+										 +'style="width: '+progressWidth+'">'
+										 +'<span>'+ids[count]+'失败</span>'
+										 +'</div>';
+									failNum++;
+								}
+								console.log("节点==="+thisNodeName+"的"+ids[count]+"测试完成");//TODO	
+								count++;
+								nodeProgressDiv.empty().append(testHtmlResule);
+								if(count == progressLength){
+									times(selectednodes,j+1);
+									if(failNum == 0){
+										nodeTestOpr.empty().append(successInfoBtn);
+									}else{
+										nodeTestOpr.empty().append(failInfoBtn);
+									}
+									if(j == selectednodes.length-1){
+										layer.closeAll();
+										console.log("关闭遮挡层");
+									}
+									return;
+								}
+								//4
+								var testQperfHtml = '<div class="progress-bar progress-bar-striped active progress-bar-success" role="progressbar"'
+										 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
+										 +'style="width: '+testprogressWidth+'">'
+										 +'<span>'+ids[count]+'测试中</span>'
+										 +'</div>';
+								nodeProgressDiv.append(testQperfHtml);
+								$.ajax({
+									url : ctx+"/cluster/test"+ids[count],
+									data:nodeTestInfo,
+									success : function(data) {
+										var data = eval("(" + data + ")");
+										var passStatus = passStatusFun(ids[count],data.nodeInfo);
+										if (passStatus == true) {
+											testHtmlResule = testHtmlResule
+												 +'<div class="progress-bar progress-bar-success" role="progressbar"'
+												 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
+												 +'style="width: '+progressWidth+'">'
+												 +'<span>'+ids[count]+'成功</span>'
+												 +'</div>';
+										}else{
+											testHtmlResule = testHtmlResule
+												 +'<div class="progress-bar progress-bar-danger" role="progressbar"'
+												 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
+												 +'style="width: '+progressWidth+'">'
+												 +'<span>'+ids[count]+'失败</span>'
+												 +'</div>';
+											failNum++;
+										}
+										console.log("节点==="+thisNodeName+"的"+ids[count]+"测试完成");//TODO	
+										count++;
+										nodeProgressDiv.empty().append(testHtmlResule);
+										if(count == progressLength){
+											times(selectednodes,j+1);
+											if(failNum == 0){
+												nodeTestOpr.empty().append(successInfoBtn);
+											}else{
+												nodeTestOpr.empty().append(failInfoBtn);
+											}
+											if(j == selectednodes.length-1){
+												layer.closeAll();
+												console.log("关闭遮挡层");
+											}
+											return;
+										}
+										//5
+										var testDockerHtml = '<div class="progress-bar progress-bar-striped active progress-bar-success" role="progressbar"'
+												 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
+												 +'style="width: '+testprogressWidth+'">'
+												 +'<span>'+ids[count]+'测试中</span>'
+												 +'</div>';
+										nodeProgressDiv.append(testDockerHtml);
+										$.ajax({
+											url : ctx+"/cluster/test"+ids[count],
+											data:nodeTestInfo,
+											success : function(data) {
+												var data = eval("(" + data + ")");
+												var passStatus = passStatusFun(ids[count],data.nodeInfo);
+												if (passStatus == true) {
+													testHtmlResule = testHtmlResule
+														 +'<div class="progress-bar progress-bar-success" role="progressbar"'
+														 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
+														 +'style="width: '+progressWidth+'">'
+														 +'<span>'+ids[count]+'成功</span>'
+														 +'</div>';
+												}else{
+													testHtmlResule = testHtmlResule
+														 +'<div class="progress-bar progress-bar-danger" role="progressbar"'
+														 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
+														 +'style="width: '+progressWidth+'">'
+														 +'<span>'+ids[count]+'失败</span>'
+														 +'</div>';
+													failNum++;
+												}
+												console.log("节点==="+thisNodeName+"的"+ids[count]+"测试完成");//TODO
+												count++;
+												nodeProgressDiv.empty().append(testHtmlResule);
+												if(count == progressLength){
+													times(selectednodes,j+1);
+													if(failNum == 0){
+														nodeTestOpr.empty().append(successInfoBtn);
+													}else{
+														nodeTestOpr.empty().append(failInfoBtn);
+													}
+													if(j == selectednodes.length-1){
+														layer.closeAll();
+														console.log("关闭遮挡层");
+													}
+													return;
+												}
+												//6
+												var testDnsHtml = '<div class="progress-bar progress-bar-striped active progress-bar-success" role="progressbar"'
+														 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
+														 +'style="width: '+testprogressWidth+'">'
+														 +'<span>'+ids[count]+'测试中</span>'
+														 +'</div>';
+												nodeProgressDiv.append(testDnsHtml);
+												$.ajax({
+													url : ctx+"/cluster/test"+ids[count],
+													data:nodeTestInfo,
+													success : function(data) {
+														var data = eval("(" + data + ")");
+														var passStatus = passStatusFun(ids[count],data.nodeInfo);
+														if (passStatus == true) {
+															testHtmlResule = testHtmlResule
+																 +'<div class="progress-bar progress-bar-success" role="progressbar"'
+																 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
+																 +'style="width: '+progressWidth+'">'
+																 +'<span>'+ids[count]+'成功</span>'
+																 +'</div>';
+														}else{
+															testHtmlResule = testHtmlResule
+																 +'<div class="progress-bar progress-bar-danger" role="progressbar"'
+																 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
+																 +'style="width: '+progressWidth+'">'
+																 +'<span>'+ids[count]+'失败</span>'
+																 +'</div>';
+															failNum++;
+														}
+														console.log("节点==="+thisNodeName+"的"+ids[count]+"测试完成");//TODO	
+														count++;
+														nodeProgressDiv.empty().append(testHtmlResule);
+														if(count == progressLength){
+															times(selectednodes,j+1);
+															if(failNum == 0){
+																nodeTestOpr.empty().append(successInfoBtn);
+															}else{
+																nodeTestOpr.empty().append(failInfoBtn);
+															}
+															if(j == selectednodes.length-1){
+																layer.closeAll();
+																console.log("关闭遮挡层");
+															}
+															return;
+														}
+														
+													}
+												})
+											}
+										})
+									}
+								})
+							}
+						})
+					}
+				})
+			}
 		}
-	
 	});
 }
