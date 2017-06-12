@@ -397,9 +397,10 @@ public class CephController {
 	 */
 	@RequestMapping(value = { "ceph/clearcephrbd" }, method = RequestMethod.GET)
 	@ResponseBody
-	public String clearRbd(){
+	public String clearRbd(String imgName){
 		Map<String, String> map = new HashMap<>();
 		String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
+		map.put("status", "200");
 		String msg = "";
 		try {
 			cluster = new Rados(CEPH_NAME);
@@ -407,26 +408,18 @@ public class CephController {
 			cluster.confReadFile(f);
 			cluster.connect();
 
-			// 获取所有pool
-			String[] pools = cluster.poolList();
-			boolean poolExist = false;
-			for (String pool : pools) {
-				if (namespace.equals(pool)) {
-					poolExist = true;
-					break;
-				}
-			}
-
-			if (!poolExist) {
-				cluster.poolCreate(namespace);
-			}
-
 			IoCTX ioctx = cluster.ioCtxCreate(namespace);
 			try {
 				Rbd rbd = new Rbd(ioctx); // RBD
-
-
-				map.put("status", "200");
+                RbdImage rbdImage = rbd.open(imgName);
+                long size = rbdImage.stat().size;
+                rbdImage.getPointer().clear(size);
+                rbd.close(rbdImage);
+				return JSON.toJSONString(map);
+			} catch (RbdException e) {
+				msg = "指定的镜像不存在！";
+				map.put("msg", msg);
+				map.put("status", "500");
 				return JSON.toJSONString(map);
 			} finally {
 				if (cluster != null) {
@@ -435,8 +428,7 @@ public class CephController {
 			}
 
 		} catch (RadosException e) {
-			LOGGER.error(e.getMessage());
-			msg = "pool" + namespace + "创建失败!";
+			msg = "ceph异常！";
 			map.put("msg", msg);
 			map.put("status", "500");
 			return JSON.toJSONString(map);
