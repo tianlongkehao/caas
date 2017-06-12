@@ -18,8 +18,9 @@ import com.bonc.epm.paas.entity.DNSService;
 @Transactional
 public interface DNSServiceDao extends CrudRepository<DNSService, Long> {
 
-	@Query("select i from DNSService i where i.address = ?1")
+	@Query("select i from DNSService i where i.address = ?1 order by createDate")
 	List<DNSService> findByAddress(String address);
 
+	@Query("select i from DNSService i where i.isMonitor = ?1 order by createDate")
 	List<DNSService> findByIsMonitor(Integer isMonitor);
 }
