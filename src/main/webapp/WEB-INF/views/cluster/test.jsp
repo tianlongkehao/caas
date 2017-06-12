@@ -215,7 +215,7 @@
 									<th class="testItemTit testItemTitNoCheckbox">Pool Blocksize：</th>
 									<td>
 										<input type="number" value="60" class="number testItemCon" min="1"
-											autocomplete="off" max="" id="PoolBlocksize"
+											autocomplete="off" max="" id="PoolBlocksizeTarget"
 											onkeyup="this.value=this.value.replace(/\D/g,'')"
 											name="instanceNum"><span class="s-unit">KB</span>
 									</td>
@@ -224,7 +224,7 @@
 									<th class="testItemTit testItemTitNoCheckbox">Base Device Size：</th>
 									<td>
 										<input type="number" value="100" class="number testItemCon" min="1"
-											autocomplete="off" max="" id="BaseDeviceSize"
+											autocomplete="off" max="" id="BaseDeviceSizeTarget"
 											onkeyup="this.value=this.value.replace(/\D/g,'')"
 											name="instanceNum"><span class="s-unit">GB</span>
 									</td>
@@ -233,7 +233,7 @@
 									<th class="testItemTit testItemTitNoCheckbox">Backing Filesystem：</th>
 									<td>
 										<input type="text" value="xfs" class="number testItemCon" min="1"
-											autocomplete="off" max="" id="BackingFilesystem"
+											autocomplete="off" max="" id="BackingFilesystemTarget"
 											name="instanceNum">
 									</td>
 								</tr>
@@ -241,7 +241,7 @@
 									<th class="testItemTit testItemTitNoCheckbox">Data file：</th>
 									<td>
 										<input type="text" value="/dev/loop0" class="number testItemCon" min="1"
-											autocomplete="off" max="" id="Datafile"
+											autocomplete="off" max="" id="DatafileTarget"
 											name="instanceNum">
 									</td>
 								</tr>
@@ -249,7 +249,7 @@
 									<th class="testItemTit testItemTitNoCheckbox">Data Space Used：</th>
 									<td>
 										<input type="number" value="0" class="number testItemCon" min="1"
-											autocomplete="off" max="" id="DataSpaceUsed"
+											autocomplete="off" max="" id="DataSpaceUsedTarget"
 											name="instanceNum"><span class="s-unit">GB</span>
 									</td>
 								</tr>
@@ -257,7 +257,7 @@
 									<th class="testItemTit testItemTitNoCheckbox">Data Space Total：</th>
 									<td>
 										<input type="number" value="100" class="number testItemCon" min="1"
-											autocomplete="off" max="" id="DataSpaceTotal"
+											autocomplete="off" max="" id="DataSpaceTotalTarget"
 											name="instanceNum"><span class="s-unit">GB</span>
 									</td>
 								</tr>
@@ -265,7 +265,7 @@
 									<th class="testItemTit testItemTitNoCheckbox">Data Space Available：</th>
 									<td>
 										<input type="number" value="100" class="number testItemCon" min="1"
-											autocomplete="off" max="" id="DataSpaceAvailable"
+											autocomplete="off" max="" id="DataSpaceAvailableTarget"
 											name="instanceNum"><span class="s-unit">GB</span>
 									</td>
 								</tr>
@@ -273,7 +273,7 @@
 									<th class="testItemTit testItemTitNoCheckbox">Metadata file：</th>
 									<td>
 										<input type="text" value="/dev/loop1" class="number testItemCon" min="1"
-											autocomplete="off" max="" id="Metadatafile"
+											autocomplete="off" max="" id="MetadatafileTarget"
 											name="instanceNum">
 									</td>
 								</tr>
@@ -281,7 +281,7 @@
 									<th class="testItemTit testItemTitNoCheckbox">Meta Space Used：</th>
 									<td>
 										<input type="number" value="0" class="number testItemCon" min="1"
-											autocomplete="off" max="" id="MetaSpaceUsed"
+											autocomplete="off" max="" id="MetaSpaceUsedTarget"
 											name="instanceNum"><span class="s-unit">MB</span>
 									</td>
 								</tr>
@@ -289,7 +289,7 @@
 									<th class="testItemTit testItemTitNoCheckbox">Meta Space Total：</th>
 									<td>
 										<input type="number" value="2" class="number testItemCon" min="1"
-											autocomplete="off" max="" id="MetaSpaceTotal"
+											autocomplete="off" max="" id="MetaSpaceTotalTarget"
 											name="instanceNum"><span class="s-unit">GB</span>
 									</td>
 								</tr>
@@ -297,14 +297,14 @@
 									<th class="testItemTit testItemTitNoCheckbox">Meta Space Available：</th>
 									<td>
 										<input type="number" value="2" class="number testItemCon" min="1"
-											autocomplete="off" max="" id="MetaSpaceAvailable"
+											autocomplete="off" max="" id="MetaSpaceAvailableTarget"
 											name="instanceNum"><span class="s-unit">GB</span>
 									</td>
 								</tr>
 								<tr>
 									<th class="testItemTit testItemTitNoCheckbox">Deferred Removal Enable：</th>
 									<td>
-										<select id="DeferredRemovalEnable" class="testItemCon">
+										<select id="DeferredRemovalEnableTarget" class="testItemCon">
 											<option value="false">false</option>
 											<option value="true">true</option>
 										</select>
@@ -313,7 +313,7 @@
 								<tr>
 									<th class="testItemTit testItemTitNoCheckbox">Udev Sync Supported：</th>
 									<td>
-										<select id="UdevSyncSupported" class="testItemCon">
+										<select id="UdevSyncSupportedTarget" class="testItemCon">
 											<option value="false">false</option>
 											<option value="true">true</option>
 										</select>
@@ -322,7 +322,7 @@
 								<tr>
 									<th class="testItemTit testItemTitNoCheckbox">Deferred Deletion Enable：</th>
 									<td>
-										<select id="DeferredDeletionEnable" class="testItemCon">
+										<select id="DeferredDeletionEnableTarget" class="testItemCon">
 											<option value="false">false</option>
 											<option value="true">true</option>
 										</select>
@@ -332,7 +332,7 @@
 									<th class="testItemTit testItemTitNoCheckbox">Deferred Deleted Device Count：</th>
 									<td>
 										<input type="number" value="0" class="number testItemCon" min="1"
-											autocomplete="off" max="" id="DeferredDeletedDeviceCount"
+											autocomplete="off" max="" id="DeferredDeletedDeviceCountTarget"
 											name="instanceNum">
 									</td>
 								</tr>
