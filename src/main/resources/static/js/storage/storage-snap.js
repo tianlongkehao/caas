@@ -10,7 +10,7 @@ function storageRollBack(obj){
 
     //判断是否可以回滚
     $.ajax({
-			url:""+ctx+"/ceph/snapability?imgname="+rbd,
+			url:""+ctx+"/ceph/checkrbdrunning?imgname="+rbd,
 			type:"get",
 			success:function(data){
 				var data = eval("(" + data + ")");

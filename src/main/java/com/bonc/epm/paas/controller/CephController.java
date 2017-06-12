@@ -987,6 +987,7 @@ public class CephController {
 
 					// 数据库中删除镜像
 					cephRbdInfoDao.delete(cephRbdInfo);
+					serviceRbdDao.deleteByCephrbdId(imgId);
 
 					// 记录日志
 					String extraInfo = "删除镜像 " + JSON.toJSONString(cephRbdInfo);
@@ -1001,7 +1002,8 @@ public class CephController {
 					map.put("msg", msg);
 					map.put("status", "500");
 
-					cephRbdInfoDao.deleteByName(imgname);
+					cephRbdInfoDao.delete(imgId);
+					serviceRbdDao.deleteByCephrbdId(imgId);
 				}
 
 				return JSON.toJSONString(map);
@@ -1356,14 +1358,13 @@ public class CephController {
 	}
 
 	/**
-	 * 快照是否可以回滚（判断是否有实例在使用块设备）
-	 *
+	 * 检查是否有服务正在使用rbd
 	 * @param imgname
 	 * @return
 	 */
-	@RequestMapping(value = { "ceph/snapability" }, method = RequestMethod.GET)
+	@RequestMapping(value = { "ceph/checkrbdrunning" }, method = RequestMethod.GET)
 	@ResponseBody
-	public String canRollBack(String imgname) {
+	public String checkRbdRunning(String imgname){
 		Map<String, String> map = new HashMap<>();
 		String msg = "";
 		map.put("status", "200");
@@ -1379,7 +1380,7 @@ public class CephController {
 
 		long rbdId = cephRbdInfos.get(0).getId();
 		List<ServiceCephRbd> serviceCephRbds = serviceRbdDao.findByCephrbdId(rbdId);
-		if (CollectionUtils.isEmpty(cephRbdInfos)) {
+		if (CollectionUtils.isEmpty(serviceCephRbds)) {
 			return JSON.toJSONString(map);
 		}
 
@@ -1387,7 +1388,7 @@ public class CephController {
 			return JSON.toJSONString(map);
 		} else {
 			msg = "服务: " + serviceCephRbds.get(0).getServicename() + "正在使用磁盘: " + imgname + ","
-					+ "请先停止服务，再进行回滚操作，回滚成功后，重启服务生效！";
+					+ "请先停止服务再进行操作，重启服务生效！";
 			map.put("msg", msg);
 			map.put("status", "500");
 			return JSON.toJSONString(map);
