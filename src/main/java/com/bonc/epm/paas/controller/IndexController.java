@@ -155,7 +155,7 @@ public class IndexController {
 	private CommonOperationLogDao commonOperationLogDao;
 
     @Autowired
-    DNSController2 dnsController;
+    DNSController dnsController;
     /**
      * Description: <br>
      * 首页
