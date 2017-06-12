@@ -1527,12 +1527,15 @@ function oneSetAutoFlexInfo(id, containerName, minReplicas, maxReplicas, targetC
 						layer.alert("自动伸缩失败，请检查服务器连接");
 					} else if (data.status == "402") {
 						layer.alert("最小副本数不能大于最大副本数");
+					} else if (data.status == "403") {
+						layer.alert("CPU使用率不能为空");
+					} else if (data.status == "404") {
+						layer.alert("副本数不能为空");
 					} else if (data.status == "400") {
 						layer.alert("未查询到该服务！", function() {
 							window.location.reload();
 						});
 					}
-
 				}
 			});
 		},
