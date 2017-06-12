@@ -24,4 +24,5 @@ public interface DNSServiceDao extends CrudRepository<DNSService, Long> {
 	@Query("select i from DNSService i where i.address = ?1")
 	List<DNSService> findByAddress(String address);
 
+	List<DNSService> findByIsMonitor(Integer isMonitor);
 }

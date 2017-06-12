@@ -154,7 +154,8 @@ public class IndexController {
     @Autowired
 	private CommonOperationLogDao commonOperationLogDao;
 
-
+    @Autowired
+    DNSController2 dnsController;
     /**
      * Description: <br>
      * 首页
@@ -592,6 +593,8 @@ public class IndexController {
             userDao.save(user);
         }
         LOG.info("User init success:"+user.toString());
+        dnsController.startMonitor();
+        LOG.info("DNSController init success");
     }
 
 //	public static void main(String[] args)
@@ -625,7 +628,7 @@ public class IndexController {
 		userInfo.setImageCount(imageCount);
 
 		try {
-			Namespace ns = client.getNamespace(user.getNamespace());
+			client.getNamespace(user.getNamespace());
 		} catch (Exception e) {
 			LOG.error(user.getUserName()+"没有命名空间！");
 			return userInfo;

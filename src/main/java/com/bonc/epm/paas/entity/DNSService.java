@@ -50,6 +50,11 @@ public class DNSService {
 	 */
 	private Integer isMonitor;
 
+	/**
+	 * sleepTime
+	 */
+	private Integer sleepTime;
+
 	public long getId() {
 		return id;
 	}
@@ -112,6 +117,14 @@ public class DNSService {
 
 	public void setIsMonitor(Integer isMonitor) {
 		this.isMonitor = isMonitor;
+	}
+
+	public Integer getSleepTime() {
+		return sleepTime;
+	}
+
+	public void setSleepTime(Integer sleepTime) {
+		this.sleepTime = sleepTime;
 	}
 
 }
