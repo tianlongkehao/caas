@@ -1036,6 +1036,7 @@ public class ServiceController {
 				if (service.getServiceType().equals("1")) {
 					controller = this.setVolumeStorage(controller, service.getId());
 				}
+				controller = setCephRbd(controller,service.getId());
 				controller = client.createReplicationController(controller);
 			} else {
 				List<com.bonc.epm.paas.kubernetes.model.Container> containers = controller.getSpec().getTemplate()
@@ -2655,6 +2656,16 @@ public class ServiceController {
 		for (com.bonc.epm.paas.kubernetes.model.Container container : containers) {
 			container.setVolumeMounts(volumeMounts);
 		}
+		return controller;
+	}
+
+	/**
+	 * 挂载ceph_rbd
+	 * @param controller
+	 * @param serviceId
+	 * @return
+	 */
+	private ReplicationController setCephRbd(ReplicationController controller, long serviceId){
 		return controller;
 	}
 
