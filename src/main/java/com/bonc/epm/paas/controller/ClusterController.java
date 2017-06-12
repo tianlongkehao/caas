@@ -1119,11 +1119,12 @@ public class ClusterController {
 					nodeInfo.setTeststatus(true);
 					nodeInfo.setNodeTestInfo(nodeTestInfos.get(0));
 				}
-				/*NodeTestInfo nodeTestInfo = nodeInfoDao.findByNodename(node.getMetadata().getName());
-				if (nodeTestInfo==null) {
-					nodeInfo.setTeststatus(true);
-					nodeInfo.setNodeTestInfo(nodeTestInfo);
-				}*/
+				/*
+				 * NodeTestInfo nodeTestInfo =
+				 * nodeInfoDao.findByNodename(node.getMetadata().getName()); if
+				 * (nodeTestInfo==null) { nodeInfo.setTeststatus(true);
+				 * nodeInfo.setNodeTestInfo(nodeTestInfo); }
+				 */
 				nodeInfos.add(nodeInfo);
 			}
 		}
@@ -1132,10 +1133,11 @@ public class ClusterController {
 		if (!CollectionUtils.isEmpty(nodeTestInfos)) {
 			model.addAttribute("testparam", nodeTestInfos.get(0));// 执行过批量测试，则返回测试参数信息
 		}
-		/*NodeTestInfo nodeTestInfo = nodeInfoDao.findByNodename("all");
-		if (null!=nodeTestInfo) {
-			model.addAttribute("testparam", nodeTestInfo);// 执行过批量测试，则返回测试参数信息
-		}*/
+		/*
+		 * NodeTestInfo nodeTestInfo = nodeInfoDao.findByNodename("all"); if
+		 * (null!=nodeTestInfo) { model.addAttribute("testparam",
+		 * nodeTestInfo);// 执行过批量测试，则返回测试参数信息 }
+		 */
 
 		model.addAttribute("nodeList", nodeInfos);// 节点信息list
 		model.addAttribute("menu_flag", "cluster");
@@ -1315,7 +1317,7 @@ public class ClusterController {
 		} catch (Exception e) {
 			// e.printStackTrace();
 			LOG.info("******************************部署失败************************************");
-			//deletePodsForTest();
+			// deletePodsForTest();
 			map.put("msg", "部署失败！");
 			map.put("status", 500);
 			return JSON.toJSONString(map);
@@ -1339,7 +1341,7 @@ public class ClusterController {
 				long end = System.currentTimeMillis();
 				if ((end - start) > 60000) {// 1分钟即为超时
 					LOG.info("******************************部署超时************************************");
-					//deletePodsForTest();
+					// deletePodsForTest();
 					map.put("msg", "部署超时！");
 					map.put("status", 500);
 					return JSON.toJSONString(map);
@@ -1348,7 +1350,7 @@ public class ClusterController {
 
 			} catch (InterruptedException e) {
 				LOG.info("******************************部署失败************************************");
-				//deletePodsForTest();
+				// deletePodsForTest();
 				// e.printStackTrace();
 				map.put("msg", "部署失败！");
 				map.put("status", 500);
@@ -1508,18 +1510,20 @@ public class ClusterController {
 
 	/**
 	 * 删除指定节点的测试记录，测试某节点时，先执行此方法。
+	 *
 	 * @param nodename
 	 */
 	@RequestMapping(value = { "/deleteTestInfo" }, method = RequestMethod.GET)
 	@ResponseBody
-	public void deleteNodeTestInfo(String nodename){
-          nodeInfoDao.deleteByNodename(nodename);
+	public void deleteNodeTestInfo(String nodename) {
+		nodeInfoDao.deleteByNodename(nodename);
 	}
 
 	/**
 	 * 测试ping
 	 *
-	 *   200成功，500失败且有msg返回
+	 * 200成功，500失败且有msg返回
+	 *
 	 * @param nodename
 	 * @param pingIp
 	 * @param pingtime
@@ -1557,18 +1561,18 @@ public class ClusterController {
 			LocalHealthyClient localHealthyClient = new LocalHealthyClient(pod.getStatus().getHostIP(),
 					localservice.getSpec().getPorts().get(0).getNodePort().toString(), new RestFactory());
 
-			/*NodeTestInfo nodeInfo = nodeInfoDao.findByNodename(nodename);
-			if(nodeInfo == null){
-				nodeInfo = new NodeTestInfo();
-				nodeInfo.setNodename(nodename);
-			}*/
+			/*
+			 * NodeTestInfo nodeInfo = nodeInfoDao.findByNodename(nodename);
+			 * if(nodeInfo == null){ nodeInfo = new NodeTestInfo();
+			 * nodeInfo.setNodename(nodename); }
+			 */
 
 			List<NodeTestInfo> nodeInfos = nodeInfoDao.findByNodename(nodeTestInfo.getNodename());
-			NodeTestInfo nodeInfo =null;
-			if(CollectionUtils.isEmpty(nodeInfos)){
+			NodeTestInfo nodeInfo = null;
+			if (CollectionUtils.isEmpty(nodeInfos)) {
 				nodeInfo = new NodeTestInfo();
 				nodeInfo.setNodename(nodeTestInfo.getNodename());
-			}else{
+			} else {
 				nodeInfo = nodeInfos.get(0);
 			}
 
@@ -1603,7 +1607,8 @@ public class ClusterController {
 	/**
 	 * 测试tracepath
 	 *
-	 *   200成功，500失败且有msg返回
+	 * 200成功，500失败且有msg返回
+	 *
 	 * @param nodename
 	 * @param tracepathIp
 	 * @param tracetime
@@ -1641,18 +1646,18 @@ public class ClusterController {
 			LocalHealthyClient localHealthyClient = new LocalHealthyClient(pod.getStatus().getHostIP(),
 					localservice.getSpec().getPorts().get(0).getNodePort().toString(), new RestFactory());
 
-			/*NodeTestInfo nodeInfo = nodeInfoDao.findByNodename(nodename);
-			if(nodeInfo == null){
-				nodeInfo = new NodeTestInfo();
-				nodeInfo.setNodename(nodename);
-			}*/
+			/*
+			 * NodeTestInfo nodeInfo = nodeInfoDao.findByNodename(nodename);
+			 * if(nodeInfo == null){ nodeInfo = new NodeTestInfo();
+			 * nodeInfo.setNodename(nodename); }
+			 */
 
 			List<NodeTestInfo> nodeInfos = nodeInfoDao.findByNodename(nodeTestInfo.getNodename());
-			NodeTestInfo nodeInfo =null;
-			if(CollectionUtils.isEmpty(nodeInfos)){
+			NodeTestInfo nodeInfo = null;
+			if (CollectionUtils.isEmpty(nodeInfos)) {
 				nodeInfo = new NodeTestInfo();
 				nodeInfo.setNodename(nodeTestInfo.getNodename());
-			}else{
+			} else {
 				nodeInfo = nodeInfos.get(0);
 			}
 
@@ -1664,14 +1669,14 @@ public class ClusterController {
 
 			nodeInfo.setTracepathoutmsg(traceresponse.getOutmsg());
 			String tracemsg = traceresponse.getOutmsg();
-			tracemsg = tracemsg.subSequence(tracemsg.indexOf("real"), tracemsg.indexOf("user")).toString()
-					.trim();
+			tracemsg = tracemsg.subSequence(tracemsg.indexOf("real"), tracemsg.indexOf("user")).toString().trim();
 			tracemsg = tracemsg.split("0m")[1].split("s")[0];
 			nodeInfo.setTracetime(Double.parseDouble(tracemsg));
 			if (nodeInfo.getTracepathoutmsg().contains("hops")) {
 				nodeInfo.setTracepass(nodeInfo.getTracetime() <= nodeTestInfo.getTracetimetarget());// trace通过
 			}
-			nodeInfo.setTracepathoutmsg("time (tracepath " + nodeTestInfo.getTraceIp() + " -b)" + "\n" + nodeInfo.getTracepathoutmsg());
+			nodeInfo.setTracepathoutmsg(
+					"time (tracepath " + nodeTestInfo.getTraceIp() + " -b)" + "\n" + nodeInfo.getTracepathoutmsg());
 
 			nodeInfoDao.save(nodeInfo);
 			map.put("nodeInfo", nodeInfo);
@@ -1690,13 +1695,14 @@ public class ClusterController {
 
 	/**
 	 * 指定节点的Curl测试
+	 *
 	 * @param nodename
 	 * @param curltime
 	 * @return
 	 */
 	@RequestMapping(value = { "/testcurl" }, method = RequestMethod.GET)
 	@ResponseBody
-	public String excuteCurl(NodeTestInfo nodeTestInfo){
+	public String excuteCurl(NodeTestInfo nodeTestInfo) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("status", 200);
 		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
@@ -1736,18 +1742,18 @@ public class ClusterController {
 			ClusterHealthyClient clusterHealthyClient = new ClusterHealthyClient(clusterpod.getStatus().getHostIP(),
 					clusterservice.getSpec().getPorts().get(0).getNodePort().toString(), new RestFactory());
 
-			/*NodeTestInfo nodeInfo = nodeInfoDao.findByNodename(nodename);
-			if(nodeInfo == null){
-				nodeInfo = new NodeTestInfo();
-				nodeInfo.setNodename(nodename);
-			}*/
+			/*
+			 * NodeTestInfo nodeInfo = nodeInfoDao.findByNodename(nodename);
+			 * if(nodeInfo == null){ nodeInfo = new NodeTestInfo();
+			 * nodeInfo.setNodename(nodename); }
+			 */
 
 			List<NodeTestInfo> nodeInfos = nodeInfoDao.findByNodename(nodeTestInfo.getNodename());
-			NodeTestInfo nodeInfo =null;
-			if(CollectionUtils.isEmpty(nodeInfos)){
+			NodeTestInfo nodeInfo = null;
+			if (CollectionUtils.isEmpty(nodeInfos)) {
 				nodeInfo = new NodeTestInfo();
 				nodeInfo.setNodename(nodeTestInfo.getNodename());
-			}else{
+			} else {
 				nodeInfo = nodeInfos.get(0);
 			}
 
@@ -1762,8 +1768,8 @@ public class ClusterController {
 			if (!nodeInfo.getCurloutmsg().contains("Failed")) {
 				nodeInfo.setCurlpass(nodeInfo.getCurltime() <= nodeInfo.getCurltimetarget());// curl通过
 			}
-			nodeInfo.setCurloutmsg("curl -s -o /dev/null -w %{time_total}\"\n\" \"http://"
-					+ pod.getStatus().getPodIP() + ":8011\"" + "\n" + nodeInfo.getCurloutmsg());
+			nodeInfo.setCurloutmsg("curl -s -o /dev/null -w %{time_total}\"\n\" \"http://" + pod.getStatus().getPodIP()
+					+ ":8011\"" + "\n" + nodeInfo.getCurloutmsg());
 
 			nodeInfoDao.save(nodeInfo);
 			map.put("nodeInfo", nodeInfo);
@@ -1782,6 +1788,7 @@ public class ClusterController {
 
 	/**
 	 * 测试qperf
+	 *
 	 * @param nodename
 	 * @param speed
 	 * @param latency
@@ -1789,7 +1796,7 @@ public class ClusterController {
 	 */
 	@RequestMapping(value = { "/testqperf" }, method = RequestMethod.GET)
 	@ResponseBody
-	public String excuteQperf(NodeTestInfo nodeTestInfo){
+	public String excuteQperf(NodeTestInfo nodeTestInfo) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("status", 200);
 		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
@@ -1829,18 +1836,18 @@ public class ClusterController {
 			ClusterHealthyClient clusterHealthyClient = new ClusterHealthyClient(clusterpod.getStatus().getHostIP(),
 					clusterservice.getSpec().getPorts().get(0).getNodePort().toString(), new RestFactory());
 
-			/*NodeTestInfo nodeInfo = nodeInfoDao.findByNodename(nodename);
-			if(nodeInfo == null){
-				nodeInfo = new NodeTestInfo();
-				nodeInfo.setNodename(nodename);
-			}*/
+			/*
+			 * NodeTestInfo nodeInfo = nodeInfoDao.findByNodename(nodename);
+			 * if(nodeInfo == null){ nodeInfo = new NodeTestInfo();
+			 * nodeInfo.setNodename(nodename); }
+			 */
 
 			List<NodeTestInfo> nodeInfos = nodeInfoDao.findByNodename(nodeTestInfo.getNodename());
-			NodeTestInfo nodeInfo =null;
-			if(CollectionUtils.isEmpty(nodeInfos)){
+			NodeTestInfo nodeInfo = null;
+			if (CollectionUtils.isEmpty(nodeInfos)) {
 				nodeInfo = new NodeTestInfo();
 				nodeInfo.setNodename(nodeTestInfo.getNodename());
-			}else{
+			} else {
 				nodeInfo = nodeInfos.get(0);
 			}
 
@@ -1899,13 +1906,14 @@ public class ClusterController {
 
 	/**
 	 * 测试指定节点的docker
+	 *
 	 * @param nodename
 	 * @param memory
 	 * @return
 	 */
 	@RequestMapping(value = { "/testdocker" }, method = RequestMethod.GET)
 	@ResponseBody
-    public String excuteDocker(NodeTestInfo nodeTestInfo){
+	public String excuteDocker(NodeTestInfo nodeTestInfo) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("status", 200);
 		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
@@ -1922,15 +1930,16 @@ public class ClusterController {
 			Pod pod = client.getPodOfNamespace("kube-system", nodeTestInfo.getNodename());
 
 			List<NodeTestInfo> nodeInfos = nodeInfoDao.findByNodename(nodeTestInfo.getNodename());
-			NodeTestInfo nodeInfo =null;
-			if(CollectionUtils.isEmpty(nodeInfos)){
+			NodeTestInfo nodeInfo = null;
+			if (CollectionUtils.isEmpty(nodeInfos)) {
 				nodeInfo = new NodeTestInfo();
 				nodeInfo.setNodename(nodeTestInfo.getNodename());
-			}else{
+			} else {
 				nodeInfo = nodeInfos.get(0);
 			}
 
-			DockerClient dockerClient = dockerClientService.getSpecifiedDockerClientInstance(pod.getStatus().getHostIP());
+			DockerClient dockerClient = dockerClientService
+					.getSpecifiedDockerClientInstance(pod.getStatus().getHostIP());
 			InfoCmd infoCmd = dockerClient.infoCmd();
 			Info info = infoCmd.exec();
 
@@ -1949,9 +1958,10 @@ public class ClusterController {
 			nodeInfo.setDockerMetaSpaceUsedTarget(nodeTestInfo.getDockerMetaSpaceUsedTarget());
 			nodeInfo.setDockerPoolBlocksizeTarget(nodeTestInfo.getDockerPoolBlocksizeTarget());
 			nodeInfo.setDockerUdevSyncSupportedTarget(nodeTestInfo.isDockerUdevSyncSupportedTarget());
-			nodeInfo.setDockerDeferredDeletedDeviceCountTarget(nodeTestInfo.getDockerDeferredDeletedDeviceCountTarget());
+			nodeInfo.setDockerDeferredDeletedDeviceCountTarget(
+					nodeTestInfo.getDockerDeferredDeletedDeviceCountTarget());
 
-			Map<String, Object> dockermap = new HashMap<String,Object>();
+			Map<String, Object> dockermap = new HashMap<String, Object>();
 			String dockermsg = "";
 			List<List<String>> list = info.getDriverStatuses();
 			for (List<String> l : list) {
@@ -1963,80 +1973,92 @@ public class ClusterController {
 
 			boolean pass = true;
 
-			//Data Space Total
-            String dockerDataSpaceTotal =dockermap.get("Data Space Total").toString();
-            nodeInfo.setDockerDataSpaceTotal(Math.round((float)ConvertUtil.convertMemoryBy2(dockerDataSpaceTotal)));
-            pass = pass &&  nodeInfo.getDockerDataSpaceTotal()== nodeTestInfo.getDockerDataSpaceTotalTarget();
+			// Data Space Total
+			String dockerDataSpaceTotal = dockermap.get("Data Space Total").toString();
+			nodeInfo.setDockerDataSpaceTotal(Math.round((float) ConvertUtil.convertMemoryBy2(dockerDataSpaceTotal)));
+			pass = pass && nodeInfo.getDockerDataSpaceTotal() == nodeTestInfo.getDockerDataSpaceTotalTarget();
 
-            //Data Space Used
-            String dockerDataSpaceUsed =dockermap.get("Data Space Used").toString();
-            nodeInfo.setDockerDataSpaceUsed(Math.round((float)ConvertUtil.convertMemoryBy2(dockerDataSpaceUsed)));
-            pass = pass &&  nodeInfo.getDockerDataSpaceUsed()== nodeTestInfo.getDockerDataSpaceUsedTarget();
+			// Data Space Used
+			String dockerDataSpaceUsed = dockermap.get("Data Space Used").toString();
+			nodeInfo.setDockerDataSpaceUsed(Math.round((float) ConvertUtil.convertMemoryBy2(dockerDataSpaceUsed)));
+			pass = pass && nodeInfo.getDockerDataSpaceUsed() == nodeTestInfo.getDockerDataSpaceUsedTarget();
 
-            //Data Space Available
-            String dockerDataSpaceAvailable =dockermap.get("Data Space Available").toString();
-            nodeInfo.setDockerDataSpaceAvailable(Math.round((float)ConvertUtil.convertMemoryBy2(dockerDataSpaceAvailable)));
-            pass = pass &&  nodeInfo.getDockerDataSpaceAvailable() == nodeTestInfo.getDockerDataSpaceAvailableTarget();
+			// Data Space Available
+			String dockerDataSpaceAvailable = dockermap.get("Data Space Available").toString();
+			nodeInfo.setDockerDataSpaceAvailable(
+					Math.round((float) ConvertUtil.convertMemoryBy2(dockerDataSpaceAvailable)));
+			pass = pass && nodeInfo.getDockerDataSpaceAvailable() == nodeTestInfo.getDockerDataSpaceAvailableTarget();
 
-            //Metadata Space Used
-            String dockerMetadataSpaceUsed =dockermap.get("Metadata Space Used").toString();
-            nodeInfo.setDockerMetaSpaceUsed(Math.round((float)ConvertUtil.convertMemoryBy2(dockerMetadataSpaceUsed)*1024f));
-            pass = pass &&  nodeInfo.getDockerMetaSpaceUsed() == nodeTestInfo.getDockerMetaSpaceUsedTarget();
+			// Metadata Space Used
+			String dockerMetadataSpaceUsed = dockermap.get("Metadata Space Used").toString();
+			nodeInfo.setDockerMetaSpaceUsed(
+					Math.round((float) ConvertUtil.convertMemoryBy2(dockerMetadataSpaceUsed) * 1024f));
+			pass = pass && nodeInfo.getDockerMetaSpaceUsed() == nodeTestInfo.getDockerMetaSpaceUsedTarget();
 
-            //Metadata Space Total
-            String dockerMetadataSpaceTotal =dockermap.get("Metadata Space Total").toString();
-            nodeInfo.setDockerMetaSpaceTotal(Math.round((float)ConvertUtil.convertMemoryBy2(dockerMetadataSpaceTotal)));
-            pass = pass &&  nodeInfo.getDockerMetaSpaceTotal() == nodeTestInfo.getDockerMetaSpaceTotalTarget();
+			// Metadata Space Total
+			String dockerMetadataSpaceTotal = dockermap.get("Metadata Space Total").toString();
+			nodeInfo.setDockerMetaSpaceTotal(
+					Math.round((float) ConvertUtil.convertMemoryBy2(dockerMetadataSpaceTotal)));
+			pass = pass && nodeInfo.getDockerMetaSpaceTotal() == nodeTestInfo.getDockerMetaSpaceTotalTarget();
 
-            //Metadata Space Available
-            String dockerMetadataSpaceAvailable =dockermap.get("Metadata Space Available").toString();
-            nodeInfo.setDockerMetaSpaceAvailable(Math.round((float)ConvertUtil.convertMemoryBy2(dockerMetadataSpaceAvailable)));
-            pass = pass &&  nodeInfo.getDockerMetaSpaceAvailable() == nodeTestInfo.getDockerMetaSpaceAvailableTarget();
+			// Metadata Space Available
+			String dockerMetadataSpaceAvailable = dockermap.get("Metadata Space Available").toString();
+			nodeInfo.setDockerMetaSpaceAvailable(
+					Math.round((float) ConvertUtil.convertMemoryBy2(dockerMetadataSpaceAvailable)));
+			pass = pass && nodeInfo.getDockerMetaSpaceAvailable() == nodeTestInfo.getDockerMetaSpaceAvailableTarget();
 
-            //Pool Blocksize
-            String dockerPoolBlocksize =dockermap.get("Pool Blocksize").toString();
-            nodeInfo.setDockerPoolBlocksize(Math.round((float)ConvertUtil.convertMemoryBy2(dockerPoolBlocksize)*1024f*1024f));
-            pass = pass &&  nodeInfo.getDockerPoolBlocksize() == nodeTestInfo.getDockerPoolBlocksizeTarget();
+			// Pool Blocksize
+			String dockerPoolBlocksize = dockermap.get("Pool Blocksize").toString();
+			nodeInfo.setDockerPoolBlocksize(
+					Math.round((float) ConvertUtil.convertMemoryBy2(dockerPoolBlocksize) * 1024f * 1024f));
+			pass = pass && nodeInfo.getDockerPoolBlocksize() == nodeTestInfo.getDockerPoolBlocksizeTarget();
 
-            //Base Device Size
-            String dockerBaseDeviceSize =dockermap.get("Base Device Size").toString();
-            nodeInfo.setDockerBaseDeviceSize(Math.round((float)ConvertUtil.convertMemoryBy2(dockerBaseDeviceSize)));
-            pass = pass &&  nodeInfo.getDockerBaseDeviceSize() == nodeTestInfo.getDockerBaseDeviceSizeTarget();
+			// Base Device Size
+			String dockerBaseDeviceSize = dockermap.get("Base Device Size").toString();
+			nodeInfo.setDockerBaseDeviceSize(Math.round((float) ConvertUtil.convertMemoryBy2(dockerBaseDeviceSize)));
+			pass = pass && nodeInfo.getDockerBaseDeviceSize() == nodeTestInfo.getDockerBaseDeviceSizeTarget();
 
-            //Backing Filesystem
-            String dockerBackingFilesystem =dockermap.get("Backing Filesystem").toString();
-            nodeInfo.setDockerBackingFilesystem(dockerBackingFilesystem);
-            pass = pass &&  nodeInfo.getDockerBackingFilesystem().equals(nodeTestInfo.getDockerBackingFilesystemTarget());
+			// Backing Filesystem
+			String dockerBackingFilesystem = dockermap.get("Backing Filesystem").toString();
+			nodeInfo.setDockerBackingFilesystem(dockerBackingFilesystem);
+			pass = pass
+					&& nodeInfo.getDockerBackingFilesystem().equals(nodeTestInfo.getDockerBackingFilesystemTarget());
 
-            //Data file
-            String dockerDatafile =dockermap.get("Data file").toString();
-            nodeInfo.setDockerDatafile(dockerDatafile);
-            pass = pass &&  nodeInfo.getDockerDatafile().equals(nodeTestInfo.getDockerDatafileTarget());
+			// Data file
+			String dockerDatafile = dockermap.get("Data file").toString();
+			nodeInfo.setDockerDatafile(dockerDatafile);
+			pass = pass && nodeInfo.getDockerDatafile().equals(nodeTestInfo.getDockerDatafileTarget());
 
-            //Metadata file
-            String dockerMetadatafile =dockermap.get("Metadata file").toString();
-            nodeInfo.setDockerMetadatafile(dockerMetadatafile);
-            pass = pass &&  nodeInfo.getDockerMetadatafile().equals(nodeTestInfo.getDockerMetadatafileTarget());
+			// Metadata file
+			String dockerMetadatafile = dockermap.get("Metadata file").toString();
+			nodeInfo.setDockerMetadatafile(dockerMetadatafile);
+			pass = pass && nodeInfo.getDockerMetadatafile().equals(nodeTestInfo.getDockerMetadatafileTarget());
 
-            //Udev Sync Supported
-            boolean dockerUdevSyncSupported =Boolean.parseBoolean(dockermap.get("Udev Sync Supported").toString());
-            nodeInfo.setDockerUdevSyncSupported(dockerUdevSyncSupported);
-            pass = pass && nodeInfo.isDockerUdevSyncSupported()&&nodeTestInfo.isDockerUdevSyncSupportedTarget();
+			// Udev Sync Supported
+			boolean dockerUdevSyncSupported = Boolean.parseBoolean(dockermap.get("Udev Sync Supported").toString());
+			nodeInfo.setDockerUdevSyncSupported(dockerUdevSyncSupported);
+			pass = pass && nodeInfo.isDockerUdevSyncSupported() && nodeTestInfo.isDockerUdevSyncSupportedTarget();
 
-            //Deferred Removal Enabled
-            boolean dockerDeferredRemovalEnabled =Boolean.parseBoolean(dockermap.get("Deferred Removal Enabled").toString());
-            nodeInfo.setDockerDeferredRemovalEnable(dockerDeferredRemovalEnabled);
-            pass = pass && nodeInfo.isDockerDeferredRemovalEnable()&&nodeTestInfo.isDockerDeferredRemovalEnableTarget();
+			// Deferred Removal Enabled
+			boolean dockerDeferredRemovalEnabled = Boolean
+					.parseBoolean(dockermap.get("Deferred Removal Enabled").toString());
+			nodeInfo.setDockerDeferredRemovalEnable(dockerDeferredRemovalEnabled);
+			pass = pass && nodeInfo.isDockerDeferredRemovalEnable()
+					&& nodeTestInfo.isDockerDeferredRemovalEnableTarget();
 
-            //Deferred Deletion Enabled
-            boolean dockerDeferredDeletionEnabled =Boolean.parseBoolean(dockermap.get("Deferred Deletion Enabled").toString());
-            nodeInfo.setDocekrDeferredDeletionEnable(dockerDeferredDeletionEnabled);
-            pass = pass && nodeInfo.isDocekrDeferredDeletionEnable()&&nodeTestInfo.isDocekrDeferredDeletionEnableTarget();
+			// Deferred Deletion Enabled
+			boolean dockerDeferredDeletionEnabled = Boolean
+					.parseBoolean(dockermap.get("Deferred Deletion Enabled").toString());
+			nodeInfo.setDocekrDeferredDeletionEnable(dockerDeferredDeletionEnabled);
+			pass = pass && nodeInfo.isDocekrDeferredDeletionEnable()
+					&& nodeTestInfo.isDocekrDeferredDeletionEnableTarget();
 
-            //Deferred Deleted Device Count
-            int dockerDeferredDeletedDeviceCount = Integer.parseInt(dockermap.get("Deferred Deleted Device Count").toString().trim());
-            nodeInfo.setDockerDeferredDeletedDeviceCount(dockerDeferredDeletedDeviceCount);
-            pass = pass && nodeInfo.getDockerDeferredDeletedDeviceCount()==nodeTestInfo.getDockerDeferredDeletedDeviceCountTarget();
+			// Deferred Deleted Device Count
+			int dockerDeferredDeletedDeviceCount = Integer
+					.parseInt(dockermap.get("Deferred Deleted Device Count").toString().trim());
+			nodeInfo.setDockerDeferredDeletedDeviceCount(dockerDeferredDeletedDeviceCount);
+			pass = pass && nodeInfo.getDockerDeferredDeletedDeviceCount() == nodeTestInfo
+					.getDockerDeferredDeletedDeviceCountTarget();
 
 			nodeInfo.setDockerpass(pass);// docker通过
 			nodeInfoDao.save(nodeInfo);
@@ -2052,15 +2074,16 @@ public class ClusterController {
 		}
 
 		return JSON.toJSONString(map);
-    }
+	}
 
 	/**
 	 * 测试dns
+	 *
 	 * @return
 	 */
 	@RequestMapping(value = { "/testdns" }, method = RequestMethod.GET)
 	@ResponseBody
-    public String excuteDns(NodeTestInfo nodeTestInfo){
+	public String excuteDns(NodeTestInfo nodeTestInfo) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("status", 200);
 		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
@@ -2083,18 +2106,18 @@ public class ClusterController {
 			LocalHealthyClient localHealthyClient = new LocalHealthyClient(pod.getStatus().getHostIP(),
 					localservice.getSpec().getPorts().get(0).getNodePort().toString(), new RestFactory());
 
-			/*NodeTestInfo nodeInfo = nodeInfoDao.findByNodename(nodename);
-			if(nodeInfo == null){
-				nodeInfo = new NodeTestInfo();
-				nodeInfo.setNodename(nodename);
-			}*/
+			/*
+			 * NodeTestInfo nodeInfo = nodeInfoDao.findByNodename(nodename);
+			 * if(nodeInfo == null){ nodeInfo = new NodeTestInfo();
+			 * nodeInfo.setNodename(nodename); }
+			 */
 
 			List<NodeTestInfo> nodeInfos = nodeInfoDao.findByNodename(nodeTestInfo.getNodename());
-			NodeTestInfo nodeInfo =null;
-			if(CollectionUtils.isEmpty(nodeInfos)){
+			NodeTestInfo nodeInfo = null;
+			if (CollectionUtils.isEmpty(nodeInfos)) {
 				nodeInfo = new NodeTestInfo();
 				nodeInfo.setNodename(nodeTestInfo.getNodename());
-			}else{
+			} else {
 				nodeInfo = nodeInfos.get(0);
 			}
 
@@ -2104,19 +2127,19 @@ public class ClusterController {
 			nodeInfo.setDns(true);
 			String dnString = masterdnsresponse.getOutmsg();
 			nodeInfo.setMasterdnsoutmsg(dnString);
-			nodeInfo.setMasterdns(dnString.contains("timed out") || dnString.contains("failed")
-					|| dnString.contains("resolved") ? false : true);
-			nodeInfo.setMasterdnsoutmsg(
-					"busybox nslookup localhealthy.kube-system.svc.cluster.local 10.245.100.100" + "\n"
-							+ nodeInfo.getMasterdnsoutmsg());
+			nodeInfo.setMasterdns(
+					dnString.contains("timed out") || dnString.contains("failed") || dnString.contains("resolved")
+							? false : true);
+			nodeInfo.setMasterdnsoutmsg("busybox nslookup localhealthy.kube-system.svc.cluster.local 10.245.100.100"
+					+ "\n" + nodeInfo.getMasterdnsoutmsg());
 			dnString = standbydnsresponse.getOutmsg();
 			nodeInfo.setStandbydnsoutmsg(dnString);
-			nodeInfo.setStandbydns(dnString.contains("timed out") || dnString.contains("failed")
-					|| dnString.contains("resolved") ? false : true);
+			nodeInfo.setStandbydns(
+					dnString.contains("timed out") || dnString.contains("failed") || dnString.contains("resolved")
+							? false : true);
 			nodeInfo.setDnspass(nodeInfo.isMasterdns() && nodeInfo.isStandbydns());
-			nodeInfo.setStandbydnsoutmsg(
-					"busybox nslookup localhealthy.kube-system.svc.cluster.local 10.245.100.101" + "\n"
-							+ nodeInfo.getStandbydnsoutmsg());
+			nodeInfo.setStandbydnsoutmsg("busybox nslookup localhealthy.kube-system.svc.cluster.local 10.245.100.101"
+					+ "\n" + nodeInfo.getStandbydnsoutmsg());
 
 			nodeInfoDao.save(nodeInfo);
 			map.put("nodeInfo", nodeInfo);
@@ -2131,7 +2154,7 @@ public class ClusterController {
 		}
 
 		return JSON.toJSONString(map);
-    }
+	}
 
 	/**
 	 *
@@ -2165,15 +2188,38 @@ public class ClusterController {
 	}
 
 	/**
+	 * 获取执行测试的参数
+	 * @return
+	 */
+	@RequestMapping(value = { "/testparam" }, method = RequestMethod.GET)
+	@ResponseBody
+	public String getTestParam() {
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("status", 200);
+
+		Iterable<NodeTestInfo> iterable = nodeInfoDao.findAll();
+		if (iterable != null) {
+			Iterator<NodeTestInfo> iterator = iterable.iterator();
+			if (iterator.hasNext()) {
+				map.put("testparam", iterator.next());// 执行过批量测试，则返回测试参数信息
+			}
+		} else {
+			map.put("status", 500);
+		}
+
+		return JSON.toJSONString(map);
+	}
+
+	/**
 	 * 得到所有的测试结果
-	 * @return 节点测试结果 status：500  没有测试结果 200 成功
+	 *
+	 * @return 节点测试结果 status：500 没有测试结果 200 成功
 	 */
 	@RequestMapping(value = { "/excutetestResultForAll" }, method = RequestMethod.GET)
 	@ResponseBody
 	public String getClusterTestResultForAllNode() {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("status", 200);
-		String msg = "";
 
 		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
 		NodeList nodes = client.getAllNodes();
@@ -2202,15 +2248,6 @@ public class ClusterController {
 				}
 				nodeInfos.add(nodeInfo);
 			}
-		}
-
-		//List<NodeTestInfo> nodeTestInfos = nodeInfoDao.findByNodename("all");
-		Iterable<NodeTestInfo> iterable = nodeInfoDao.findAll();
-		if(iterable!=null){
-			Iterator<NodeTestInfo> iterator = iterable.iterator();
-			  if(iterator.hasNext()){
-				  map.put("testparam", iterator.next());// 执行过批量测试，则返回测试参数信息
-			  }
 		}
 
 		map.put("nodetestresult", nodeInfos);
