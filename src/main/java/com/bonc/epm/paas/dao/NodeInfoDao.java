@@ -10,7 +10,7 @@ import com.bonc.epm.paas.cluster.entity.NodeTestInfo;
 @Transactional
 public interface NodeInfoDao extends CrudRepository<NodeTestInfo, Long>{
 
-	public List<NodeTestInfo> findById(long id);
+	public NodeTestInfo findById(long id);
 
 	public List<NodeTestInfo> findByNodename(String nodename);
 
