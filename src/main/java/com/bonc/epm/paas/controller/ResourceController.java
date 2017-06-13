@@ -161,9 +161,12 @@ public class ResourceController {
 		ResourceQuotaSpec spec = quota.getSpec();
 		Map<String, String> hard = quota.getSpec().getHard();
 
+		cpu = (cpu + REST_RESOURCE_CPU) / RATIO_LIMITTOREQUESTCPU;
+		double tempMem = 1.0d*(mem + REST_RESOURCE_MEMORY) / RATIO_LIMITTOREQUESTMEMORY;
+
 		// 资源按照系数调整
-		hard.put("memory", 1.0d*(mem + REST_RESOURCE_MEMORY) / RATIO_LIMITTOREQUESTMEMORY + "G"); // 内存
-		hard.put("cpu", (cpu + REST_RESOURCE_CPU) / RATIO_LIMITTOREQUESTCPU + "");// CPU数量
+		hard.put("cpu", cpu + "");// CPU数量
+		hard.put("memory", tempMem + "G"); // 内存
 		spec.setHard(hard);
 		quota.setSpec(spec);
 
