@@ -73,6 +73,16 @@ public class HorizontalPodAutoscalerController {
 		User user = CurrentUserUtils.getInstance().getUser();
 		//判断服务是否存在
 		List<Service> services = serviceDao.findByNameOf(user.getId(), ServiceName);
+		if (targetCPUUtilizationPercentage == null || targetCPUUtilizationPercentage == 0) {
+			//targetCPUUtilizationPercentage为空
+			map.put("status", "403");
+			return JSON.toJSONString(map);
+		}
+		if (minReplicas == null || maxReplicas == 0) {
+			//副本数为空
+			map.put("status", "404");
+			return JSON.toJSONString(map);
+		}
 		if (services.size() != 1) {
 			//找不到该服务
 			map.put("status", "400");
@@ -125,6 +135,16 @@ public class HorizontalPodAutoscalerController {
 		User user = CurrentUserUtils.getInstance().getUser();
 		//判断服务是否存在
 		List<Service> services = serviceDao.findByNameOf(user.getId(), ServiceName);
+		if (targetCPUUtilizationPercentage == null || targetCPUUtilizationPercentage == 0) {
+			//targetCPUUtilizationPercentage为空
+			map.put("status", "403");
+			return JSON.toJSONString(map);
+		}
+		if (minReplicas == null || maxReplicas == 0) {
+			//副本数为空
+			map.put("status", "404");
+			return JSON.toJSONString(map);
+		}
 		if (services.size() != 1) {
 			//找不到该服务
 			map.put("status", "400");
