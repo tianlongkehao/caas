@@ -208,9 +208,9 @@ public class ResourceController {
 				continue;
 			}
 			String quotaCpu = resourceQuota.getSpec().getHard().get("cpu");
-			String quotaMem = resourceQuota.getSpec().getHard().get("memory").replaceAll("G", "").trim();
+			String quotaMem = resourceQuota.getSpec().getHard().get("memory");
 			String usedQuotaCpu = resourceQuota.getStatus().getUsed().get("cpu");
-			String usedQuotaMem = resourceQuota.getStatus().getUsed().get("memory").replaceAll("G", "").trim();
+			String usedQuotaMem = resourceQuota.getStatus().getUsed().get("memory");
 			TenantResource tenantResource = new TenantResource();
 			tenantResource.setId(tenant.getId());
 			tenantResource.setName(tenant.getUserName());
