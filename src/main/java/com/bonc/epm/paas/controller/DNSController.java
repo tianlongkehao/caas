@@ -169,19 +169,24 @@ public class DNSController {
 	 */
 	@RequestMapping(value="/deleteDnsService.do", method=RequestMethod.POST)
 	@ResponseBody
-	public String deleteDnsService(long id) {
+	public String deleteDnsService(String idString) {
 		Map<String, Object> map = new HashMap<>();
 		List<String> messages = new ArrayList<>();
-		DNSService service = dnsServiceDao.findOne(id);
-		// 查找不到的时候返回异常
-		if (service == null) {
-			messages.add("查找监控失败：[id:" + id + "]");
-			LOG.error("查找监控失败：[id:" + id + "]");
-			map.put("status", "400");
-			map.put("messages", messages);
-			return JSON.toJSONString(map);
+
+		List<Long> idList = JSONObject.parseArray(idString, Long.class);
+		for (Long id : idList) {
+			DNSService service = dnsServiceDao.findOne(id);
+			// 查找不到的时候返回异常
+			if (service == null) {
+				messages.add("查找监控失败：[id:" + id + "]");
+				LOG.error("查找监控失败：[id:" + id + "]");
+				map.put("status", "400");
+				map.put("messages", messages);
+				return JSON.toJSONString(map);
+			}
+			dnsServiceDao.delete(service);
 		}
-		dnsServiceDao.delete(service);
+
 		if (CollectionUtils.isEmpty(messages)) {
 			map.put("status", "200");
 		} else {
@@ -378,6 +383,9 @@ public class DNSController {
 							for (DNSService dnsService : dnsServices) {
 								String checkResult = checkDns(pod, dnsService.getAddress());
 								PingResult pingResult = parsePingResult(dnsService.getAddress(), checkResult);
+								if (BooleanUtils.isNotTrue(isMonitorCheck)) {
+									pingResult.setId(dnsService.getId());
+								}
 								pingResultList.add(pingResult);
 							}
 						}
