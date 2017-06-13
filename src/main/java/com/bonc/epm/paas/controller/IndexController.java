@@ -204,7 +204,7 @@ public class IndexController {
 				}
 				Shera shera = sheraDao.findByUserId(id);
 				model.addAttribute("userShera", shera);
-				model.addAttribute("usedstorage", usedstorage / 1024);
+				model.addAttribute("usedstorage", (long)Math.floor(usedstorage / 1024));
 			} else {
 				//获取所有租户的信息
 				List<User> userList = userDao.findAllTenant();
@@ -330,10 +330,8 @@ public class IndexController {
             Map<String, String> hard = quota.getStatus().getHard();
             double totalCpu =ConvertUtil.convertCpu(hard.get("cpu"))*RATIO_LIMITTOREQUESTCPU - REST_RESOURCE_CPU;
             double totalMem =ConvertUtil.convertMemory(hard.get("memory"))*RATIO_LIMITTOREQUESTMEMORY - REST_RESOURCE_MEMORY;
-            totalCpu = Math.floor(totalCpu);
-            totalMem = Math.floor(totalMem);
-            model.addAttribute("servCpuNum", totalCpu); // cpu个数
-            model.addAttribute("servMemoryNum", totalMem);// 内存个数
+            model.addAttribute("servCpuNum", (long)Math.floor(totalCpu)); // cpu个数
+            model.addAttribute("servMemoryNum", (long)Math.floor(totalMem));// 内存个数
             model.addAttribute("servPodNum", hard.get("pods"));// pod个数
             model.addAttribute("servServiceNum", hard.get("services")); // 服务个数
             model.addAttribute("servControllerNum", hard.get("replicationcontrollers"));// 副本控制数
@@ -343,10 +341,8 @@ public class IndexController {
             PodList podList = client.getAllPods();
             double usedCpu = ConvertUtil.convertCpu(used.get("cpu"))*RATIO_LIMITTOREQUESTCPU;
             double usedMem = ConvertUtil.convertMemoryBy2(used.get("memory"))*RATIO_LIMITTOREQUESTMEMORY;
-            usedCpu = Math.floor(usedCpu);
-            usedMem = Math.floor(usedMem);
-            model.addAttribute("usedCpuNum",usedCpu); // 已使用CPU个数
-            model.addAttribute("usedMemoryNum",usedMem);// 已使用内存
+            model.addAttribute("usedCpuNum",(long)Math.floor(usedCpu)); // 已使用CPU个数
+            model.addAttribute("usedMemoryNum",(long)Math.floor(usedMem));// 已使用内存
             model.addAttribute("usedPodNum", (null != podList) ? podList.size() : 0); // 已经使用的POD个数
             model.addAttribute("usedServiceNum", (null !=rcList) ? rcList.size() : 0);// 已经使用的服务个数
             // model.addAttribute("usedControllerNum", usedControllerNum);
