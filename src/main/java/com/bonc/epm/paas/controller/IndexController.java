@@ -594,6 +594,7 @@ public class IndexController {
         }
         LOG.info("User init success:"+user.toString());
         dnsController.startMonitor();
+        dnsController.createDNSMonitor();
         LOG.info("DNSController init success");
     }
 

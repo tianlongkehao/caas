@@ -124,41 +124,41 @@ public class DNSController {
 		return JSON.toJSONString(map);
 	}
 
-	/**
-	 * modifyDnsService:修改DNSService. <br/>
-	 *
-	 * @param dnsService
-	 * @return String
-	 */
-	@RequestMapping(value="/modifyDnsService.do", method=RequestMethod.POST)
-	@ResponseBody
-	public String modifyDnsService(DNSService dnsService) {
-		Map<String, Object> map = new HashMap<>();
-		List<String> messages = new ArrayList<>();
-		User user = CurrentUserUtils.getInstance().getUser();
-		DNSService service = dnsServiceDao.findOne(dnsService.getId());
-		// 查找不到的时候返回异常
-		if (service == null) {
-			messages.add("查找监控失败：[id:" + dnsService.getId() + "]");
-			LOG.error("查找监控失败：[id:" + dnsService.getId() + "]");
-			map.put("status", "400");
-			map.put("messages", messages);
-			return JSON.toJSONString(map);
-		}
-		service.setAddress(dnsService.getAddress());
-		service.setIsMonitor(dnsService.getIsMonitor());
-		service.setCreateBy(user.getId());
-		service.setCreateDate(new Date());
-		service = dnsServiceDao.save(service);
-
-		if (CollectionUtils.isEmpty(messages)) {
-			map.put("status", "200");
-		} else {
-			map.put("status", "400");
-			map.put("messages", messages);
-		}
-		return JSON.toJSONString(map);
-	}
+//	/**
+//	 * modifyDnsService:修改DNSService. <br/>
+//	 *
+//	 * @param dnsService
+//	 * @return String
+//	 */
+//	@RequestMapping(value="/modifyDnsService.do", method=RequestMethod.POST)
+//	@ResponseBody
+//	public String modifyDnsService(DNSService dnsService) {
+//		Map<String, Object> map = new HashMap<>();
+//		List<String> messages = new ArrayList<>();
+//		User user = CurrentUserUtils.getInstance().getUser();
+//		DNSService service = dnsServiceDao.findOne(dnsService.getId());
+//		// 查找不到的时候返回异常
+//		if (service == null) {
+//			messages.add("查找监控失败：[id:" + dnsService.getId() + "]");
+//			LOG.error("查找监控失败：[id:" + dnsService.getId() + "]");
+//			map.put("status", "400");
+//			map.put("messages", messages);
+//			return JSON.toJSONString(map);
+//		}
+//		service.setAddress(dnsService.getAddress());
+//		service.setIsMonitor(dnsService.getIsMonitor());
+//		service.setCreateBy(user.getId());
+//		service.setCreateDate(new Date());
+//		service = dnsServiceDao.save(service);
+//
+//		if (CollectionUtils.isEmpty(messages)) {
+//			map.put("status", "200");
+//		} else {
+//			map.put("status", "400");
+//			map.put("messages", messages);
+//		}
+//		return JSON.toJSONString(map);
+//	}
 
 	/**
 	 * deleteDnsService:删除DNSService. <br/>
@@ -190,24 +190,24 @@ public class DNSController {
 		return JSON.toJSONString(map);
 	}
 
-	/**
-	 * modifySleepTime:修改监控循环的时间. <br/>
-	 *
-	 * @param sleeptime
-	 * @return String
-	 */
-	@RequestMapping(value="/modifySleepTime.do", method=RequestMethod.POST)
-	@ResponseBody
-	public String modifySleepTime(Integer sleeptime) {
-		Map<String, String> map = new HashMap<>();
-		Iterable<DNSService> all = dnsServiceDao.findAll();
-		for (DNSService dnsService2 : all) {
-			dnsService2.setSleepTime(sleeptime);
-		}
-		dnsServiceDao.save(all);
-		map.put("status", "200");
-		return JSON.toJSONString(map);
-	}
+//	/**
+//	 * modifySleepTime:修改监控循环的时间. <br/>
+//	 *
+//	 * @param sleeptime
+//	 * @return String
+//	 */
+//	@RequestMapping(value="/modifySleepTime.do", method=RequestMethod.POST)
+//	@ResponseBody
+//	public String modifySleepTime(Integer sleeptime) {
+//		Map<String, String> map = new HashMap<>();
+//		Iterable<DNSService> all = dnsServiceDao.findAll();
+//		for (DNSService dnsService2 : all) {
+//			dnsService2.setSleepTime(sleeptime);
+//		}
+//		dnsServiceDao.save(all);
+//		map.put("status", "200");
+//		return JSON.toJSONString(map);
+//	}
 
 	/**
 	 * startMonitor:初始化监控. <br/>
@@ -249,15 +249,12 @@ public class DNSController {
 	 *
 	 * @return String
 	 */
-	private String createDNSMonitor() {
+	public String createDNSMonitor() {
 		Map<String, Object> map = new HashMap<>();
 		List<String> messages = new ArrayList<>();
 
 		List<String> command = new ArrayList<>();
-		command.add("sleep");
-
-		List<String> args = new ArrayList<>();
-		args.add("9999999999");
+		command.add("top");
 
 		int nodePort = serviceController.vailPortSet();
 		List<PortConfig> portConfigs = new ArrayList<>();
@@ -269,32 +266,49 @@ public class DNSController {
 
 		KubernetesAPIClientInterface client = kubernetesClientService.getClient(KubernetesClientService.adminNameSpace);
 		// 创建Service
+		Service service = null;
+		try {
+			service = client.getService(DNS_MONITOR_NAME);
+		} catch (KubernetesClientException e1) {
+			service = null;
+		}
 		Service k8sService = kubernetesClientService.generateService(DNS_MONITOR_NAME, portConfigs, null, DNS_MONITOR_NAME,
 				"");
-		try {
-			k8sService = client.createService(k8sService);
-		} catch (KubernetesClientException e) {
-			LOG.error("创建监控失败：[Reason:" + e.getStatus().getReason() + "]");
-			messages.add("创建监控失败：[Reason:" + e.getStatus().getReason() + "]");
-			e.printStackTrace();
-			map.put("status", "400");
-			map.put("messages", messages);
-			return JSON.toJSONString(map);
+		if (service == null) {
+			try {
+				k8sService = client.createService(k8sService);
+			} catch (KubernetesClientException e) {
+				LOG.error("创建监控失败：[Reason:" + e.getStatus().getReason() + "]");
+				messages.add("创建监控失败：[Reason:" + e.getStatus().getReason() + "]");
+				e.printStackTrace();
+				map.put("status", "400");
+				map.put("messages", messages);
+				return JSON.toJSONString(map);
+			}
 		}
+
 		// 创建ReplicationController
-		ReplicationController replicationController = kubernetesClientService.generateSimpleReplicationController(
-				DNS_MONITOR_NAME, 1, null, null, null, MONITOR_IMAGE_NAME, portConfigs, 1.0, "1024.0", null, DNS_MONITOR_NAME,
-				"", new ArrayList<>(), command, args, new ArrayList<>(), false);
+		ReplicationController rc = null;
 		try {
-			replicationController = client.createReplicationController(replicationController);
-		} catch (KubernetesClientException e) {
-			client.deleteService(DNS_MONITOR_NAME);
-			LOG.error("创建监控失败：[Reason:" + e.getStatus().getReason() + "]");
-			messages.add("创建监控失败：[Reason:" + e.getStatus().getReason() + "]");
-			e.printStackTrace();
-			map.put("status", "400");
-			map.put("messages", messages);
-			return JSON.toJSONString(map);
+			rc = client.getReplicationController(DNS_MONITOR_NAME);
+		} catch (KubernetesClientException e1) {
+			rc = null;
+		}
+		if (rc == null) {
+			ReplicationController replicationController = kubernetesClientService.generateSimpleReplicationController(
+					DNS_MONITOR_NAME, 1, null, null, null, MONITOR_IMAGE_NAME, portConfigs, 1.0, "1024.0", null, DNS_MONITOR_NAME,
+					"", new ArrayList<>(), command, null, new ArrayList<>(), false);
+			try {
+				replicationController = client.createReplicationController(replicationController);
+			} catch (KubernetesClientException e) {
+				client.deleteService(DNS_MONITOR_NAME);
+				LOG.error("创建监控失败：[Reason:" + e.getStatus().getReason() + "]");
+				messages.add("创建监控失败：[Reason:" + e.getStatus().getReason() + "]");
+				e.printStackTrace();
+				map.put("status", "400");
+				map.put("messages", messages);
+				return JSON.toJSONString(map);
+			}
 		}
 
 		if (CollectionUtils.isEmpty(messages)) {
@@ -323,7 +337,7 @@ public class DNSController {
 		// 检查是否有地址需要解析
 		List<DNSService> dnsServices = dnsServiceDao.findByIsMonitor(CommConstant.TYPE_YES_VALUE);
 		if (CollectionUtils.isEmpty(dnsServices)) {
-			messages.add("正在创建测试服务，请稍候再试。");
+			messages.add("没有需要检测的服务。");
 			map.put("status", 300);
 			return JSON.toJSONString(map);
 		}
@@ -331,44 +345,46 @@ public class DNSController {
 		// 检查是否已经创建服务
 		KubernetesAPIClientInterface client = kubernetesClientService.getClient(KubernetesClientService.adminNameSpace);
 		Service service = null;
-		try {
-			// 查找对应的监控service 若没有找到则创建服务
-			service = client.getService(DNS_MONITOR_NAME);
-			if (null == service) {
-				createDNSMonitor();
-				messages.add("正在创建测试服务，请稍候再试。");
-				map.put("status", 300);
-				return JSON.toJSONString(map);
-			}
-		} catch (KubernetesClientException e) {
-			e.printStackTrace();
-			createDNSMonitor();
-			messages.add("正在创建测试服务，请稍候再试。");
-			map.put("status", 300);
-			return JSON.toJSONString(map);
-		}
-
-		if (null != service) {
-			Map<String, String> selector = service.getSpec().getSelector();
-			PodList labelSelectorPods;
+		while(true){
 			try {
-				labelSelectorPods = client.getLabelSelectorPods(selector);
+				// 查找对应的监控service 若没有找到则创建服务
+				service = client.getService(DNS_MONITOR_NAME);
+				if (null == service) {
+					createDNSMonitor();
+					continue;
+				}
 			} catch (KubernetesClientException e) {
-				LOG.error(e.getStatus().getReason());
-				messages.add("正在创建测试服务，请稍候再试。");
-				messages.add(e.getStatus().getReason());
-				map.put("status", 300);
-				return JSON.toJSONString(map);
+				createDNSMonitor();
+				continue;
 			}
-			if (null != labelSelectorPods && CollectionUtils.isNotEmpty(labelSelectorPods.getItems())) {
-				for (Pod pod : labelSelectorPods.getItems()) {
-					if (kubernetesClientService.isRunning(pod)) {
-						for (DNSService dnsService : dnsServices) {
-							String checkResult = checkDns(pod, dnsService.getAddress());
-							PingResult pingResult = parsePingResult(dnsService.getAddress(), checkResult);
-							pingResultList.add(pingResult);
+
+			if (null != service) {
+				Map<String, String> selector = service.getSpec().getSelector();
+				PodList labelSelectorPods;
+				try {
+					labelSelectorPods = client.getLabelSelectorPods(selector);
+				} catch (KubernetesClientException e) {
+					continue;
+				}
+				if (null != labelSelectorPods && CollectionUtils.isNotEmpty(labelSelectorPods.getItems())) {
+					for (Pod pod : labelSelectorPods.getItems()) {
+						if (kubernetesClientService.isRunning(pod)) {
+							for (DNSService dnsService : dnsServices) {
+								String checkResult = checkDns(pod, dnsService.getAddress());
+								PingResult pingResult = parsePingResult(dnsService.getAddress(), checkResult);
+								pingResultList.add(pingResult);
+							}
 						}
 					}
+				}
+			}
+			if (CollectionUtils.isNotEmpty(pingResultList)) {
+				break;
+			} else {
+				try {
+					Thread.sleep(5000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
 				}
 			}
 		}
@@ -410,15 +426,68 @@ public class DNSController {
 		pingResult.setPingResult(checkResult);
 		pingResult.setCreateDate(new Date());
 		pingResult.setCreateBy(1);
-		if (checkResult.contains("Address 1: ") && !checkResult.contains("can't resolve")) {
-			int addressIndex = checkResult.lastIndexOf("Address 1: ");
-			pingResult.setIp(checkResult.substring(addressIndex + 11).replace("\n", ""));
-			pingResult.setSuccess(true);
-		} else {
-			pingResult.setSuccess(false);
+		String[] resultList = checkResult.split("\n");
+		for (int i = 0; i < resultList.length; i++) {
+			if (resultList[i].contains(address) && i+1 < resultList.length) {
+				if (resultList[i+1].contains("Address 1: ")) {
+					int addressIndex = resultList[i+1].lastIndexOf("Address 1: ");
+					pingResult.setIp(resultList[i+1].substring(addressIndex + 11).replace("\n", ""));
+				}
+				break;
+			}
 		}
 		return pingResult;
 	}
 
+	/**
+	 * modifyDnsMonitorConfig:修改勾选的地址和时间间隔. <br/>
+	 *
+	 * @param addressString
+	 * @param sleepTime
+	 * @return String
+	 */
+	@RequestMapping(value="/modifyDnsMonitorConfig.do", method=RequestMethod.POST)
+	@ResponseBody
+	public String modifyDnsMonitorConfig(String addressString, Integer sleepTime) {
+		Map<String, Object> map = new HashMap<>();
+		List<String> messages = new ArrayList<>();
+		map.put("messages", messages);
+		if (addressString == null || sleepTime == null) {
+			messages.add("参数不能为空。");
+			map.put("status", "300");
+			return JSON.toJSONString(map);
+		}
+		List<String> addressList = JSONObject.parseArray(addressString, String.class);
+		if (addressList.size() > 5) {
+			messages.add("最多只能检查五个地址。");
+			map.put("status", "301");
+			return JSON.toJSONString(map);
+		}
+		Iterable<DNSService> all = dnsServiceDao.findAll();
+		Iterator<DNSService> iterator = all.iterator();
+		while (iterator.hasNext()) {
+			DNSService dnsService = iterator.next();
+			if (addressList.contains(dnsService.getAddress())) {
+				dnsService.setIsMonitor(CommConstant.TYPE_YES_VALUE);
+			} else {
+				dnsService.setIsMonitor(CommConstant.TYPE_NO_VALUE);
+			}
+			dnsService.setSleepTime(sleepTime);
+			dnsServiceDao.save(dnsService);
+		}
+		map.put("status", "200");
+		return JSON.toJSONString(map);
+	}
 
+	/**
+	 * getMonitorLog:获取监控日志. <br/>
+	 *
+	 * @return String
+	 */
+	@RequestMapping(value="/getMonitorLog.do", method=RequestMethod.GET)
+	@ResponseBody
+	public String getMonitorLog() {
+		Iterable<PingResult> all = pingResultDao.findAllOrderByCreateDate();
+		return JSON.toJSONString(all);
+	}
 }
