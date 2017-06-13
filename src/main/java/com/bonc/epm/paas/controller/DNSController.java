@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -217,7 +218,7 @@ public class DNSController {
 		new Thread() {
 			public void run() {
 				while (true) {
-					String checkDnsResult = getCheckDnsResult();
+					String checkDnsResult = getCheckDnsResult(true);
 					JSONObject parseObject = JSONObject.parseObject(checkDnsResult);
 					if (parseObject.get("status").equals("200")) {
 						List<PingResult> pingResults = JSONObject
@@ -327,7 +328,7 @@ public class DNSController {
 	 */
 	@RequestMapping(value="getCheckDnsResult.do", method=RequestMethod.GET)
 	@ResponseBody
-	private String getCheckDnsResult() {
+	private String getCheckDnsResult(Boolean isMonitorCheck) {
 		Map<String, Object> map = new HashMap<>();
 		List<String> messages = new ArrayList<>();
 		List<PingResult> pingResultList = new ArrayList<>();
@@ -335,7 +336,12 @@ public class DNSController {
 		map.put("pingResultList", pingResultList);
 
 		// 检查是否有地址需要解析
-		List<DNSService> dnsServices = dnsServiceDao.findByIsMonitor(CommConstant.TYPE_YES_VALUE);
+		List<DNSService> dnsServices = null;
+		if (BooleanUtils.isTrue(isMonitorCheck)) {
+			dnsServices = dnsServiceDao.findByIsMonitor(CommConstant.TYPE_YES_VALUE);
+		} else {
+			dnsServices = (List<DNSService>) dnsServiceDao.findAll();
+		}
 		if (CollectionUtils.isEmpty(dnsServices)) {
 			messages.add("没有需要检测的服务。");
 			map.put("status", 300);
@@ -490,7 +496,7 @@ public class DNSController {
 		Iterable<PingResult> all = pingResultDao.findAllOrderByCreateDate();
 		return JSON.toJSONString(all);
 	}
-	
+
 	/**
 	 * getAllDnsService:获取所有的监控域名. <br/>
 	 *
