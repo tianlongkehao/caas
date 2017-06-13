@@ -9,6 +9,7 @@ import com.bonc.epm.paas.entity.Service;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
 import com.bonc.epm.paas.kubernetes.model.ResourceQuota;
+import com.bonc.epm.paas.util.ConvertUtil;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 
 @org.springframework.stereotype.Service
@@ -60,8 +61,8 @@ public class ResourceService {
 				long hard = kubernetesClientService.transMemory(quota.getStatus().getHard().get("memory"));
 				long used = kubernetesClientService.transMemory(quota.getStatus().getUsed().get("memory"));
 
-				double leftCpu = kubernetesClientService.transCpu(quota.getStatus().getHard().get("cpu"))
-						- kubernetesClientService.transCpu(quota.getStatus().getUsed().get("cpu"));
+				double leftCpu = ConvertUtil.convertCpu(quota.getStatus().getHard().get("cpu"))
+						- ConvertUtil.convertCpu(quota.getStatus().getUsed().get("cpu"));
 
 				long leftmemory = hard - used;
 

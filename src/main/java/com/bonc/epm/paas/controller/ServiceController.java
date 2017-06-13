@@ -100,6 +100,7 @@ import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
 import com.bonc.epm.paas.shera.api.SheraAPIClientInterface;
 import com.bonc.epm.paas.shera.model.ChangeGit;
 import com.bonc.epm.paas.shera.util.SheraClientService;
+import com.bonc.epm.paas.util.ConvertUtil;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 import com.bonc.epm.paas.util.PoiUtils;
 import com.bonc.epm.paas.util.RandomString;
@@ -854,8 +855,8 @@ public class ServiceController {
 				long hard = kubernetesClientService.transMemory(quota.getStatus().getHard().get("memory"));
 				long used = kubernetesClientService.transMemory(quota.getStatus().getUsed().get("memory"));
 
-				double leftCpu = kubernetesClientService.transCpu(quota.getStatus().getHard().get("cpu"))
-						- kubernetesClientService.transCpu(quota.getStatus().getUsed().get("cpu"));
+				double leftCpu = ConvertUtil.convertCpu(quota.getStatus().getHard().get("cpu"))
+						- ConvertUtil.convertCpu(quota.getStatus().getUsed().get("cpu"));
 
 				long leftmemory = hard - used;
 

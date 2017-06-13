@@ -1,7 +1,5 @@
 package com.bonc.epm.paas.util;
 
-import java.util.Map;
-
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -11,30 +9,6 @@ import org.apache.commons.lang.StringUtils;
  *
  */
 public class ConvertUtil {
-
-	public static String computeCpuOut(Map<String, String> val) {
-		String cpuVal = val.get("cpu");
-		if (cpuVal.contains("m")) {
-			Float a1 = Float.valueOf(cpuVal.replace("m", "")) / 1000;
-			return a1.toString();
-		} else {
-			return cpuVal;
-		}
-	}
-
-	public static String computeMemoryOut(Map<String, String> val) {
-		String memVal = val.get("memory");
-		memVal = memVal.replaceAll("i", "");
-		if (memVal.contains("K")) {
-			Float a1 = Float.valueOf(memVal.replace("K", "")) / 1000 / 1000;
-			return a1.toString();
-		} else if (memVal.contains("M")) {
-			Float a1 = Float.valueOf(memVal.replace("M", "")) / 1000;
-			return a1.toString();
-		} else {
-			return memVal.replace("G", "");
-		}
-	}
 
 	public static double convertCpu(String cpu) {
 		if (StringUtils.isEmpty(cpu)) {
@@ -51,30 +25,43 @@ public class ConvertUtil {
 	}
 
 	/**
-	 * k8s内的进制为1000
+	 * 单位为G
+	 * 进制为1000
 	 * @param memory
 	 * @return double
 	 */
 	public static double convertMemory(String memory) {
-		if (StringUtils.isEmpty(memory)) {
-			return 0d;
-		}
-		memory = memory.replaceAll("i", "");
 		double ret;
-		if (memory.contains("K")) {
-			ret = Double.parseDouble(memory.replace("K", "")) / 1000d / 1000d;
-		} else if (memory.contains("M")) {
-			ret = Double.parseDouble(memory.replace("M", "")) / 1000d;
-		} else {
-			ret = Double.parseDouble(memory.replace("G", ""));
+		try {
+			ret = Double.parseDouble(memory);
+			return ret;
+		} catch (NumberFormatException e) {
+			ret = parseMemory(memory);
+			ret = ret * Math.pow(10, -9);
+			return ret;
 		}
-
-		return ret;
 	}
 
 	/**
+	 * 单位为G
+	 * 进制为1024
+	 * @param memory
+	 * @return
+	 */
+	public static double convertMemoryBy2(String memory) {
+		double ret;
+		try {
+			ret = Double.parseDouble(memory);
+			return ret;
+		} catch (NumberFormatException e) {
+			ret = parseMemory(memory);
+			ret = ret / Math.pow(2, 30);
+			return ret;
+		}
+	}
+	/**
 	 * convertMemory:转换内存值字符串为无单位数值. <br/>
-	 *
+	 * 单位为字节
 	 * @param memory
 	 * @return double
 	 */
@@ -82,7 +69,6 @@ public class ConvertUtil {
 		if (StringUtils.isEmpty(memory)) {
 			return 0d;
 		}
-		memory = memory.replaceAll("i", "");
 		double ret;
 		if (memory.endsWith("n")) {
 			ret = Double.parseDouble(memory.replace("n", "")) * Math.pow(10, -9);
@@ -116,6 +102,20 @@ public class ConvertUtil {
 			ret = Double.parseDouble(memory.replace("Pi", "")) * Math.pow(2, 50);
 		} else if (memory.endsWith("Ei")) {
 			ret = Double.parseDouble(memory.replace("Ei", "")) * Math.pow(2, 60);
+		} else if (memory.endsWith("kB")) {
+			ret = Double.parseDouble(memory.replace("kB", "")) * Math.pow(2, 10);
+		} else if (memory.endsWith("KB")) {
+			ret = Double.parseDouble(memory.replace("KB", "")) * Math.pow(2, 10);
+		} else if (memory.endsWith("MB")) {
+			ret = Double.parseDouble(memory.replace("MB", "")) * Math.pow(2, 20);
+		} else if (memory.endsWith("GB")) {
+			ret = Double.parseDouble(memory.replace("GB", "")) * Math.pow(2, 30);
+		} else if (memory.endsWith("TB")) {
+			ret = Double.parseDouble(memory.replace("TB", "")) * Math.pow(2, 40);
+		} else if (memory.endsWith("PB")) {
+			ret = Double.parseDouble(memory.replace("PB", "")) * Math.pow(2, 50);
+		} else if (memory.endsWith("EB")) {
+			ret = Double.parseDouble(memory.replace("EB", "")) * Math.pow(2, 60);
 		} else {
 			ret = Double.parseDouble(memory);
 		}
