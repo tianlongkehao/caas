@@ -561,6 +561,17 @@ public class ClusterController {
 			List<CatalogResource> yValue = new ArrayList<CatalogResource>();
 			yValue.add(influxdbSearchService.generateYValueOfCluster(influxDB, timePeriod));
 			yValue.add(influxdbSearchService.generateYValueOfMinmon(influxDB, timePeriod));
+			for (CatalogResource catalogResource : yValue) {
+				for (DetailResource detailResource : catalogResource.getVal()) {
+					for (Collectivity collectivity : detailResource.getVal()) {
+						for (DetailInfo detailInfo : collectivity.getVal()) {
+							if (detailInfo.getyAxis().size() > xValue.size()) {
+								detailInfo.getyAxis().remove(0);
+							}
+						}
+					}
+				}
+			}
 			clusterResources.setyValue(yValue);
 		} catch (Exception e) {
 			LOG.error("get cluster monitor data failed. error message:-" + e.getMessage());

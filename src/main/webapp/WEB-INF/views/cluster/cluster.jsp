@@ -85,7 +85,9 @@
     var colorData = ['#7EB26D', '#EAB839', '#6ED0E0', '#61a0a8', '#749f83', '#ca8622', '#bda29a', '#2f4554', '#d48265', '#00bfff', '#61a0a8', '#61a0a8', '#749f83', '#91c7ae', '#6e7074'];
     var fourPart = [];
     var eachPart = [];
-    
+    var loading = layer.load(0, {
+		shade : [ 0.3, '#000' ]
+	});
     //默认监控5分钟
     getClusterMonitor("5m");
     
@@ -94,6 +96,7 @@
         $.ajax({
             url: ctx + "/cluster/getClusterMonitor?timePeriod=" + timePeriod,
             success: function (data) {
+            	layer.closeAll();
                 createChart($.parseJSON(data));
             }
         })
@@ -122,6 +125,9 @@
 
     //时间筛选
     function searchTime() {
+    	var loading = layer.load(0, {
+    		shade : [ 0.3, '#000' ]
+    	});
         removePod();
         var time0val = $("#search_time")[0].value;
         getClusterMonitor(time0val);
