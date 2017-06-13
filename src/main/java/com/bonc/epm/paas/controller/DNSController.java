@@ -490,4 +490,16 @@ public class DNSController {
 		Iterable<PingResult> all = pingResultDao.findAllOrderByCreateDate();
 		return JSON.toJSONString(all);
 	}
+	
+	/**
+	 * getAllDnsService:获取所有的监控域名. <br/>
+	 *
+	 * @return String
+	 */
+	@RequestMapping(value="/getAllDnsService.do", method=RequestMethod.GET)
+	@ResponseBody
+	public String getAllDnsService() {
+		Iterable<DNSService> all = dnsServiceDao.findAll();
+		return JSON.toJSONString(all);
+	}
 }
