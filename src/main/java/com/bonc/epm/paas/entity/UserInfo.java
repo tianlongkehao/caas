@@ -2,6 +2,8 @@ package com.bonc.epm.paas.entity;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.bonc.epm.paas.util.ConvertUtil;
+
 public class UserInfo {
 	UserResource userResource;
 	User user;
@@ -168,14 +170,14 @@ public class UserInfo {
 	}
 	public float getRestCpuNum() {
 		try {
-			return (float)(Math.round(servCpuNum - usedCpuNum)*100)/100;
+			return (float)(Math.round((servCpuNum - usedCpuNum)*100))/100;
 		} catch (Exception e) {
 			return 0;
 		}
 	}
 	public double getRestMemoryNum() {
 		try {
-			return Double.parseDouble(servMemoryNum) - usedMemoryNum;
+			return (double)(Math.round((ConvertUtil.convertMemory(servMemoryNum) - usedMemoryNum)*100))/100;
 		} catch (Exception e) {
 			return 0;
 		}

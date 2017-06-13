@@ -329,44 +329,21 @@ $(document).ready(function(){
 		layer.open({
 			type : 1,
 			title : '添加认证',
-			area: ['500px'],
 			content : $("#addCredentialsCon"),
+			area: ['500px'],
 			btn : [ '添加', '取消' ],
 			scrollbar:false,
 			yes:function(index, layero){
+				if (!judgeCredData()) {
+					return;
+				}
 				var type = $("#CredentialsType").val();
 				var codeType = $("#codeType").val();
 				var username = $("#userNameCred").val();
 				var password = $("#passwordCred").val();
-				var privateKey = $("#SSHpasswordCred").val();
+				var privateKey = $("#privateKey").val();
 				var remark = $("#keyRemark").val();
-				if (!username || username.length < 1) {
-			    	layer.tips('用户名不能为空','#userNameCred',{tips:[1,'#3595CC']});
-			    	$("#userNameCred").focus();
-			    	return;
-				}
-				var code = "";
-				if (type == 1 ) {
-					code = "HTTP";
-					if (!password || password.length < 1) {
-				    	layer.tips('密码不能为空','#passwordCred',{tips:[1,'#3595CC']});
-				    	$("#passwordCred").focus();
-				    	return;
-					}
-				}
-				if (type == 2 ) {
-					code = "SSH";
-					if (!privateKey || privateKey.length < 1) {
-						layer.tips('密钥不能为空','#SSHpasswordCred',{tips:[1,'#3595CC']});
-						$("#SSHpasswordCred").focus();
-						return;
-					}
-				}
-				if (!remark || remark.length < 1) {
-			    	layer.tips('描述信息不能为空','#keyRemark',{tips:[1,'#3595CC']});
-			    	$("#keyRemark").focus();
-			    	return;
-				}
+				var code = type==1?"HTTP":"SSH";
 				$.ajax({
 					url : ctx + "/secret/addCredential.do",
 					data : {
@@ -380,19 +357,102 @@ $(document).ready(function(){
 					success : function(data) {
 						data = eval("(" + data + ")");
 						if (data.status == "200") {
-							var html = "<option value='"+data.id+"'>"+username +" ("+code+") ("+remark+")"+"</option>";
-							$("#codeCredentials").append(html);
-							layer.alert("代码认证导入成功");
-							layer.close(index);
+							if(type == 2){
+								$("#sshPassword").val(data.sshKey);
+								layer.open({
+									type : 1,
+									title : 'ssh密钥',
+									content : $("#sshPwdInfo"),
+									area : ['500px'],
+									btn : ['确认'],
+									scrollbar : false,
+									yes : function(index, layero) {
+										var html = "<option value='"+data.id+"'>"+username +" ("+code+") ("+remark+")"+"</option>";
+										$("#codeCredentials").append(html);
+										layer.closeAll();
+									}
+								});
+							} else {
+								var html = "<option value='"+data.id+"'>"+username +" ("+code+") ("+remark+")"+"</option>";
+								$("#codeCredentials").append(html);
+								layer.closeAll();
+							}
 						} else {
 							layer.alert("代码认证导入失败");
 						}
 					}
 				});
 			}
-
 		});
 	});
+//	$(document).on('click','#addCredentialsBtn',function(){
+//		layer.open({
+//			type : 1,
+//			title : '添加认证',
+//			area: ['500px'],
+//			content : $("#addCredentialsCon"),
+//			btn : [ '添加', '取消' ],
+//			scrollbar:false,
+//			yes:function(index, layero){
+//				var type = $("#CredentialsType").val();
+//				var codeType = $("#codeType").val();
+//				var username = $("#userNameCred").val();
+//				var password = $("#passwordCred").val();
+//
+//				var remark = $("#keyRemark").val();
+//				if (!username || username.length < 1) {
+//			    	layer.tips('用户名不能为空','#userNameCred',{tips:[1,'#3595CC']});
+//			    	$("#userNameCred").focus();
+//			    	return;
+//				}
+//				var code = "";
+//				if (type == 1 ) {
+//					code = "HTTP";
+//					if (!password || password.length < 1) {
+//				    	layer.tips('密码不能为空','#passwordCred',{tips:[1,'#3595CC']});
+//				    	$("#passwordCred").focus();
+//				    	return;
+//					}
+//				}
+//				if (type == 2 ) {
+//					code = "SSH";
+//					if (!privateKey || privateKey.length < 1) {
+//						layer.tips('密钥不能为空','#SSHpasswordCred',{tips:[1,'#3595CC']});
+//						$("#SSHpasswordCred").focus();
+//						return;
+//					}
+//				}
+//				if (!remark || remark.length < 1) {
+//			    	layer.tips('描述信息不能为空','#keyRemark',{tips:[1,'#3595CC']});
+//			    	$("#keyRemark").focus();
+//			    	return;
+//				}
+//				$.ajax({
+//					url : ctx + "/secret/addCredential.do",
+//					data : {
+//						"type" : type,
+//						"codeType" : codeType,
+//						"userName" : username,
+//						"password" : password,
+//						"privateKey" : privateKey,
+//						"remark" : remark
+//					},
+//					success : function(data) {
+//						data = eval("(" + data + ")");
+//						if (data.status == "200") {
+//							var html = "<option value='"+data.id+"'>"+username +" ("+code+") ("+remark+")"+"</option>";
+//							$("#codeCredentials").append(html);
+//							layer.alert("代码认证导入成功");
+//							layer.close(index);
+//						} else {
+//							layer.alert("代码认证导入失败");
+//						}
+//					}
+//				});
+//			}
+//
+//		});
+//	});
 	//选择认证类型
 	$(".ssh").hide();
 	$(document).on('change','#CredentialsType',function(){
@@ -1603,14 +1663,49 @@ function checkQuickCiAdd() {
 
 //加载工具集的勾选项
 function loadCiToolsChecked(){
-	var ciToolsVal = $("#ciToolsCheckedVal").val();
-	var ciTools = ciToolsVal.split(",");
-	var toolChkInput = $(".toolChk");
-	toolChkInput.prop("checked") == true;
-	//toolChkInput.attr("checked",false);
-	for(var i=0; i<ciTools.length; i++){
-		$("#"+ciTools[i].replace(/\//g, '\\/')).prop("checked",true);
-
+	if($("#ciToolsCheckedVal").val()){
+		var ciToolsVal = $("#ciToolsCheckedVal").val();
+		var ciTools = ciToolsVal.split(",");
+		var toolChkInput = $(".toolChk");
+		toolChkInput.prop("checked") == true;
+		//toolChkInput.attr("checked",false);
+		for(var i=0; i<ciTools.length; i++){
+			$("#"+ciTools[i].replace(/\//g, '\\/')).prop("checked",true);
+		}
 	}
 }
 
+//数据格式判断
+function judgeCredData(){
+	var type = $("#CredentialsType").val();
+	var username = $("#userNameCred").val();
+	var password = $("#passwordCred").val();
+	var remark = $("#keyRemark").val();
+	if (!username || username.length < 1) {
+		layer.tips('用户名不能为空','#userNameCred',{tips:[1,'#3595CC']});
+		$("#userNameCred").focus();
+		return;
+	}
+	var code = "";
+	if (type == 1 ) {
+		code = "HTTP";
+		if (!password || password.length < 1) {
+			layer.tips('密码不能为空','#passwordCred',{tips:[1,'#3595CC']});
+			$("#passwordCred").focus();
+			return;
+		}
+	}
+	if (!remark || remark.length < 1) {
+		layer.tips('描述信息不能为空','#keyRemark',{tips:[1,'#3595CC']});
+		$("#keyRemark").focus();
+		return;
+	}
+	return true;
+}
+
+//复制密钥按钮
+function copySshPwd(){
+	var sshPassword=document.getElementById("sshPassword");
+	sshPassword.select(); // 选择对象
+	document.execCommand("Copy"); // 执行浏览器复制命令
+}

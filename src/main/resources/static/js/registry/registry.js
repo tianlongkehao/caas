@@ -209,7 +209,7 @@ function findImages(){
 	                    {
 	                    	data : null ,
 	                    	render : function ( data, type, row ) {
-	                    		var html = '<a href="'+ctx+'/registry/detail/'+row.id+'" title="查看详细信息" >'+row.name+'</a>';
+	                    		var html = '<a class="link" href="'+ctx+'/registry/detail/'+row.id+'" title="查看详细信息" >'+row.name+'</a>';
 	                    		return html;
 	                    	}
 	                    },
@@ -318,7 +318,7 @@ function findImagesNoSonar(){
 	                    {
 	                    	data : null ,
 	                    	render : function ( data, type, row ) {
-	                    		var html = '<a href="'+ctx+'/registry/detail/'+row.id+'" title="查看详细信息" >'+row.name+'</a>';
+	                    		var html = '<a class="link" href="'+ctx+'/registry/detail/'+row.id+'" title="查看详细信息" >'+row.name+'</a>';
 	                    		return html;
 	                    	}
 	                    },

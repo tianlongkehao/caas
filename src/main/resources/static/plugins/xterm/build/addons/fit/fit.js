@@ -47,6 +47,7 @@
     exports.fit = function (term) {
         var geometry = exports.proposeGeometry(term);
         term.resize(geometry.cols, geometry.rows);
+        term._setSize(geometry.cols, geometry.rows);
     };
     Xterm.prototype.proposeGeometry = function () {
         return exports.proposeGeometry(this);

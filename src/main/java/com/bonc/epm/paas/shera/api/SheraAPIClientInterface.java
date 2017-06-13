@@ -11,11 +11,14 @@
 
 package com.bonc.epm.paas.shera.api;
 
+import java.util.List;
+
 import com.bonc.epm.paas.shera.exceptions.SheraClientException;
 import com.bonc.epm.paas.shera.model.ChangeGit;
 import com.bonc.epm.paas.shera.model.CredentialCheckEntity;
 import com.bonc.epm.paas.shera.model.CredentialKey;
 import com.bonc.epm.paas.shera.model.CredentialKeyList;
+import com.bonc.epm.paas.shera.model.ExecConfig;
 import com.bonc.epm.paas.shera.model.GitCredential;
 import com.bonc.epm.paas.shera.model.Jdk;
 import com.bonc.epm.paas.shera.model.JdkList;
@@ -27,6 +30,8 @@ import com.bonc.epm.paas.shera.model.JobExecViewList;
 import com.bonc.epm.paas.shera.model.Log;
 import com.bonc.epm.paas.shera.model.Rating;
 import com.bonc.epm.paas.shera.model.SonarConfig;
+import com.bonc.epm.paas.shera.model.SshConfig;
+import com.bonc.epm.paas.shera.model.SshKey;
 
 /**
  * @author ke_wang
@@ -110,6 +115,7 @@ public interface SheraAPIClientInterface {
 
 	public Jdk createJdk(Jdk jdk) throws SheraClientException;
 
+	/* Sonar API */
 	public SonarConfig createSonarConfig(SonarConfig sonarConfig) throws SheraClientException;
 
 	public SonarConfig updateSonarConfig(SonarConfig sonarConfig) throws SheraClientException;
@@ -119,4 +125,28 @@ public interface SheraAPIClientInterface {
 	public Rating getJobRating(String projectKey) throws SheraClientException;
 
 	public Rating deleteJobRating(String projectKey) throws SheraClientException;
+
+	/* exec config API */
+	public ExecConfig createExecConfig(ExecConfig execConfig) throws SheraClientException;
+
+	public void deleteExecConfig(String userid, Integer kindid) throws SheraClientException;
+
+	public void deleteExecConfig(String key) throws SheraClientException;
+
+	public List<ExecConfig> getExecConfig(Integer kindid) throws SheraClientException;
+
+	/* ssh key API */
+	public SshKey createSshKey(SshKey sshKey) throws SheraClientException;
+
+	public void deleteSshKey(String userid) throws SheraClientException;
+
+	public SshKey getSshKey(String userid) throws SheraClientException;
+
+	/* ssh config API */
+	public SshConfig createSshConfig(SshConfig sshConfig) throws SheraClientException;
+
+	public void deleteSshConfig(String userid) throws SheraClientException;
+
+	public SshConfig getSshConfig(String userid) throws SheraClientException;
+
 }

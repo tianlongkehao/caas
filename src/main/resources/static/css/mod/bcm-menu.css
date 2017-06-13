@@ -78,19 +78,26 @@ nav.navbar-default{
     line-height: 76px;
 }
 .helpDoc input{
-	background-color: #fff;
-    /* color: #e8504f; */
+	background-color: #e8504f;
+    color: #fff;
     font-weight: bolder;
     outline:none;
+    outline:0;
+}
+/* .helpDoc input:visited{
+	border-color: #e8504f;
+	color: #fff;
+	outline:none;
 }
 .helpDoc input:hover{
-	/* border-color: #e8504f; */
+	border-color: #e32b2b;
 	outline:none;
-}
-.helpDoc input:visited{
-	/* border-color: #e8504f; */
-	outline:none;
-}
+}*/
+.helpDoc input:active,
+.helpDoc input.active{
+	color: #fff;
+	outline:0;
+} 
 .nav-bcm{
 	text-align: center;
 	/* background-color: #e14344; */
@@ -147,7 +154,7 @@ nav.navbar-default{
 #nav-side{
 	height:100%; 
 	/* overflow-y: auto; */
-	height: calc(100% - 90px);
+	height: calc(100% - 150px);
     /* overflow-x: hidden; */
 }
 
@@ -349,6 +356,18 @@ i.fa-nav{
 #menu_log.active a i.fa-nav-log{
 	background: url(../../images/bg-nav2.png) no-repeat;
 	background-position: 0 -163px;
+}
+#menu_storage a i.fa-nav-storage{
+	background: url(../../images/bg-nav1.png) no-repeat;
+	background-position: 0 -182px;
+}
+#menu_storage a:hover i.fa-nav-storage{
+	background: url(../../images/bg-nav2.png) no-repeat;
+	background-position: 0 -183px;
+}
+#menu_storage.active a i.fa-nav-storage{
+	background: url(../../images/bg-nav2.png) no-repeat;
+	background-position: 0 -183px;
 }
 
 

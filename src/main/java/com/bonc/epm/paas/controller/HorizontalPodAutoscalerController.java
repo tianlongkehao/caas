@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.aspectj.weaver.patterns.ThisOrTargetAnnotationPointcut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,9 +14,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
+import com.bonc.epm.paas.constant.ServiceConstant;
 import com.bonc.epm.paas.dao.ServiceDao;
 import com.bonc.epm.paas.entity.Service;
 import com.bonc.epm.paas.entity.User;
+import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
 import com.bonc.epm.paas.kubernetes.apis.KubernetesAPISClientInterface;
 import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
 import com.bonc.epm.paas.kubernetes.model.HorizontalPodAutoscaler;
@@ -68,9 +69,24 @@ public class HorizontalPodAutoscalerController {
 		User user = CurrentUserUtils.getInstance().getUser();
 		//判断服务是否存在
 		List<Service> services = serviceDao.findByNameOf(user.getId(), ServiceName);
+		if (targetCPUUtilizationPercentage == null || targetCPUUtilizationPercentage == 0) {
+			//targetCPUUtilizationPercentage为空
+			map.put("status", "403");
+			return JSON.toJSONString(map);
+		}
+		if (minReplicas == null || maxReplicas == 0) {
+			//副本数为空
+			map.put("status", "404");
+			return JSON.toJSONString(map);
+		}
 		if (services.size() != 1) {
 			//找不到该服务
 			map.put("status", "400");
+			return JSON.toJSONString(map);
+		}
+		if (minReplicas >= maxReplicas) {
+			//最小pod数大于最大pod数
+			map.put("status", "402");
 			return JSON.toJSONString(map);
 		}
 		//创建hpa
@@ -109,15 +125,30 @@ public class HorizontalPodAutoscalerController {
 	 */
 	@RequestMapping(value = { "/services/{service}/hpa" }, method = RequestMethod.PUT)
 	@ResponseBody
-	public String replaceHPA(String ServiceName, Integer minReplicas, Integer maxReplicas,
+	public String replaceHPA(@PathVariable("service") String ServiceName, Integer minReplicas, Integer maxReplicas,
 			Integer targetCPUUtilizationPercentage) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		User user = CurrentUserUtils.getInstance().getUser();
 		//判断服务是否存在
 		List<Service> services = serviceDao.findByNameOf(user.getId(), ServiceName);
+		if (targetCPUUtilizationPercentage == null || targetCPUUtilizationPercentage == 0) {
+			//targetCPUUtilizationPercentage为空
+			map.put("status", "403");
+			return JSON.toJSONString(map);
+		}
+		if (minReplicas == null || maxReplicas == 0) {
+			//副本数为空
+			map.put("status", "404");
+			return JSON.toJSONString(map);
+		}
 		if (services.size() != 1) {
 			//找不到该服务
 			map.put("status", "400");
+			return JSON.toJSONString(map);
+		}
+		if (minReplicas >= maxReplicas) {
+			//最小pod数大于最大pod数
+			map.put("status", "402");
 			return JSON.toJSONString(map);
 		}
 		KubernetesAPISClientInterface apisClient = kubernetesClientService.getApisClient();
@@ -167,7 +198,7 @@ public class HorizontalPodAutoscalerController {
 	 */
 	@RequestMapping(value = { "/services/{service}/hpa" }, method = RequestMethod.DELETE)
 	@ResponseBody
-	public String deleteHPA(String ServiceName) {
+	public String deleteHPA(@PathVariable("service") String ServiceName) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		User user = CurrentUserUtils.getInstance().getUser();
 		//判断服务是否存在
@@ -183,17 +214,30 @@ public class HorizontalPodAutoscalerController {
 			LOG.info("deleteHPA:[" + ServiceName + "]");
 			apisClient.deleteHorizontalPodAutoscaler(ServiceName);
 		} catch (KubernetesClientException e) {
-			map.put("status", "401");
-			map.put("exception", e);
-			e.printStackTrace();
-			return JSON.toJSONString(map);
+			LOG.info(e.getStatus().getMessage());
 		}
+		//将副本数改为默认副本数
+		try {
+			Service service = services.get(0);
+			Integer addservice = services.get(0).getInstanceNum();
+			if (service.getStatus() == ServiceConstant.CONSTRUCTION_STATUS_RUNNING
+					|| service.getStatus() == ServiceConstant.CONSTRUCTION_STATUS_DEBUG) {
+				KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+				client.updateReplicationController(service.getServiceName(), addservice);
+			}
+		} catch (KubernetesClientException e) {
+			LOG.error("modify servicenum error:" + e.getStatus().getMessage());
+		} catch (Exception e) {
+			LOG.error("modify service error :" + e);
+		}
+
+//		serviceController.modifyServiceNum(services.get(0).getId(), services.get(0).getInstanceNum());
 
 		// 保存service
 		Service service = services.get(0);
-		service.setMinReplicas(0);
-		service.setMaxReplicas(0);
-		service.setTargetCPUUtilizationPercentage(0);
+		service.setMinReplicas(-1);
+		service.setMaxReplicas(-1);
+		service.setTargetCPUUtilizationPercentage(-1);
 		serviceDao.save(service);
 
 		map.put("status", "200");

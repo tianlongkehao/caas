@@ -26,6 +26,7 @@ import com.bonc.epm.paas.shera.model.ChangeGit;
 import com.bonc.epm.paas.shera.model.CredentialCheckEntity;
 import com.bonc.epm.paas.shera.model.CredentialKey;
 import com.bonc.epm.paas.shera.model.CredentialKeyList;
+import com.bonc.epm.paas.shera.model.ExecConfig;
 import com.bonc.epm.paas.shera.model.GitCredential;
 import com.bonc.epm.paas.shera.model.Jdk;
 import com.bonc.epm.paas.shera.model.JdkList;
@@ -37,6 +38,8 @@ import com.bonc.epm.paas.shera.model.JobExecViewList;
 import com.bonc.epm.paas.shera.model.Log;
 import com.bonc.epm.paas.shera.model.Rating;
 import com.bonc.epm.paas.shera.model.SonarConfig;
+import com.bonc.epm.paas.shera.model.SshConfig;
+import com.bonc.epm.paas.shera.model.SshKey;
 
 /**
  * @author ke_wang
@@ -52,8 +55,7 @@ public interface SheraAPI {
 	 * get a job by id
 	 *
 	 * @param namespace
-	 * @param name
-	 *            id of job
+	 *            * @param name id of job
 	 * @return {@link Job}
 	 * @throws SheraClientException
 	 */
@@ -189,8 +191,10 @@ public interface SheraAPI {
 	 * update a git hook
 	 *
 	 * @param namespace
-	 * @param name id of a job
-	 * @param changeGit a ChangeGit
+	 * @param name
+	 *            id of a job
+	 * @param changeGit
+	 *            a ChangeGit
 	 * @throws SheraClientException
 	 * @return {@link ChangeGit}
 	 */
@@ -198,8 +202,8 @@ public interface SheraAPI {
 	@Path("/git/hooks/update/{namespace}/{name}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public ChangeGit updateGitHooks(@PathParam("namespace") String namespace, @PathParam("name") String name, ChangeGit changeGit)
-			throws SheraClientException;
+	public ChangeGit updateGitHooks(@PathParam("namespace") String namespace, @PathParam("name") String name,
+			ChangeGit changeGit) throws SheraClientException;
 
 	/**
 	 * delete a job
@@ -407,7 +411,8 @@ public interface SheraAPI {
 	@Path("/sonar/config/{namespace}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public SonarConfig createSonarConfig(@PathParam("namespace") String namespace, SonarConfig sonarConfig) throws SheraClientException;
+	public SonarConfig createSonarConfig(@PathParam("namespace") String namespace, SonarConfig sonarConfig)
+			throws SheraClientException;
 
 	/**
 	 *
@@ -422,7 +427,8 @@ public interface SheraAPI {
 	@Path("/sonar/update/{namespace}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public SonarConfig updateSonarConfig(@PathParam("namespace") String namespace, SonarConfig sonarConfig) throws SheraClientException;
+	public SonarConfig updateSonarConfig(@PathParam("namespace") String namespace, SonarConfig sonarConfig)
+			throws SheraClientException;
 
 	/**
 	 *
@@ -452,7 +458,8 @@ public interface SheraAPI {
 	@Path("/sonar/rating/{namespace}/{projectKey}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Rating getJobRating(@PathParam("namespace") String namespace, @PathParam("projectKey") String projectKey) throws SheraClientException;
+	public Rating getJobRating(@PathParam("namespace") String namespace, @PathParam("projectKey") String projectKey)
+			throws SheraClientException;
 
 	/**
 	 *
@@ -467,6 +474,150 @@ public interface SheraAPI {
 	@Path("/sonar/{projectKey}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Rating deleteJobRating(@PathParam("namespace") String namespace, @PathParam("projectKey") String projectKey) throws SheraClientException;
+	public Rating deleteJobRating(@PathParam("namespace") String namespace, @PathParam("projectKey") String projectKey)
+			throws SheraClientException;
+
+	/**
+	 * createExecConfig:创建shera的工具配置. <br/>
+	 *
+	 * @author longkaixiang
+	 * @param execConfig
+	 * @return ExecConfig
+	 */
+	@POST
+	@Path("/exec")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public ExecConfig createExecConfig(ExecConfig execConfig);
+
+	/**
+	 * deleteExecConfig:删除shera的工具配置. <br/>
+	 *
+	 * @author longkaixiang
+	 * @param userid
+	 * @param kindid
+	 * @return ExecConfig
+	 */
+	@DELETE
+	@Path("/exec/{userid}/{kindid}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public void deleteExecConfig(@PathParam("userid") String userid, @PathParam("kindid") Integer kindid);
+
+	/**
+	 * deleteExecConfig:删除shera的工具配置. <br/>
+	 *
+	 * @author longkaixiang
+	 * @param key void
+	 */
+	@DELETE
+	@Path("/exec/{key}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public void deleteExecConfig(@PathParam("key") String key);
+
+	/**
+	 * updateExecConfig:修改shera的工具配置. <br/>
+	 *
+	 * @author longkaixiang
+	 * @param key
+	 * @param execConfig void
+	 */
+	@PUT
+	@Path("/exec/{key}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public ExecConfig updateExecConfig(@PathParam("key") String key, ExecConfig execConfig);
+
+	/**
+	 * getExecConfig:获取shera的工具配置. <br/>
+	 *
+	 * @author longkaixiang
+	 * @param key
+	 * @param kindid void
+	 */
+	@GET
+	@Path("/exec/{userid}/{kindid}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public String getExecConfig(@PathParam("userid") String userid, @PathParam("kindid") Integer kindid);
+
+	/**
+	 * createSshKey:create ssh rsa public key and private key. <br/>
+	 *
+	 * @author longkaixiang
+	 * @param sshKey
+	 * @return SshKey
+	 */
+	@POST
+	@Path("/ssh")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public SshKey createSshKey(SshKey sshKey);
+
+	/**
+	 * createSshKey:del ssh rsa from db by user id. <br/>
+	 *
+	 * @author longkaixiang
+	 * @param userid
+	 * @return SshKey
+	 */
+	@DELETE
+	@Path("/ssh/{userid}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public void deleteSshKey(@PathParam("userid") String userid);
+
+	/**
+	 * getSshKey:get ssh rsa from db by user id. <br/>
+	 *
+	 * @author longkaixiang
+	 * @param userid
+	 * @return SshKey
+	 */
+	@GET
+	@Path("/ssh/{userid}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public SshKey getSshKey(@PathParam("userid") String userid);
+
+	/**
+	 * createSshConfig:create ssh config. <br/>
+	 *
+	 * @author longkaixiang
+	 * @param sshConfig
+	 * @return SshConfig
+	 */
+	@POST
+	@Path("/ssh/config")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public SshConfig createSshConfig(SshConfig sshConfig);
+
+	/**
+	 * deleteSshConfig:delete ssh config. <br/>
+	 *
+	 * @author longkaixiang
+	 * @param userid
+	 * @return SshConfig
+	 */
+	@DELETE
+	@Path("/ssh/config/{userid}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public SshConfig deleteSshConfig(@PathParam("userid") String userid);
+
+	/**
+	 * getSshConfig:get  ssh config. <br/>
+	 *
+	 * @author longkaixiang
+	 * @param userid
+	 * @return SshConfig
+	 */
+	@GET
+	@Path("/ssh/config/{userid}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public SshConfig getSshConfig(@PathParam("userid") String userid);
 
 }

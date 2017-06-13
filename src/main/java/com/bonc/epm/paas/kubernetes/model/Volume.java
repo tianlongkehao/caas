@@ -6,6 +6,18 @@ public class Volume {
 
 	private CephFSVolumeSource cephfs;
 
+	private ConfigMapTemplate configMap;
+
+	private CephRbd rbd;
+
+	public CephRbd getRbd() {
+		return rbd;
+	}
+
+	public void setRbd(CephRbd rbd) {
+		this.rbd = rbd;
+	}
+
 	public String getName() {
 		return name;
 	}
@@ -20,6 +32,14 @@ public class Volume {
 
 	public void setCephfs(CephFSVolumeSource cephfs) {
 		this.cephfs = cephfs;
+	}
+
+	public ConfigMapTemplate getConfigMap() {
+		return configMap;
+	}
+
+	public void setConfigMap(ConfigMapTemplate configMap) {
+		this.configMap = configMap;
 	}
 
 }

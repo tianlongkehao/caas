@@ -5,7 +5,7 @@ public class NodeSpec {
 	private String externalID;
 	private String providerID;
 	private Boolean unschedulable;
-	
+
 	public String getPodCIDR() {
 		return podCIDR;
 	}
@@ -24,10 +24,12 @@ public class NodeSpec {
 	public void setProviderID(String providerID) {
 		this.providerID = providerID;
 	}
-	public Boolean getunschedulable() {
+
+	public Boolean getUnschedulable() {
 		return unschedulable;
 	}
-	public void setunschedulable(Boolean unschedulable) {
+	public void setUnschedulable(Boolean unschedulable) {
 		this.unschedulable = unschedulable;
 	}
+
 }

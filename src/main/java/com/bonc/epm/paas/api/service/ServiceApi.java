@@ -23,6 +23,7 @@ import com.alibaba.fastjson.JSON;
 import com.bonc.epm.paas.constant.ServiceConstant;
 import com.bonc.epm.paas.dao.EnvVariableDao;
 import com.bonc.epm.paas.dao.PortConfigDao;
+import com.bonc.epm.paas.dao.ServiceConfigmapDao;
 import com.bonc.epm.paas.dao.ServiceDao;
 import com.bonc.epm.paas.dao.StorageDao;
 import com.bonc.epm.paas.dao.UserDao;
@@ -30,11 +31,15 @@ import com.bonc.epm.paas.docker.util.DockerClientService;
 import com.bonc.epm.paas.entity.EnvVariable;
 import com.bonc.epm.paas.entity.PortConfig;
 import com.bonc.epm.paas.entity.Service;
+import com.bonc.epm.paas.entity.ServiceConfigmap;
 import com.bonc.epm.paas.entity.Storage;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
+import com.bonc.epm.paas.kubernetes.apis.KubernetesAPISClientInterface;
 import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
 import com.bonc.epm.paas.kubernetes.model.CephFSVolumeSource;
+import com.bonc.epm.paas.kubernetes.model.HorizontalPodAutoscaler;
+import com.bonc.epm.paas.kubernetes.model.Kind;
 import com.bonc.epm.paas.kubernetes.model.LocalObjectReference;
 import com.bonc.epm.paas.kubernetes.model.PodSpec;
 import com.bonc.epm.paas.kubernetes.model.PodTemplateSpec;
@@ -43,7 +48,6 @@ import com.bonc.epm.paas.kubernetes.model.ReplicationControllerSpec;
 import com.bonc.epm.paas.kubernetes.model.Volume;
 import com.bonc.epm.paas.kubernetes.model.VolumeMount;
 import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
-import com.bonc.epm.paas.util.CurrentUserUtils;
 
 /**
  * @author Administrator
@@ -82,6 +86,12 @@ public class ServiceApi {
 	 */
 	@Autowired
 	private StorageDao storageDao;
+
+	/**
+	 * 服务与配置文件数据层接口
+	 */
+	@Autowired
+	private ServiceConfigmapDao serviceConfigmapDao;
 
 	/**
 	 * dockerClientService:docker服务接口.
@@ -306,8 +316,8 @@ public class ServiceApi {
 		 ***************************************/
 		try {
 			k8sService = kubernetesClientService.generateService(service.getServiceName(), portConfigs,
-					service.getProxyZone(), service.getServicePath(), service.getProxyPath(),
-					service.getSessionAffinity(), service.getNodeIpAffinity());
+					service.getProxyZone(), service.getServicePath(),
+					service.getSessionAffinity());
 			k8sService = client.createService(k8sService);
 		} catch (KubernetesClientException e) {
 			System.out.println(e.getStatus().getMessage());
@@ -324,8 +334,11 @@ public class ServiceApi {
 			List<String> args = new ArrayList<String>();
 			// 初始化自定义启动命令
 			String startCommand = service.getStartCommand().trim();
-			if (StringUtils.isNotBlank(startCommand)) {
-				String[] startCommandArray = startCommand.replaceAll("\\s+", " ").replaceAll("/debug.sh", "").trim()
+			if (service.getStatus().equals(ServiceConstant.CONSTRUCTION_STATUS_DEBUG)) {
+				command.add("sleep");
+				args.add("3153600000");
+			} else if (StringUtils.isNotBlank(startCommand)) {
+				String[] startCommandArray = startCommand.replaceAll("\\s+", " ").trim()
 						.split(" ");
 				for (String item : startCommandArray) {
 					if (CollectionUtils.isEmpty(command)) {
@@ -335,11 +348,16 @@ public class ServiceApi {
 					args.add(item);
 				}
 			}
+			/*************************************
+			 * 根据serviceId,查找ServiceConfigmap
+			 *************************************/
+			List<ServiceConfigmap> serviceConfigmapList = serviceConfigmapDao.findByServiceId(service.getId());
+
 			rc = kubernetesClientService.generateSimpleReplicationController(service.getServiceName(),
 					service.getInstanceNum(), service.getInitialDelay(), service.getTimeoutDetction(),
 					service.getPeriodDetction(), registryImgName, portConfigs, service.getCpuNum(),
-					service.getRam(), service.getProxyZone(), service.getServicePath(), service.getProxyPath(),
-					service.getCheckPath(), envVariables, command, args);
+					service.getRam(), service.getProxyZone(), service.getServicePath(),
+					service.getCheckPath(), envVariables, command, args, serviceConfigmapList,service.isIspodmutex());
 			// 给rc设置卷组挂载的信息
 			if (service.getServiceType().equals("1")) {
 				rc = setVolumeStorage(namespace, rc, service.getId());
@@ -350,6 +368,34 @@ public class ServiceApi {
 			messages.add("rc创建失败[ServiceName="+service.getServiceName()+", Message="+e.getStatus().getMessage()+"]");
 			return messages;
 		}
+		/*************************************
+		 * 创建一个新的autoscaler
+		 *************************************/
+		if (service.getTargetCPUUtilizationPercentage() != null && !service.getTargetCPUUtilizationPercentage().equals(0)) {
+			//初始化新的hpa
+			KubernetesAPISClientInterface apisClient = kubernetesClientService.getApisClient();
+			//获取已存在的hpa
+			HorizontalPodAutoscaler hpa = null;
+			try {
+				hpa = apisClient.getHorizontalPodAutoscaler(service.getServiceName());
+			} catch (KubernetesClientException e) {
+			}
+			HorizontalPodAutoscaler newHPA = kubernetesClientService.generateHorizontalPodAutoscaler(service.getServiceName(), service.getMaxReplicas(),
+					service.getMinReplicas(), Kind.REPLICATIONCONTROLLER, service.getTargetCPUUtilizationPercentage());
+			try {
+				if(null == hpa){
+					//不存在旧的hpa时，创建新的hpa
+					newHPA = apisClient.createHorizontalPodAutoscaler(newHPA);
+				} else {
+					//存在旧的hpa时，替换为新的hpa
+					newHPA = apisClient.replaceHorizontalPodAutoscaler(service.getServiceName(), newHPA);
+				}
+			} catch (KubernetesClientException e) {
+				messages.add("hpa创建失败[ServiceName="+service.getServiceName()+", Message="+e.getStatus().getMessage()+"]");
+			}
+		}
+
+
 		return messages;
 	}
 

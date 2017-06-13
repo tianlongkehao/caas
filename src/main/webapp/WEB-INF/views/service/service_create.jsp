@@ -22,6 +22,24 @@
 		}
 	});
 </script>
+<style type="text/css">
+.self-define {
+    height: 34px;
+    padding: 6px 12px;
+    font-size: 14px;
+    line-height: 1.42857143;
+    color: #555;
+    background-color: #fff;
+    background-image: none;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+    -webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;
+    -o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+    transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+}
+</style>
 </head>
 <body>
 
@@ -95,10 +113,11 @@
 												name="imgVersion" readOnly="readOnly"></li>
 											<li class="line-h-3"><span class="ve_top">服务名称：<font
 													color="red">*</font></span><input type="text" value=""
-												class="in_style form-control" id="serviceName" name="serviceName" oninput="javascript:onEditServiceName()">
+												class="in_style form-control" id="serviceName" name="serviceName">
 												<input type="hidden" value="" class="in_style"
 												id="resourceName" name="resourceName"></li>
-											<li class="line-h-3"><span class="ve_top">服务中文名称：
+											<li class="line-h-3"><span class="ve_top">服务中文名称：<font
+													color="red">*</font>
 											</span><input type="text" value=""
 												class="in_style form-control" id="serviceChName" name="serviceChName"></li>
 											<li class="line-h-3"><span class="ve_top">责任人：<font color="red">*</font>
@@ -154,6 +173,14 @@
 													</c:if> <label for="monitorStatus"><font color="blue">Pinpoint监控</font></label>
 													<input type="hidden" id="monitor" name="monitor" value="">
 											</span></li>
+											<!-- Pod互斥 -->
+											<li class="line-h-3"  id="pod_mutex_type"><span class="ve_top">Pod是否互斥：</span>
+												<span><input type="checkbox"
+												id="podmutex"> <label for="podmutex"><font
+												         color="blue">互斥</font></label>
+												<input type="hidden" id="ispodmutex" name="ispodmutex" value="">
+												<label id="podmutexlabel" style="display: none;float:right" ><font color="red">注意：为了满足pod互斥，实例数量不应大于集群节点数量${nodecount }</font></label>
+											</span></li>
 											<li class="line-h-3"><span class="ve_top">服务访问路径：<font
 													color="red">*</font></span>
 												<input type="text" value="" class="in_style form-control" id="webPath" name="servicePath">
@@ -168,24 +195,12 @@
 												</c:forEach>
 											    <input type="hidden" value="" class="in_style" id="proxyZone" name="proxyZone">
                                             </li>
-											<li class="line-h-3"><span class="ve_top">nginx代理路径：<font
-													color="red">*</font></span>
-												<input type="text" value="" class="in_style form-control" id="nginxPath" name="proxyPath">
-												<span style="color:#1dd2af" id="proxy-path"><i class="fa fa-info-circle"></i></span>
-											</li>
 											<li class="line-h-3"> <span class="ve_top">ClientIP黏连方式：</span>
 	                                            <select class="selectVolume form-control" id="sessionAffinity" name="sessionAffinity"
 	                                                style="height: 34px; width: 230px;">
 	                                                <option name="sessionAffinity" value="" >NONE</option>
 	                                                <option name="sessionAffinity" value="ClientIP">ClientIP</option>
 	                                            </select>
-                                            </li>
-                    						<li class="line-h-3"> <span class="ve_top">NodeIp黏连方式：</span>
-                                                <select class="selectVolume form-control" id="nodeIpAffinity" name="nodeIpAffinity"
-                                                    style="height: 34px; width: 230px;">
-                                                    <option name="nodeIpAffinity" value="" >NONE</option>
-                                                    <option name="nodeIpAffinity" value="nodeIpAffinity">nodeIpAffinity</option>
-                                                </select>
                                             </li>
 											<!--<li class="line-h-3"><span class="ve_top">选择集群：</span>
                                     <div class="select-versions" data-toggle="dropdown">
@@ -263,6 +278,18 @@
 													<input type="hidden" id = "leftmemory" value = "${leftmemory * 1024 }"/>
 												</div>
 											</li>
+
+											<li id="configmap" class="line-h-3" ><span class="ve_top">配置文件模板：</span>
+												  <select class="selectVolume self-define " id="configmap" name="configmap" style="height: 34px; width: 230px;">
+                                                    <option value="-1" >NONE</option>
+                                                    <c:forEach items="${configmapList}" var="configmap">
+                                                       <option value="${configmap.id}">${configmap.name}</option>
+                                                    </c:forEach>
+                                                  </select>
+                                                  <span> 挂载路径：</span>
+                                                  <input type="text" class="self-define " style="width: 330px;" id = "configmapPath" name ="configmapPath" value="/configfiles" />
+											</li>
+
 											<li id="service_type"><span class="ve_top">服务类型：</span>
 												<span class="update-mi"> <input type="checkbox"
 													id="state_service" stateless="0"> <label
@@ -271,18 +298,19 @@
 												<input type="hidden" id = "serviceType" name ="serviceType" value = "1"/>
 											</span></li>
 
-											<li class="hide-set" id="save_roll_dev"><span class="ve_top">挂载地址：</span>
+											<li class="hide-set" id="save_roll_dev">
 												<ol id="mountPathList">
-													<li class="hide-select">
-														<select class="selectVolume form-control" id="selectVolume"
-																		style="height: 34px; width: 230px;">
+
+													<li class="hide-select hide">
+														<select class="selectVolumeAddItme form-control"
+																		style="height: 30px; width: 98%;margin:0 auto;padding-top:4px;margin-left:4px">
 																<option  value="">选择一个存储卷</option>
 																<c:forEach items="${storageList }" var = "storage">
 																    <option  value="${storage.id }">${storage.storageName }  ${storage.storageSize }M</option>
 																</c:forEach>
 													    </select>
 														<input type="text" id="mountPath" class="form-control" value="" />
-														<a id="addVolume"><i class="fa fa-plus"></i>添加</a>
+														<!-- <a id="addVolume"><i class="fa fa-plus"></i>添加</a> -->
 													</li>
 													<li>
 														<table class="table table-hover enabled" id="volPath">
@@ -295,6 +323,11 @@
 															</thead>
 															<tbody id="volList">
 															</tbody>
+															<tfoot class="addTfootBtn">
+																<tr id="addVolume">
+																	<td colspan="3"><i class="fa fa-plus margin"></i>添加挂载</td>
+																</tr>
+															</tfoot>
 														</table>
 														<input type="hidden" id="cephAds" name = "cephAds" value="" />
 													</li>
@@ -303,10 +336,10 @@
 												<input type = "hidden" id = "userName" value="${userName }"/>
 												<ol>
 													<li class="hide-select">
-												       <input type="text" class="form-control" placeholder="name" id="Name">
+												       <!-- <input type="text" class="form-control" placeholder="name" id="Name">
 												       <input type="text" class="form-control" placeholder="value" id="Value">
-												       <a id="cratePATH"><i class="fa fa-plus"></i>添加</a>
-														<div style="float: right;margin-top:7px;">
+												       <a id="cratePATH"><i class="fa fa-plus"></i>添加</a> -->
+														<div style="float: left;">
 															<span id="importBtn" class=" btn-info btn-sm"
 																style="cursor: pointer">导入模板</span> <span id="exportBtn"
 																class=" btn-info btn-sm" style="cursor: pointer">另存为模板</span>
@@ -324,6 +357,11 @@
 															<tbody id="Path-oper1">
 																<input type="hidden" id="arrayKey" value="APM,id,name" />
 															</tbody>
+															<tfoot class="addTfootBtn">
+																<tr id="cratePATH">
+																	<td colspan="3"><i class="fa fa-plus margin"></i>添加环境变量</td>
+																</tr>
+															</tfoot>
 														</table>
 													</li>
 												</ol></li>
@@ -351,10 +389,13 @@
 															</a></td>
 														</tr> -->
 													</tbody>
+													<tfoot class="addTfootBtn">
+														<tr id="createPort">
+															<td colspan="4"><i class="fa fa-plus margin"></i>添加端口</td>
+														</tr>
+													</tfoot>
 												</table>
-												<div class="createPort" style="background: #fafafa">
-													<span id="createPort"><i class="fa fa-plus margin"></i>添加端口</span>
-												</div></li>
+											</li>
 										</ul>
 									</div>
 								</form>

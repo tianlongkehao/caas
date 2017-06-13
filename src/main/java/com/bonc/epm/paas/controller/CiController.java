@@ -286,40 +286,6 @@ public class CiController {
     }
 
 
-//    /**
-//     * Description: <br>
-//     * 代码构建shera中job的构建信息查询和展示；
-//     * @param cis cis
-//     * @return
-//     */
-//    public List<Ci> findSheraData(List<Ci> cis){
-//        try {
-//            SheraAPIClientInterface client = sheraClientService.getClient();
-//            JobExecList jobExecList = client.getAllJobs();
-//            if (StringUtils.isEmpty(jobExecList.getItems())) {
-//                return cis;
-//            }
-//            if (cis.size()!=0 && jobExecList != null) {
-//                for (Ci ci :cis) {
-//                    for (JobExec jobExec :jobExecList) {
-//                        if (ci.getProjectName().equals(jobExec.getJobId())) {
-//                            if (jobExec.getLastSuccessTime() != 0 ) {
-//                                ci.setConstructionDate(DateUtils.getLongToDate(jobExec.getLastSuccessTime()));
-//                            }
-//                            if (jobExec.getLastFailureTime() != 0) {
-//                                ci.setConstructionFailDate(DateUtils.getLongToDate(jobExec.getLastFailureTime()));
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//        catch (Exception e) {
-//            LOG.error("find all job data error : " + e.getMessage());
-//            e.printStackTrace();
-//        }
-//        return cis;
-//    }
 
     /**
      *
@@ -489,7 +455,7 @@ public class CiController {
                                                             ciCode.getCodeName(),ciCode.getCodeRefspec(),dockerFileContentEdit,ci.getDockerFileLocation(),
                                                             originCi.getImgNameFirst(),ci.getImgNameLast(),ciInvokeList,ciCodeCredential.getUserName(),
                                                             ciCodeCredential.getType(),ciCode.getCodeType(),ciCodeCredential.getUniqueKey(),
-                                                            ciCode.getSonarCheck()==CiConstant.CODE_CHECK_TRUE,ciCode.getSources(),ciCode.getCiTools());
+                                                            ciCode.getSonarCheck(),ciCode.getSources(),ciCode.getCiTools());
             client.updateJob(job);
             //添加代码挂钩
             if (ciCode.getIsHookCode() == 1) {
@@ -733,7 +699,12 @@ public class CiController {
 		List<Object> toolGroups = getToolGroups();
 		//获取sonarConfig
 		SheraAPIClientInterface client = sheraClientService.getClient();
-		SonarConfig sonarConfig = client.getSonarConfig();
+		SonarConfig sonarConfig = null;
+		try {
+			sonarConfig = client.getSonarConfig();
+		} catch (SheraClientException e) {
+			sonarConfig = null;
+		}
 
 		model.addAttribute("username", imageNameFirst);
 		model.addAttribute("basicImage", basicImage);
@@ -1010,7 +981,7 @@ public class CiController {
                 Job job = sheraClientService.generateJob(ci.getProjectName(),ciCode.getJdkVersion(),ciCode.getCodeBranch(),ciCode.getCodeUrl(),
                     ciCode.getCodeName(),ciCode.getCodeRefspec(), dockerFileContent,ci.getDockerFileLocation(),
                     ci.getImgNameFirst(),ci.getImgNameLast(),ciInvokeList,ciCodeCredential.getUserName(),
-                    ciCodeCredential.getType(),ciCode.getCodeType(),ciCodeCredential.getUniqueKey(),ciCode.getSonarCheck()==CiConstant.CODE_CHECK_TRUE,ciCode.getSources(),ciCode.getCiTools());
+                    ciCodeCredential.getType(),ciCode.getCodeType(),ciCodeCredential.getUniqueKey(),ciCode.getSonarCheck(),ciCode.getSources(),ciCode.getCiTools());
 //                System.out.println(JSON.toJSONString(job));
                 client.createJob(job);
                 //添加代码挂钩
@@ -1085,80 +1056,6 @@ public class CiController {
         }
         return JSON.toJSONString(result);
     }
-
-//    /**
-//     * 快速构建的创建
-//     *
-//     * @param ci ： ci
-//     * @return String
-//     * @see
-//     */
-//    @RequestMapping("ci/addCi.do")
-//	public String addCi(Ci ci) {
-//        User cuurentUser = CurrentUserUtils.getInstance().getUser();
-//        ci.setCreateBy(cuurentUser.getId());
-//        ci.setCreateDate(new Date());
-//        ci.setType(CiConstant.TYPE_QUICK);
-//        ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_WAIT);
-//        ci.setConstructionDate(new Date());
-//        ci.setCodeLocation(CODE_TEMP_PATH+"/"+ci.getImgNameFirst()+"/"+ci.getImgNameLast()+"/"+ci.getImgNameVersion());
-//        ciDao.save(ci);
-//
-//        //添加日志
-//        String extraInfo = "快速构建的创建：" + JSON.toJSONString(ci);
-//        CommonOperationLog log=CommonOprationLogUtils.getOprationLog(ci.getProjectName(), extraInfo, CommConstant.QUICK_CI, CommConstant.OPERATION_TYPE_CREATED);
-//        commonOperationLogDao.save(log);
-//
-//        LOG.debug("addCi--id:"+ci.getId()+"--name:"+ci.getProjectName());
-//        return "redirect:/ci";
-//
-//    }
-
-//	/**
-//	 * 最开始的dockerfile构建
-//	 *
-//	 * @param ci ：ci
-//	 * @param sourceCode : 上传代码
-//	 * @param dockerFile MultipartFile
-//	 * @return  String
-//	 * @see MultipartFile
-//	 */
-//    @RequestMapping(value={"ci/addResourceCi.do"},method=RequestMethod.POST)
-//	public String addResourceCi(Ci ci,@RequestParam("sourceCode") MultipartFile sourceCode,@RequestParam("dockerFile") MultipartFile dockerFile) {
-//        User cuurentUser = CurrentUserUtils.getInstance().getUser();
-//        ci.setCreateBy(cuurentUser.getId());
-//        ci.setCreateDate(new Date());
-//        ci.setType(CiConstant.TYPE_DOCKERFILE);
-//        ci.setConstructionStatus(CiConstant.CONSTRUCTION_STATUS_WAIT);
-//        ci.setConstructionDate(new Date());
-//        ci.setCodeLocation(CODE_TEMP_PATH+"/"+ci.getImgNameFirst()+"/"+ci.getImgNameLast()+"/"+ci.getImgNameVersion());
-//        ci.setDockerFileLocation("/");
-//        try {
-//            File file = new File(ci.getCodeLocation());
-//            if(!file.exists()){
-//                file.mkdirs();
-//            }
-//            if (!sourceCode.isEmpty()) {
-//                FileUtils.storeFile(sourceCode.getInputStream(), ci.getCodeLocation()+"/"+sourceCode.getOriginalFilename());
-//            }
-//            if (!dockerFile.isEmpty()) {
-//                FileUtils.storeFile(dockerFile.getInputStream(), ci.getCodeLocation()+"/"+dockerFile.getOriginalFilename());
-//            }
-//        }
-//        catch (Exception e) {
-//            LOG.error("modifyResourceCi error:"+e.getMessage());
-//
-//            return "redirect:/error";
-//        }
-//        ciDao.save(ci);
-//        LOG.debug("addCi--id:"+ci.getId()+"--name:"+ci.getProjectName());
-//
-//        String extraInfo = "DockerFile构建的创建：" + JSON.toJSONString(ci);
-//        CommonOperationLog log=CommonOprationLogUtils.getOprationLog(ci.getProjectName(), extraInfo, CommConstant.DOCKER_FILE_CI, CommConstant.OPERATION_TYPE_CREATED);
-//        commonOperationLogDao.save(log);
-//
-//        return "redirect:/ci";
-//    }
 
 	/**
 	 *
@@ -2095,4 +1992,12 @@ public class CiController {
 		map.put("sonarConfig", sonarConfig);
 		return JSON.toJSONString(map);
 	}
+
+
+    @RequestMapping(value={"shera/add"},method=RequestMethod.GET)
+   	public String sheraAdd(Model model){
+           model.addAttribute("menu_flag", "ci");
+           model.addAttribute("li_flag", "shera");
+           return "ci/shera-add.jsp";
+       }
 }
