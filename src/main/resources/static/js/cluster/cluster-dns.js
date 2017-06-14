@@ -22,7 +22,7 @@ $(document).ready(function () {
 						+'<td>'+dnsip+'</td>'
 						+'<td>'+dnscreateDate+'</td>'
 						+'<td>'
-						+'<a onclick="delOneDns('+dnsid+')" title="批量删除"><i class="fa fa-trash"></i></a>'
+						+'<a onclick="delOneDns('+dnsid+')" title="删除"><i class="fa fa-trash"></i></a>'
 						+'</td>'
 						+'</tr>';
 				}
@@ -39,6 +39,46 @@ function showOneDnsResult(obj){
 }
 function hideOneDnsResult(obj){
 	layer.close(tip_index); 
+}
+//创建dns
+function createDns(){
+	layer.open({
+		type: 1,
+		title: "创建dns",
+		content: $(".createDnsInfo"),
+		area: ["520px"],
+		btn: ["确定","取消"],
+		yes: function(index,layero){
+			var address = $("#address").val();
+			if(!checkDns(address)){
+				return;
+			}
+			layer.close(index);
+			$.ajax({
+				url:ctx + "/DNSController/createDnsService.do",
+				type:"post",
+				data:{"address":address},
+				success:function(data){
+					var data = eval("("+data+")");
+					if(data.status == '200'){
+						layer.msg("创建成功", {
+							icon : 1
+						});
+						setTimeout("location.reload(true)", 1000 );
+					}else{
+						layer.alert(data.messages[0],{
+							icon : 2,
+							btn:['关闭'],
+							yes:function(){
+								layer.closeAll();
+								setTimeout("location.reload(true)", 100 );
+							}
+						});
+					}
+				}
+			});
+		}
+	})
 }
 //创建定时监控任务
 function createDNSMonitor(){
@@ -125,19 +165,17 @@ function createDNSMonitor(){
 function checkServerDomain(obj){
 	$(obj).find("i.fa-check").toggle();
 }
-var addHostCount = 0;
-function addDnsHost(obj){
-	var strHtml = '<tr onclick="checkServerDomain(this)"><td><input type="text"><i class="fa fa-save" onclick="saveAddHost(this)"></i></td></tr>';
-	$(obj).parents(".domainTable").find("tbody").append(strHtml);
-}
-function saveAddHost(obj){
-	var thisVal = $(obj).parent().find("input").val();
-	var changeHtml = thisVal+'<i class="fa fa-check" domain="'+thisVal+'"></i>';
-	$(obj).parent().empty().append(changeHtml);
-}
+//function addDnsHost(obj){
+//	var strHtml = '<tr onclick="checkServerDomain(this)"><td><input type="text"><i class="fa fa-save" onclick="saveAddHost(this)"></i></td></tr>';
+//	$(obj).parents(".domainTable").find("tbody").append(strHtml);
+//}
+//function saveAddHost(obj){
+//	var thisVal = $(obj).parent().find("input").val();
+//	var changeHtml = thisVal+'<i class="fa fa-check" domain="'+thisVal+'"></i>';
+//	$(obj).parent().empty().append(changeHtml);
+//}
 //定时日志
 function dnsHistory(){
-	
 	$.ajax({
 		url:ctx + "/DNSController/getMonitorLog.do",
 		type:"get",
@@ -159,36 +197,31 @@ function dnsHistory(){
 					layer.close(index);
 				}
 			})	
-			
 		}
 	})
 }
 
-
-
-
-
 //创建DNS的验证
-function checkDns(serviceName,address){
+function checkDns(address){
 	var flag = true;
 	//serviceName服务名只能是小写字母开头，只能小写字母加数字
-	if (serviceName == "" ) {
-		layer.tips('服务名不能为空！', '#serviceName', {
-			tips : [1, '#3595CC']
-		});
-		$('#serviceName').focus();
-		flag = false;
-		return;
-	}
-	var check = /^[a-z](?!\d{3,20}$)[a-z\d]{3,20}$/ ;
-	if (!check.test(serviceName)) {
-		layer.tips('服务名必须是小写字母开头，只能是小写字母和数字的4-20个字符组成！', '#serviceName', {
-			tips : [1, '#3595CC']
-		});
-		$('#serviceName').focus();
-		flag = false;
-		return;
-	}
+//	if (serviceName == "" ) {
+//		layer.tips('服务名不能为空！', '#serviceName', {
+//			tips : [1, '#3595CC']
+//		});
+//		$('#serviceName').focus();
+//		flag = false;
+//		return;
+//	}
+//	var check = /^[a-z](?!\d{3,20}$)[a-z\d]{3,20}$/ ;
+//	if (!check.test(serviceName)) {
+//		layer.tips('服务名必须是小写字母开头，只能是小写字母和数字的4-20个字符组成！', '#serviceName', {
+//			tips : [1, '#3595CC']
+//		});
+//		$('#serviceName').focus();
+//		flag = false;
+//		return;
+//	}
 	//address域名就是网址 网址+端口 ip ip加端口
 	if (address == "") {
 		layer.tips('域名不能为空！', '#address', {
@@ -215,7 +248,7 @@ function checkDns(serviceName,address){
 function delOneDns(id){
 	var idArray = new Array();
 	idArray.push(id);
-	var ids = {"id":JSON.stringify(idArray)};
+	var ids = {"idString":JSON.stringify(idArray)};
 	layer.open({
 		title: "删除",
 		content: "确定删除？",
@@ -256,7 +289,7 @@ function delDns(){
 		var id = parseInt($(chkItem[i]).attr("id"));
 		idArray.push(id);
 	}
-	var ids = {"id":JSON.stringify(idArray)};
+	var ids = {"idString":JSON.stringify(idArray)};
 	layer.open({
 		title: "批量删除",
 		content: "确定删除？",

@@ -34,10 +34,12 @@
 										<i class="fa fa-map-marker" style="margin-right: 6px;"></i>集群DNS
 									</h5>
 									<div class="ibox-tools">
-										<a title="创建定时监控任务监控" onclick="createDNSMonitor()"><i
+										<a title="创建dns" onclick="createDns()"><i
 											class="fa fa-plus"></i></a>
-										<a title="定时日志" onclick="dnsHistory()"><i
+										<a title="创建定时监控任务监控" onclick="createDNSMonitor()"><i
 											class="fa fa-history"></i></a>
+										<a title="定时日志" onclick="dnsHistory()"><i
+											class="fa fa-file-text-o"></i></a>
 										<a title="删除" onclick="delDns()"><i
 											class="fa fa-trash"></i></a>
 										<a href="javascript:window.location.reload(true);" title="刷新"><i
@@ -100,9 +102,9 @@
 					<tbody id="timeTaskList">
 						
 					</tbody>
-					<tfoot>
+					<!-- <tfoot>
 						<tr onclick="addDnsHost(this)"><td><i class="fa fa-plus"></i>添加</td></tr>
-					</tfoot>
+					</tfoot> -->
 				</table>
 			</div>
 			<span><i class="fa fa-warning" style="color:#e8504f;margin-top:15px;margin-left:15%"></i>最多选5个定时检查的域名</span>
@@ -111,10 +113,10 @@
 </div>
 <div class="createDnsInfo" style="display:none">
 	<div style="padding:15px">
-		<div style="height:50px">
+		<!-- <div style="height:50px">
 			<span style="width:15%;float:left;line-height:34px;">服务名称：</span>
 			<input style="width:80%;float:left;" class="form-control" id="serviceName" placeholder="服务名必须是小写字母开头，且是小写字母加数字的4-20个字符组成" value="">
-		</div>
+		</div> -->
 		<div style="height:40px">
 			<span style="width:15%;float:left;line-height:34px;">域名：</span>
 			<input style="width:80%;float:left;" class="form-control" id="address" placeholder="域名就是 网址+端口，例如:192.168.0.1:8080" value="">
