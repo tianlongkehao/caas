@@ -20,6 +20,8 @@ public class ServiceCephRbd {
 
 	private String rbdname;
 
+	private String path;
+
 	public String getServicename() {
 		return servicename;
 	}
@@ -58,6 +60,14 @@ public class ServiceCephRbd {
 
 	public void setServiceId(long serviceId) {
 		this.serviceId = serviceId;
+	}
+
+	public String getPath() {
+		return path;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
 	}
 
 }

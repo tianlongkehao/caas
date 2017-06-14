@@ -136,6 +136,9 @@ public class CephController {
 	@Autowired
 	private SnapStrategyDao snapStrategyDao;
 
+	/*@Autowired
+	private ServiceDao serviceDao;*/
+
 	/**
 	 * connectCephFS
 	 */
@@ -1362,30 +1365,45 @@ public class CephController {
 	 */
 	@RequestMapping(value = { "ceph/checkrbdrunning" }, method = RequestMethod.GET)
 	@ResponseBody
-	public String checkRbdRunning(String imgname){
+	public String checkRbdRunning(long imgId){
 		Map<String, String> map = new HashMap<>();
 		String msg = "";
 		map.put("status", "200");
-		List<CephRbdInfo> cephRbdInfos = cephRbdInfoDao
-				.findByPoolAndName(CurrentUserUtils.getInstance().getUser().getNamespace(), imgname);
+		CephRbdInfo cephRbdInfo = cephRbdInfoDao.findOne(imgId);
 
-		if (CollectionUtils.isEmpty(cephRbdInfos)) {
-			msg = "找不到块设备: " + imgname + "!";
+		if (cephRbdInfo==null) {
+			msg = "数据库中找不到块设备!";
 			map.put("msg", msg);
 			map.put("status", "500");
 			return JSON.toJSONString(map);
 		}
 
-		long rbdId = cephRbdInfos.get(0).getId();
-		List<ServiceCephRbd> serviceCephRbds = serviceRbdDao.findByCephrbdId(rbdId);
+		/*List<ServiceCephRbd> serviceCephRbds = serviceRbdDao.findByCephrbdId(imgId);
+		if (CollectionUtils.isEmpty(serviceCephRbds)) {
+			return JSON.toJSONString(map);
+		}else{
+			long serviceId = serviceCephRbds.get(0).getServiceId();
+			Service service = serviceDao.findOne(serviceId);
+			if(service==null||service.getStatus()!=3){
+				return JSON.toJSONString(map);
+			}else{
+				msg = "服务: " + service.getServiceName() + "正在使用磁盘: " + cephRbdInfo.getName() + ","
+						+ "请先停止服务再进行操作，重启服务生效！";
+				map.put("msg", msg);
+				map.put("status", "500");
+				return JSON.toJSONString(map);
+			}
+		}*/
+
+		List<ServiceCephRbd> serviceCephRbds = serviceRbdDao.findByCephrbdId(imgId);
 		if (CollectionUtils.isEmpty(serviceCephRbds)) {
 			return JSON.toJSONString(map);
 		}
 
-		if (!cephRbdInfos.get(0).isUsed()) {
+		if (!cephRbdInfo.isUsed()) {
 			return JSON.toJSONString(map);
 		} else {
-			msg = "服务: " + serviceCephRbds.get(0).getServicename() + "正在使用磁盘: " + imgname + ","
+			msg = "服务: " + serviceCephRbds.get(0).getServicename() + "正在使用磁盘: " + cephRbdInfo.getName() + ","
 					+ "请先停止服务再进行操作，重启服务生效！";
 			map.put("msg", msg);
 			map.put("status", "500");

@@ -316,7 +316,7 @@ function changeStorageSize(obj){
 	})
 }
 
-//释放块设备
+//释放块设备1.确定是否有启动中的服务正在使用此块设备2.删除块设备
 function releaseStorage(obj){
 	var rbdId = $(obj).parent().parent().parent().parent().attr("rbdId");
 
@@ -327,23 +327,34 @@ function releaseStorage(obj){
 			yes: function(index, layero){
 				   layer.close(index);
 				   var loading = layer.load(0, {shade : [ 0.3, '#000' ]});
-					$.ajax({
-	 					url:""+ctx+"/ceph/deleterbd?imgId="+rbdId,
+
+				   $.ajax({
+	 					url:""+ctx+"/ceph/checkrbdrunning?imgId="+rbdId,
 	 					type:"get",
 	 					success:function(data){
-
 	 						layer.closeAll("loading");
-
 	 						var data = eval("(" + data + ")");
 	 						if(data.status =='500'){
 	 							layer.msg(data.msg,{icon : 5});
 	 						}else{
-	 							layer.msg("磁盘删除成功！",{icon : 6});
-	 							location.reload();
+	 							$.ajax({
+	 			 					url:""+ctx+"/ceph/deleterbd?imgId="+rbdId,
+	 			 					type:"get",
+	 			 					success:function(data){
+	 			 						var data = eval("(" + data + ")");
+	 			 						if(data.status =='500'){
+	 			 							layer.msg(data.msg,{icon : 5});
+	 			 						}else{
+	 			 							layer.msg("磁盘删除成功！",{icon : 6});
+	 			 							location.reload();
+	 			 						}
+	 			 					}
+	 			 				});
 	 						}
-	 						return;
 	 					}
 	 				});
+
+
 			}
 	})
 }
