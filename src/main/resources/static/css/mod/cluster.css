@@ -1381,4 +1381,7 @@ table.table tr td textarea{
 #chkitem .testItemCon{
 	width:80%;
 }
-
+.clusterImg{
+	height: 18px;
+    margin-bottom: 3px;
+}
