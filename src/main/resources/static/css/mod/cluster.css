@@ -1289,6 +1289,7 @@ i.pushOrg {
 	cursor:pointer;
 }
 /* dns */
+
 .timedTaskInfo table tr td{
 	text-indent: 16px;
 }
@@ -1299,10 +1300,15 @@ i.pushOrg {
 	color:#1dd2af;
 	display:none;
 }
+.timedTaskInfo table tfoot tr{
+	background:#ddd;
+	text-align:center;
+}
 .domainTable{
 	max-height:240px;
 	overflow-y:auto;
 }
+
 /* test */
 .clusterTestBtns{
 	height: 40px;

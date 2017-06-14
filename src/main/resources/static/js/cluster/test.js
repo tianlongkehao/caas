@@ -125,9 +125,25 @@ function detail(obj) {
 				}
 				if(nodetestresult.docker){
 					tabHtml += '<li id="tab'+count+'"><a href="#dockerTab" data-toggle="tab">Docker</a></li>';
-					var memory=nodetestresult.dockerDataSpaceTotal;
 					var dockerpass=nodetestresult.dockerpass ? '通过' : '未通过';
 					var dockerdetail=nodetestresult.dockermsg;
+
+					var PoolBlocksize = nodetestresult.dockerPoolBlocksize;
+					var BaseDeviceSize = nodetestresult.dockerBaseDeviceSize;
+					var BackingFilesystem = nodetestresult.dockerBackingFilesystem;
+					var Datafile=nodetestresult.dockerDatafile;
+					var DataSpaceUsed = nodetestresult.dockerDataSpaceUsed;
+					var DataSpaceTotal = nodetestresult.dockerDataSpaceTotal;
+					var DataSpaceAvailable=nodetestresult.dockerDataSpaceAvailable;
+					var Metadatafile = nodetestresult.dockerMetadatafile;
+					var MetaSpaceUsed=nodetestresult.dockerMetaSpaceUsed;
+					var MetaSpaceTotal = nodetestresult.dockerMetaSpaceTotal;
+					var MetaSpaceAvailable = nodetestresult.dockerMetaSpaceAvailable;
+					var DeferredRemovalEnable=nodetestresult.dockerDeferredRemovalEnable;
+					var UdevSyncSupported = nodetestresult.dockerUdevSyncSupported;
+					var DeferredDeletionEnable = nodetestresult.docekrDeferredDeletionEnable;
+					var DeferredDeletedDeviceCount=nodetestresult.dockerDeferredDeletedDeviceCount;
+
 					tabInfoHtml += '<div class="tab-pane fade tabInfo'+count+'" id="dockerTab">'
 						+'<table class="table">'
 						+'<tbody class="dockerTable">'
@@ -136,8 +152,64 @@ function detail(obj) {
 						+'<td class="tableInput"><input class="" type="text" id="dockerpass" readOnly value="'+dockerpass+'"></td>'
 						+'</tr>'
 						+'<tr>'
-						+'<th style="width: 20%">磁盘大小(G)：</th>'
-						+'<td class="tableInput"><input class="" type="text" id="memory" readOnly value="'+memory+'"></td>'
+						+'<th style="width: 20%">Pool Blocksize(KB)：</th>'
+						+'<td class="tableInput"><input class="" type="text" id="PoolBlocksize" readOnly value="'+PoolBlocksize+'"></td>'
+						+'</tr>'
+						+'<tr>'
+						+'<th style="width: 20%">Base Device Size(GB)：</th>'
+						+'<td class="tableInput"><input class="" type="text" id="BaseDeviceSize" readOnly value="'+BaseDeviceSize+'"></td>'
+						+'</tr>'
+						+'<tr>'
+						+'<th style="width: 20%">Backing Filesystem：</th>'
+						+'<td class="tableInput"><input class="" type="text" id="BackingFilesystem" readOnly value="'+BackingFilesystem+'"></td>'
+						+'</tr>'
+						+'<tr>'
+						+'<th style="width: 20%">Data file：</th>'
+						+'<td class="tableInput"><input class="" type="text" id="Datafile" readOnly value="'+Datafile+'"></td>'
+						+'</tr>'
+						+'<tr>'
+						+'<th style="width: 20%">Data Space Used(GB)：</th>'
+						+'<td class="tableInput"><input class="" type="text" id="DataSpaceUsed" readOnly value="'+DataSpaceUsed+'"></td>'
+						+'</tr>'
+						+'<tr>'
+						+'<th style="width: 20%">Data Space Total(GB)：</th>'
+						+'<td class="tableInput"><input class="" type="text" id="DataSpaceTotal" readOnly value="'+DataSpaceTotal+'"></td>'
+						+'</tr>'
+						+'<tr>'
+						+'<th style="width: 20%">Data Space Available(GB)：</th>'
+						+'<td class="tableInput"><input class="" type="text" id="DataSpaceAvailable" readOnly value="'+DataSpaceAvailable+'"></td>'
+						+'</tr>'
+						+'<tr>'
+						+'<th style="width: 20%">Metadata file：</th>'
+						+'<td class="tableInput"><input class="" type="text" id="Metadatafile" readOnly value="'+Metadatafile+'"></td>'
+						+'</tr>'
+						+'<tr>'
+						+'<th style="width: 20%">Meta Space Used(MB)：</th>'
+						+'<td class="tableInput"><input class="" type="text" id="MetaSpaceUsed" readOnly value="'+MetaSpaceUsed+'"></td>'
+						+'</tr>'
+						+'<tr>'
+						+'<th style="width: 20%">Meta Space Total(GB)：</th>'
+						+'<td class="tableInput"><input class="" type="text" id="MetaSpaceTotal" readOnly value="'+MetaSpaceTotal+'"></td>'
+						+'</tr>'
+						+'<tr>'
+						+'<th style="width: 44%">Meta Space Available(KB)：</th>'
+						+'<td class="tableInput"><input class="" type="text" id="MetaSpaceAvailable" readOnly value="'+MetaSpaceAvailable+'"></td>'
+						+'</tr>'
+						+'<tr>'
+						+'<th style="width: 44%">Deferred Removal Enable：</th>'
+						+'<td class="tableInput"><input class="" type="text" id="DeferredRemovalEnable" readOnly value="'+DeferredRemovalEnable+'"></td>'
+						+'</tr>'
+						+'<tr>'
+						+'<th style="width: 44%">Udev Sync Supported：</th>'
+						+'<td class="tableInput"><input class="" type="text" id="UdevSyncSupported" readOnly value="'+UdevSyncSupported+'"></td>'
+						+'</tr>'
+						+'<tr>'
+						+'<th style="width: 44%">Deferred Deletion Enable：</th>'
+						+'<td class="tableInput"><input class="" type="text" id="DeferredDeletionEnable" readOnly value="'+DeferredDeletionEnable+'"></td>'
+						+'</tr>'
+						+'<tr>'
+						+'<th style="width: 44%">Deferred Deleted Device Count：</th>'
+						+'<td class="tableInput"><input class="" type="text" id="DeferredDeletedDeviceCount" readOnly value="'+DeferredDeletedDeviceCount+'"></td>'
 						+'</tr>'
 						+'<tr>'
 						+'<td colspan="2"><textarea id="dockerdetail" style="width: 100%; height: 200px;" readOnly value="'+dockerdetail+'">'+dockerdetail+'</textarea></td>'
@@ -544,6 +616,7 @@ function showTestList(){
 	})
 }
 function showTestListData(data){
+	debugger;
 	var nodetestresult = data.nodetestresult;
 	var testListHtml = "";
 	for(var i=0; i<nodetestresult.length; i++){
@@ -775,19 +848,8 @@ function testNodes(obj){
 				return;
 			}
 		});
-	}else{
-		//单独一个  选中的节点
-		selectednode = $(obj).parent().attr("nodename");
-		selectednodes.push(selectednode);
-		var thisDeployStatus = $(obj).parent().attr("deployStatus");
-		// 是否已经部署过
-		if(thisDeployStatus == 'false'){
-			layer.msg('执行测试前请先部署！',{icon: 5});
-			flag = false;
-			return;
-		}
 		$.ajax({
-			url:ctx + "/cluster/excutetestResult?nodename="+selectednode,
+			url:ctx + "/cluster/testparam",
 			type:"get",
 			success:function(data){
 				var data = eval("(" + data + ")");
@@ -796,31 +858,21 @@ function testNodes(obj){
 					layer.msg(data.msg,{icon : 5});
 					return;
 				}
-
-				$("#ping").prop("checked",false);
-				$("#trace").prop("checked",false);
-				$("#curl").prop("checked",false);
-				$("#qperf").prop("checked",false);
-				$("#docker").prop("checked",false);
-				$("#dns").prop("checked",false);
-	//测试默认值TODO
-				$("#pingip").val("");
-				$("#tracepathip").val("");
-				$("#pingtime").val("");
-				$("#tracepathtime").val("");
-				$("#qperf").val("");
-				$("#qperftime").val("");
-				$("#curltime").val("");
-				$("#docker").val("");
-
 				if(status == '200'){
+					$("#ping").prop("checked",false);
+					$("#trace").prop("checked",false);
+					$("#curl").prop("checked",false);
+					$("#qperf").prop("checked",false);
+					$("#docker").prop("checked",false);
+					$("#dns").prop("checked",false);
+
 					var pingitem = "";
 					var traceitem = "";
 					var qperfitem = "";
 					var curlitem = "";
 					var dockeritem = "";
 					var dnsitem = "";
-					var nodetestresult = data.nodetestresult;
+					var nodetestresult = data.testparam;
 
 					if(nodetestresult ==undefined){
 						pingitem = false;
@@ -837,17 +889,17 @@ function testNodes(obj){
 						dockeritem = nodetestresult.docker;
 						dnsitem = nodetestresult.dns;
 					}
-
-
 					$("#ping").prop("checked",pingitem);
 					$("#trace").prop("checked",traceitem);
 					$("#curl").prop("checked",curlitem);
 					$("#qperf").prop("checked",qperfitem);
 					$("#docker").prop("checked",dockeritem);
 					$("#dns").prop("checked",dnsitem);
+
 					if ($(".checkItem:checked").length == $(".checkItem").length) {
 		                $("#selectitem").prop("checked", "checked");
 		            }
+					//前一次的测试值
 					if(pingitem){
 						$("#pingip").val(nodetestresult.pingIp);
 						$("#pingtime").val(nodetestresult.pingtimetarget);
@@ -865,6 +917,21 @@ function testNodes(obj){
 					}
 					if(dockeritem){
 						$("#docker").val(nodetestresult.memorytarget);
+						$("#PoolBlocksizeTarget").val(nodetestresult.dockerPoolBlocksizeTarget);
+						$("#BaseDeviceSizeTarget").val(nodetestresult.dockerBaseDeviceSizeTarget);
+						$("#BackingFilesystemTarget").val(nodetestresult.dockerBackingFilesystemTarget);
+						$("#DatafileTarget").val(nodetestresult.dockerDatafileTarget);
+						$("#MetaSpaceUsedTarget").val(nodetestresult.dockerMetaSpaceUsedTarget);
+						$("#MetaSpaceAvailableTarget").val(nodetestresult.dockerMetaSpaceAvailableTarget);
+						$("#DeferredRemovalEnableTarget").val(nodetestresult.dockerDeferredRemovalEnableTarget);
+						$("#MetadatafileTarget").val(nodetestresult.dockerMetadatafileTarget);
+						$("#DataSpaceUsedTarget").val(nodetestresult.dockerDataSpaceUsedTarget);
+						$("#DataSpaceTotalTarget").val(nodetestresult.dockerDataSpaceTotalTarget);
+						$("#DataSpaceAvailableTarget").val(nodetestresult.dockerDataSpaceAvailableTarget);
+						$("#MetaSpaceTotalTarget").val(nodetestresult.dockerMetaSpaceTotalTarget);
+						$("#UdevSyncSupportedTarget").val(nodetestresult.dockerUdevSyncSupportedTarget);
+						$("#DeferredDeletionEnableTarget").val(nodetestresult.dockerDeferredDeletionEnableTarget);
+						$("#DeferredDeletedDeviceCountTarget").val(nodetestresult.dockerDeferredDeletedDeviceCountTarget);
 					}
 				}
 
@@ -925,21 +992,21 @@ function times(selectednodes,j){
 	var speed = $("#speed").val()=="" ? 0 : $("#speed").val();
 	var latency = $("#qperftime").val()=="" ? 0 : $("#qperftime").val();
 
-	var dockerPoolBlocksize = $("#PoolBlocksize").val()=="" ? 0 : $("#PoolBlocksize").val();
-	var dockerBaseDeviceSize  = $("#BaseDeviceSize").val()=="" ? 0 : $("#BaseDeviceSize").val();
-	var dockerBackingFilesystem = $("#BackingFilesystem").val();
-	var dockerDatafile = $("#Datafile").val();
-	var dockerMetaSpaceUsed  = $("#MetaSpaceUsed").val()=="" ? 0 : $("#MetaSpaceUsed").val();
-	var dockerMetaSpaceAvailable = $("#MetaSpaceAvailable").val()=="" ? 0 : $("#MetaSpaceAvailable").val();
-	var dockerDeferredRemovalEnable = $("#DeferredRemovalEnable").val();
-	var dockerMetadatafile = $("#Metadatafile").val();
-	var dockerDataSpaceUsed = $("#DataSpaceUsed").val()=="" ? 0 : $("#DataSpaceUsed").val();
-	var dockerDataSpaceTotal = $("#DataSpaceTotal").val()=="" ? 0 : $("#DataSpaceTotal").val();
-	var dockerDataSpaceAvailable = $("#DataSpaceAvailable").val()=="" ? 0 : $("#DataSpaceAvailable").val();
-	var dockerMetaSpaceTotal = $("#MetaSpaceTotal").val()=="" ? 0 : $("#MetaSpaceTotal").val();
-	var dockerUdevSyncSupported = $("#UdevSyncSupported").val();
-	var docekrDeferredDeletionEnable = $("#DeferredDeletionEnable").val();
-	var dockerDeferredDeletedDeviceCount = $("#DeferredDeletedDeviceCount").val()=="" ? 0 : $("#DeferredDeletedDeviceCount").val();
+	var dockerPoolBlocksize = $("#PoolBlocksizeTarget").val()=="" ? 0 : $("#PoolBlocksizeTarget").val();
+	var dockerBaseDeviceSize  = $("#BaseDeviceSizeTarget").val()=="" ? 0 : $("#BaseDeviceSizeTarget").val();
+	var dockerBackingFilesystem = $("#BackingFilesystemTarget").val();
+	var dockerDatafile = $("#DatafileTarget").val();
+	var dockerMetaSpaceUsed  = $("#MetaSpaceUsedTarget").val()=="" ? 0 : $("#MetaSpaceUsedTarget").val();
+	var dockerMetaSpaceAvailable = $("#MetaSpaceAvailableTarget").val()=="" ? 0 : $("#MetaSpaceAvailableTarget").val();
+	var dockerDeferredRemovalEnable = $("#DeferredRemovalEnableTarget").val();
+	var dockerMetadatafile = $("#MetadatafileTarget").val();
+	var dockerDataSpaceUsed = $("#DataSpaceUsedTarget").val()=="" ? 0 : $("#DataSpaceUsedTarget").val();
+	var dockerDataSpaceTotal = $("#DataSpaceTotalTarget").val()=="" ? 0 : $("#DataSpaceTotalTarget").val();
+	var dockerDataSpaceAvailable = $("#DataSpaceAvailableTarget").val()=="" ? 0 : $("#DataSpaceAvailableTarget").val();
+	var dockerMetaSpaceTotal = $("#MetaSpaceTotalTarget").val()=="" ? 0 : $("#MetaSpaceTotalTarget").val();
+	var dockerUdevSyncSupported = $("#UdevSyncSupportedTarget").val();
+	var docekrDeferredDeletionEnable = $("#DeferredDeletionEnableTarget").val();
+	var dockerDeferredDeletedDeviceCount = $("#DeferredDeletedDeviceCountTarget").val()=="" ? 0 : $("#DeferredDeletedDeviceCountTarget").val();
 
 	var thisNodeName = selectednodes[j];
 	var nodeTestInfo = {
@@ -989,6 +1056,22 @@ function times(selectednodes,j){
 	//测试结果
 	var nodeTestOpr = $('input:checkbox[id="'+thisNodeName+'"]:checked').parents(".thisTr").find(".clusterTestOpr");
 
+	nodeTestOpr.empty();
+	nodeProgressDiv.empty();
+	console.log("节点测试"+j+"==="+thisNodeName);//TODO
+	//1
+	var testHtmlResule = '<div class="progress-bar progress-bar-warning" role="progressbar"'
+		 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
+		 +'style="width: 40%;">'
+		 +'<span >部署完成</span>'
+		 +'</div>';
+	var testPingHtml = testHtmlResule+'<div class="progress-bar progress-bar-striped active progress-bar-success" role="progressbar"'
+		 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
+		 +'style="width: '+testprogressWidth+';">'
+		 +'<span>'+ids[count]+'测试中</span>'
+		 +'</div>';
+	nodeProgressDiv.empty().append(testPingHtml);
+
 	$.ajax({
 		url : ctx+"/cluster/test"+ids[count],
 		//type:'get',
@@ -1000,21 +1083,7 @@ function times(selectednodes,j){
 				setTimeout("layer.closeAll()",2000);
 				return;
 			}else{
-				nodeTestOpr.empty();
-				nodeProgressDiv.empty();
-				console.log("节点测试"+j+"==="+thisNodeName);//TODO
-				//1
-				var testHtmlResule = '<div class="progress-bar progress-bar-warning" role="progressbar"'
-					 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
-					 +'style="width: 40%;">'
-					 +'<span >部署完成</span>'
-					 +'</div>';
-				var testPingHtml = testHtmlResule+'<div class="progress-bar progress-bar-striped active progress-bar-success" role="progressbar"'
-					 +'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
-					 +'style="width: '+testprogressWidth+';">'
-					 +'<span>'+ids[count]+'测试中</span>'
-					 +'</div>';
-				nodeProgressDiv.empty().append(testPingHtml);
+
 				var passStatus = passStatusFun(ids[count],data.nodeInfo);
 				if (passStatus == true) {
 					testHtmlResule = testHtmlResule
