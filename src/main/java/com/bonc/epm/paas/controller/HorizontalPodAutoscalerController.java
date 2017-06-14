@@ -14,9 +14,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
+import com.bonc.epm.paas.constant.ServiceConstant;
 import com.bonc.epm.paas.dao.ServiceDao;
 import com.bonc.epm.paas.entity.Service;
 import com.bonc.epm.paas.entity.User;
+import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
 import com.bonc.epm.paas.kubernetes.apis.KubernetesAPISClientInterface;
 import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
 import com.bonc.epm.paas.kubernetes.model.HorizontalPodAutoscaler;
@@ -34,12 +36,6 @@ import com.bonc.epm.paas.util.CurrentUserUtils;
  */
 @Controller
 public class HorizontalPodAutoscalerController {
-
-	/**
-	 * 调用服务controller
-	 */
-	@Autowired
-	private ServiceController serviceController;
 
 	/**
 	 * serviceDao:service数据接口.
@@ -221,7 +217,21 @@ public class HorizontalPodAutoscalerController {
 			LOG.info(e.getStatus().getMessage());
 		}
 		//将副本数改为默认副本数
-		serviceController.modifyServiceNum(services.get(0).getId(), services.get(0).getInstanceNum());
+		try {
+			Service service = services.get(0);
+			Integer addservice = services.get(0).getInstanceNum();
+			if (service.getStatus() == ServiceConstant.CONSTRUCTION_STATUS_RUNNING
+					|| service.getStatus() == ServiceConstant.CONSTRUCTION_STATUS_DEBUG) {
+				KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+				client.updateReplicationController(service.getServiceName(), addservice);
+			}
+		} catch (KubernetesClientException e) {
+			LOG.error("modify servicenum error:" + e.getStatus().getMessage());
+		} catch (Exception e) {
+			LOG.error("modify service error :" + e);
+		}
+
+//		serviceController.modifyServiceNum(services.get(0).getId(), services.get(0).getInstanceNum());
 
 		// 保存service
 		Service service = services.get(0);
