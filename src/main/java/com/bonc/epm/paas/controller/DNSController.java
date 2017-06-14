@@ -110,6 +110,7 @@ public class DNSController {
 			map.put("messages", messages);
 			return JSON.toJSONString(map);
 		}
+		address = address.trim();
 		// 持久化
 		DNSService service = new DNSService();
 		service.setIsMonitor(CommConstant.TYPE_NO_VALUE);
