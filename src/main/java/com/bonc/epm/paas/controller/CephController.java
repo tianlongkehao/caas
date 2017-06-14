@@ -682,7 +682,7 @@ public class CephController {
 
 				boolean snapexist = false;
 				for (RbdSnapInfo snap : snaplist) {
-					if (imgname.equals(snap.name)) {
+					if (snapname.equals(snap.name)) {
 						snapexist = true;
 						break;
 					}
