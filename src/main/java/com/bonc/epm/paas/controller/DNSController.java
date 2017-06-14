@@ -56,6 +56,8 @@ public class DNSController {
 	 */
 	private static final Logger LOG = LoggerFactory.getLogger(DNSController.class);
 
+	private static long threadId = 0;
+
 	@Autowired
 	KubernetesClientService kubernetesClientService;
 
@@ -220,9 +222,12 @@ public class DNSController {
 	 * void
 	 */
 	public void startMonitor() {
-		new Thread() {
+		Thread t = new Thread() {
 			public void run() {
 				while (true) {
+					if (currentThread().getId() != threadId) {
+						break;
+					}
 					String checkDnsResult = getCheckDnsResult(true);
 					JSONObject parseObject = JSONObject.parseObject(checkDnsResult);
 					if (parseObject.get("status").equals("200")) {
@@ -247,7 +252,9 @@ public class DNSController {
 					}
 				}
 			}
-		}.start();
+		};
+		threadId = t.getId();
+		t.start();
 	}
 
 	/**
@@ -477,6 +484,9 @@ public class DNSController {
 			map.put("status", "301");
 			return JSON.toJSONString(map);
 		}
+
+		threadId = 0;
+
 		Iterable<DNSService> all = dnsServiceDao.findAll();
 		Iterator<DNSService> iterator = all.iterator();
 		while (iterator.hasNext()) {
@@ -489,6 +499,8 @@ public class DNSController {
 			dnsService.setSleepTime(sleepTime);
 			dnsServiceDao.save(dnsService);
 		}
+
+		startMonitor();
 		map.put("status", "200");
 		return JSON.toJSONString(map);
 	}
