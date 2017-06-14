@@ -27,6 +27,11 @@ $(document).ready(function () {
 						+'</tr>';
 				}
 				$("#dnsList").empty().append(dnsHtml);
+				$('.dataTables-example').dataTable({
+				    "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0,4] }],
+				    "aaSorting": [[ 3, "desc" ]]
+				}); 
+				$("#checkallbox").parent().removeClass("sorting_asc");
 			}
 		}
 	})
