@@ -61,7 +61,7 @@
 													<td style="width: 20%;">${snap.createDate}</td>
 													<td style="width: 20%;">${snap.snapdetail}</td>
 													<td style="text-indent: 5px;" class="del-operation">
-														<a onclick="storageRollBack(this)" rbd="${snap.imgname}" snap="${snap.name}" title="回滚磁盘">
+														<a onclick="storageRollBack(this)" imgId =${snap.imgId } rbd="${snap.imgname}" snap="${snap.name}" title="回滚磁盘">
 													    	<i class="fa fa-history"></i>
 													    </a>
 													    <a onclick="deletesnap(this)" rbd="${snap.imgname}" snap="${snap.name}">

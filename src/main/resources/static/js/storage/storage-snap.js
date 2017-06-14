@@ -5,12 +5,13 @@ $(function(){
 function storageRollBack(obj){
 	var snap = $(obj).attr("snap");
     var rbd = $(obj).attr("rbd");
+    var imgId = $(obj).attr("imgId");
 
     var loading = layer.load(0, {shade : [ 0.3, '#000' ]});
 
     //判断是否可以回滚
     $.ajax({
-			url:""+ctx+"/ceph/checkrbdrunning?imgname="+rbd,
+			url:""+ctx+"/ceph/checkrbdrunning?imgId="+imgId,
 			type:"get",
 			success:function(data){
 				var data = eval("(" + data + ")");

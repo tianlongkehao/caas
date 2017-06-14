@@ -252,20 +252,37 @@ function createSnapshoot(obj){
 					$('#snapshootName').focus();
 					return;
 				}
-				layer.close(index);
+
 				$.ajax({
- 					url:""+ctx+"/ceph/createsnap?imgname="+rbdname+"&snapname="+snapname+"&snapdetail="+detail,
+ 					url:""+ctx+"/ceph/checksnap?imgname="+rbdname+"&snapname="+snapname,
  					type:"get",
  					success:function(data){
+ 						layer.close(index);
  						var data = eval("(" + data + ")");
  						if(data.status =='500'){
  							layer.msg(data.msg,{icon : 5});
  						}else{
- 							layer.msg("快照创建成功！",{icon : 6});
+ 							if(data.exist == '1'){
+ 								layer.msg("快照名称重复！",{icon : 5});
+ 							}else{
+ 								$.ajax({
+ 				 					url:""+ctx+"/ceph/createsnap?imgname="+rbdname+"&snapname="+snapname+"&snapdetail="+detail,
+ 				 					type:"get",
+ 				 					success:function(data){
+ 				 						var data = eval("(" + data + ")");
+ 				 						if(data.status =='500'){
+ 				 							layer.msg(data.msg,{icon : 5});
+ 				 						}else{
+ 				 							layer.msg("快照创建成功！",{icon : 6});
+ 				 						}
+ 				 						return;
+ 				 					}
+ 				 				});
+ 							}
  						}
- 						return;
  					}
  				});
+
 
 				}
 	})

@@ -24,6 +24,8 @@ public class CephSnap {
 
 	private String pool;
 
+	private long imgId;
+
 	/**
 	 * 创建时间
 	 */
@@ -76,6 +78,14 @@ public class CephSnap {
 
 	public void setCreateDate(Date createDate) {
 		this.createDate = createDate;
+	}
+
+	public long getImgId() {
+		return imgId;
+	}
+
+	public void setImgId(long imgId) {
+		this.imgId = imgId;
 	}
 
 }

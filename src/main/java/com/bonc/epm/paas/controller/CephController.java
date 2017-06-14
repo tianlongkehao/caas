@@ -136,8 +136,9 @@ public class CephController {
 	@Autowired
 	private SnapStrategyDao snapStrategyDao;
 
-	/*@Autowired
-	private ServiceDao serviceDao;*/
+	/*
+	 * @Autowired private ServiceDao serviceDao;
+	 */
 
 	/**
 	 * connectCephFS
@@ -345,10 +346,11 @@ public class CephController {
 
 	/**
 	 * 删除pool，清空数据库中的相关记录
+	 *
 	 * @param namespace
 	 * @throws RadosException
 	 */
-	public void clearPool(String namespace)throws RadosException{
+	public void clearPool(String namespace) throws RadosException {
 		try {
 			cluster = new Rados(CEPH_NAME);
 			File f = new File(CEPH_DIR + CEPH_CONF);
@@ -366,18 +368,18 @@ public class CephController {
 			}
 
 			if (poolExist) {
-				//停止快照策略的执行
+				// 停止快照策略的执行
 				List<CephRbdInfo> cephRbdInfos = cephRbdInfoDao.findByPool(namespace);
-				if(!CollectionUtils.isEmpty(cephRbdInfos)){
-					for(CephRbdInfo cephRbdInfo:cephRbdInfos){
-						if(cephRbdInfo.isStrategyexcuting()){
+				if (!CollectionUtils.isEmpty(cephRbdInfos)) {
+					for (CephRbdInfo cephRbdInfo : cephRbdInfos) {
+						if (cephRbdInfo.isStrategyexcuting()) {
 							SnapListener.removeTimer(cephRbdInfo);
 						}
 					}
 				}
-				//删除pool
+				// 删除pool
 				cluster.poolDelete(namespace);
-				//删除数据库记录
+				// 删除数据库记录
 				cephRbdInfoDao.deleteByPool(namespace);
 				cephSnapDao.deleteByPool(namespace);
 				snapStrategyDao.deleteByNamespace(namespace);
@@ -394,11 +396,12 @@ public class CephController {
 
 	/**
 	 * 清空cephrbd
+	 *
 	 * @return
 	 */
 	@RequestMapping(value = { "ceph/clearcephrbd" }, method = RequestMethod.GET)
 	@ResponseBody
-	public String clearRbd(String imgName){
+	public String clearRbd(String imgName) {
 		Map<String, String> map = new HashMap<>();
 		String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
 		map.put("status", "200");
@@ -412,10 +415,10 @@ public class CephController {
 			IoCTX ioctx = cluster.ioCtxCreate(namespace);
 			try {
 				Rbd rbd = new Rbd(ioctx); // RBD
-                RbdImage rbdImage = rbd.open(imgName);
-                long size = rbdImage.stat().size;
-                rbdImage.getPointer().clear(size);
-                rbd.close(rbdImage);
+				RbdImage rbdImage = rbd.open(imgName);
+				long size = rbdImage.stat().size;
+				rbdImage.getPointer().clear(size);
+				rbd.close(rbdImage);
 				return JSON.toJSONString(map);
 			} catch (RbdException e) {
 				msg = "指定的镜像不存在！";
@@ -623,7 +626,7 @@ public class CephController {
 				rbdImage = rbd.open(imgname);
 				rbdImage.snapCreate(snapname);
 				rbd.close(rbdImage);
-				CephSnap cephSnap = saveSnapInfo(poolname,imgname, snapname, snapdetail);
+				CephSnap cephSnap = saveSnapInfo(poolname, imgname, snapname, snapdetail);
 				// 记录日志
 				String extraInfo = "快照策略自动拍照，新增快照 " + JSON.toJSONString(cephSnap);
 				LOGGER.info(extraInfo);
@@ -824,6 +827,10 @@ public class CephController {
 		snap.setPool(CurrentUserUtils.getInstance().getUser().getNamespace());
 		snap.setSnapdetail(snapdetail);
 		snap.setCreateDate(new Date());
+
+		CephRbdInfo cephRbdInfo = cephRbdInfoDao
+				.findByPoolAndName(CurrentUserUtils.getInstance().getUser().getNamespace(), imgname).get(0);
+		snap.setImgId(cephRbdInfo.getId());
 		cephSnapDao.save(snap);
 		return snap;
 	}
@@ -836,13 +843,17 @@ public class CephController {
 	 * @param snapdetail
 	 * @return
 	 */
-	private CephSnap saveSnapInfo(String poolname,String imgname, String snapname, String snapdetail) {
+	private CephSnap saveSnapInfo(String poolname, String imgname, String snapname, String snapdetail) {
 		CephSnap snap = new CephSnap();
 		snap.setImgname(imgname);
 		snap.setName(snapname);
 		snap.setPool(poolname);
 		snap.setSnapdetail(snapdetail);
 		snap.setCreateDate(new Date());
+
+		CephRbdInfo cephRbdInfo = cephRbdInfoDao
+				.findByPoolAndName(poolname,imgname).get(0);
+		snap.setImgId(cephRbdInfo.getId());
 		cephSnapDao.save(snap);
 		return snap;
 	}
@@ -961,8 +972,8 @@ public class CephController {
 
 				// 删除rbd
 				if (imageExist) {
-					//停止快照策略
-					if(cephRbdInfo.isStrategyexcuting()){
+					// 停止快照策略
+					if (cephRbdInfo.isStrategyexcuting()) {
 						boolean result = SnapListener.removeTimer(cephRbdInfo);
 						if (!result) {
 							msg = "镜像" + imgname + "的快照策略取消失败！";
@@ -1360,40 +1371,38 @@ public class CephController {
 
 	/**
 	 * 检查是否有服务正在使用rbd
+	 *
 	 * @param imgname
 	 * @return
 	 */
 	@RequestMapping(value = { "ceph/checkrbdrunning" }, method = RequestMethod.GET)
 	@ResponseBody
-	public String checkRbdRunning(long imgId){
+	public String checkRbdRunning(long imgId) {
 		Map<String, String> map = new HashMap<>();
 		String msg = "";
 		map.put("status", "200");
 		CephRbdInfo cephRbdInfo = cephRbdInfoDao.findOne(imgId);
 
-		if (cephRbdInfo==null) {
+		if (cephRbdInfo == null) {
 			msg = "数据库中找不到块设备!";
 			map.put("msg", msg);
 			map.put("status", "500");
 			return JSON.toJSONString(map);
 		}
 
-		/*List<ServiceCephRbd> serviceCephRbds = serviceRbdDao.findByCephrbdId(imgId);
-		if (CollectionUtils.isEmpty(serviceCephRbds)) {
-			return JSON.toJSONString(map);
-		}else{
-			long serviceId = serviceCephRbds.get(0).getServiceId();
-			Service service = serviceDao.findOne(serviceId);
-			if(service==null||service.getStatus()!=3){
-				return JSON.toJSONString(map);
-			}else{
-				msg = "服务: " + service.getServiceName() + "正在使用磁盘: " + cephRbdInfo.getName() + ","
-						+ "请先停止服务再进行操作，重启服务生效！";
-				map.put("msg", msg);
-				map.put("status", "500");
-				return JSON.toJSONString(map);
-			}
-		}*/
+		/*
+		 * List<ServiceCephRbd> serviceCephRbds =
+		 * serviceRbdDao.findByCephrbdId(imgId); if
+		 * (CollectionUtils.isEmpty(serviceCephRbds)) { return
+		 * JSON.toJSONString(map); }else{ long serviceId =
+		 * serviceCephRbds.get(0).getServiceId(); Service service =
+		 * serviceDao.findOne(serviceId);
+		 * if(service==null||service.getStatus()!=3){ return
+		 * JSON.toJSONString(map); }else{ msg = "服务: " +
+		 * service.getServiceName() + "正在使用磁盘: " + cephRbdInfo.getName() + "," +
+		 * "请先停止服务再进行操作，重启服务生效！"; map.put("msg", msg); map.put("status", "500");
+		 * return JSON.toJSONString(map); } }
+		 */
 
 		List<ServiceCephRbd> serviceCephRbds = serviceRbdDao.findByCephrbdId(imgId);
 		if (CollectionUtils.isEmpty(serviceCephRbds)) {
@@ -1649,7 +1658,7 @@ public class CephController {
 
 		CephRbdInfo cephRbdInfo = cephRbdInfoDao.findOne(imgId);
 		long strategyId = cephRbdInfo.getStrategyId();
-		if(strategyId == 0){
+		if (strategyId == 0) {
 			msg = "块设备没有配置快照策略!";
 			map.put("msg", msg);
 			map.put("status", "500");
@@ -1913,9 +1922,9 @@ public class CephController {
 					strategy.setExcutingCount(0);
 				} else {
 					strategy.setBindCount(cephRbdInfos.size());
-					int count=0;
-					for(CephRbdInfo cephRbdInfo:cephRbdInfos){
-						if(cephRbdInfo.isStrategyexcuting()){
+					int count = 0;
+					for (CephRbdInfo cephRbdInfo : cephRbdInfos) {
+						if (cephRbdInfo.isStrategyexcuting()) {
 							count++;
 						}
 					}
@@ -1939,7 +1948,7 @@ public class CephController {
 	 */
 	@RequestMapping(value = { "ceph/snapStrategyInfo" }, method = RequestMethod.GET)
 	@ResponseBody
-	public String getSnapStrategyBinded( long strategyId) {
+	public String getSnapStrategyBinded(long strategyId) {
 		Map<String, Object> map = new HashMap<>();
 		map.put("status", "200");
 
@@ -1957,34 +1966,35 @@ public class CephController {
 			}
 		}
 
-        map.put("bindedRbd", bindedRbd);
-        map.put("unbindedRbd", unbindedRbd);
+		map.put("bindedRbd", bindedRbd);
+		map.put("unbindedRbd", unbindedRbd);
 		return JSON.toJSONString(map);
 	}
 
 	/**
 	 * 获取指定块存储的快照策略
+	 *
 	 * @param imgId
 	 * @return
 	 */
 	@RequestMapping(value = { "ceph/specifiedSnapStrategyInfo" }, method = RequestMethod.GET)
 	@ResponseBody
-	public String getSnapStrategyForSpecifiedRbd(long imgId){
+	public String getSnapStrategyForSpecifiedRbd(long imgId) {
 		Map<String, Object> map = new HashMap<>();
 		map.put("status", "200");
 
 		CephRbdInfo cephRbdInfo = cephRbdInfoDao.findOne(imgId);
 		long strategyId = cephRbdInfo.getStrategyId();
-		if(strategyId == 0){
+		if (strategyId == 0) {
 			map.put("status", "404");
 			return JSON.toJSONString(map);
 		}
 
 		SnapStrategy snapStrategy = snapStrategyDao.findById(strategyId);
-	    boolean excuting = cephRbdInfo.isStrategyexcuting();
+		boolean excuting = cephRbdInfo.isStrategyexcuting();
 
-	    map.put("snapStrategy", snapStrategy);
-	    map.put("excuting", excuting);
+		map.put("snapStrategy", snapStrategy);
+		map.put("excuting", excuting);
 
 		return JSON.toJSONString(map);
 	}
