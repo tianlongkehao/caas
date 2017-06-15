@@ -1668,8 +1668,10 @@ public class ClusterController {
 			nodeInfo.setTracepathoutmsg(traceresponse.getOutmsg());
 			String tracemsg = traceresponse.getOutmsg();
 			tracemsg = tracemsg.subSequence(tracemsg.indexOf("real"), tracemsg.indexOf("user")).toString().trim();
-			tracemsg = tracemsg.split("0m")[1].split("s")[0];
-			nodeInfo.setTracetime(Double.parseDouble(tracemsg));
+			tracemsg = tracemsg.replace("real", "").trim();
+			int minute = Integer.parseInt(tracemsg.split("m")[0]);
+			float second = Float.parseFloat(tracemsg.split("m")[1].split("s")[0]);
+			nodeInfo.setTracetime(second+minute*60);
 			if (nodeInfo.getTracepathoutmsg().contains("hops")) {
 				nodeInfo.setTracepass(nodeInfo.getTracetime() <= nodeTestInfo.getTracetimetarget());// trace通过
 			}
