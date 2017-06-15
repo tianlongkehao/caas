@@ -492,7 +492,7 @@ $(document).ready(function() {
 		var selectednodes = new Array();
 		$("input:checkbox[name='node']").each(function(i) {
 			selectednodes.push($(this).val());
-			if($(this).attr("teststatus") == "true"){
+			if($(this).attr("teststatus") == "true" || $(this).attr("deployStatus") == "true"){
 				layer.msg('所选节点中有执行测试完成节点，若重新部署请先清理该节点！',{icon: 5});
 				flag = false;
 				return;
@@ -557,6 +557,7 @@ $(document).ready(function() {
 					$("input:checkbox[name='node']").parent().parent().find(".clusterTestOpr").empty();
 					$("input:checkbox[name='node']").parent().parent().find(".clusterTestOprBtns").attr("deployStatus","false");
 					$("input:checkbox[name='node']").attr("deployStatus","false");
+					$("input:checkbox[name='node']").attr("testStatus","false");
 					layer.msg("清除成功！",{icon : 1});
 				} else {
 					layer.msg("清除失败！",{icon : 5});
