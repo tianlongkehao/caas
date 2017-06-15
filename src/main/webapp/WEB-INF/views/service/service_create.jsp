@@ -195,7 +195,7 @@
 												</c:forEach>
 											    <input type="hidden" value="" class="in_style" id="proxyZone" name="proxyZone">
                                             </li>
-											<li class="line-h-3"> <span class="ve_top">ClientIP黏连方式：</span>
+											<li class="line-h-3"> <span class="ve_top">会话黏连方式：</span>
 	                                            <select class="selectVolume form-control" id="sessionAffinity" name="sessionAffinity"
 	                                                style="height: 34px; width: 230px;">
 	                                                <option name="sessionAffinity" value="" >NONE</option>

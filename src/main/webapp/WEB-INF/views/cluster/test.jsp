@@ -42,9 +42,9 @@
 										<i class="fa fa-map-marker" style="margin-right: 6px;"></i>集群测试
 									</h5>
 									<div class="ibox-tools">
-										<a id="deployBtn" style="cursor: pointer"><i>部署</i></a>
-										<a onclick="testNodes()" style="cursor: pointer"><i>执行</i></a>
-										<a id="deleteBtn" style="cursor: pointer"><i>清除部署</i></a>
+										<a id="deployBtn" style="cursor: pointer" title="一键部署"><img src="<%=path %>/images/cluster-deploy.png" alt="cluster-test" class="clusterImg"></a>
+										<a onclick="testNodes()" style="cursor: pointer" title="执行"><img src="<%=path %>/images/cluster-execute.png" alt="cluster-test" class="clusterImg"></a>
+										<a id="deleteBtn" style="cursor: pointer" title="一键清理部署"><i class="fa fa-undo"></i></a>
 										<a href="javascript:window.location.reload(true);" title="刷新"><i
 											class="fa fa-repeat"></i></a>
 									</div>
