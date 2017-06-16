@@ -1033,12 +1033,21 @@ function loadServices() {
 				if (curUserAutority == 1) {
 					html = '<span serviceId="' + row.id + '"' + 'class="cluster_mirrer_name" style="width: 10px;white-space: nowrap;text-overflow: ellipsis;overflow:hidden;">' + row.serviceName + '</span>' + '<span class="number-node">' + row.instanceNum + '</span>';
 				} else {
-					html = '<b ' + 'class="caret margin" style="transform: rotate(-90deg);" rotate="hide"></b>' + '<a href="' + ctx + '/service/detail/' + row.id + '" serviceId="' + row.id + '"' + 'class="cluster_mirrer_name link" style="width: 10px;white-space: nowrap;text-overflow: ellipsis;overflow:hidden;">' + row.serviceName + '</a>' + '<span class="number-node">' + row.instanceNum + '</span>';
+					html = '<b ' + 'class="caret margin" style="transform: rotate(-90deg);" rotate="hide"></b>' + '<a class="link" href="' + ctx + '/service/detail/' + row.id + '" serviceId="' + row.id + '"' + 'class="cluster_mirrer_name" style="width: 10px;white-space: nowrap;text-overflow: ellipsis;overflow:hidden;">' + row.serviceName + '</a>';
+
+					if(row.status == 1 || row.status == 4){
+						html += '<span class="number-node">0</span>';
+					}else{
+						if(row.targetCPUUtilizationPercentage == undefined || row.targetCPUUtilizationPercentage == null || row.targetCPUUtilizationPercentage == -1){
+							html += '<span class="number-node">' + row.instanceNum + '</span>';
+						}else{
+							html += '<span class="number-node">auto</span>';
+						}
+					}
 				}
 				if (row.updateImage == true) {
 					html += '<a id="' + row.id + '_code" class="margin cursor console-code-modal"' + 'href="' + ctx + 'ci/findCodeCiId.do?imgId=' + row.imgID + '"' + 'style="margin-left: 5px" ><img src="' + ctx + '/images/sd.gif" title="代码更新"></a>';
 				}
-
 				return html;
 			}
 		}, {
