@@ -376,13 +376,27 @@ function releaseStorage(obj){
 	})
 }
 
-function formatStrategy(){
+function formatStrategy(obj){
+	var rbdname = $(obj).parent().attr("rbd");
+
 	layer.open({
 		title: '格式化磁盘',
 		content: "是否确定格式化该磁盘？",
 		btn: ['确定', '取消'],
 		yes: function(index, layero){
-
+			$.ajax({
+					url:""+ctx+"/ceph/clearcephrbd?imgName="+rbdname,
+					type:"get",
+					success:function(data){
+						var data = eval("(" + data + ")");
+						if(data.status =='500'){
+							layer.msg(data.msg,{icon : 5});
+						}else{
+							layer.msg("格式化成功！",{icon : 6});
+							location.reload();
+						}
+					}
+				});
 			}
 })
 }

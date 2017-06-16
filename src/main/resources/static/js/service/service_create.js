@@ -227,8 +227,19 @@ $(document).ready(function(){
 	    	if(!saveCephData()) {
 				return;
 			}
+	    	if(!saveCephData2()) {
+				return;
+			}
 	    } else {
 	    	$("#serviceType").val(2);
+	    }
+
+	    //块设备不能共享，副本数只能为1
+	    var rbdStr = $("#rbdStrs").val();
+	    if(rbdStr!=""&&instNum!=1){
+	    	  layer.tips('块设备不能共享，实例数量只能为1！','#instanceNum',{tips: [1, '#3595CC']});
+		      $('#instanceNum').focus();
+		      return;
 	    }
 
 	    var nginxstr = "";

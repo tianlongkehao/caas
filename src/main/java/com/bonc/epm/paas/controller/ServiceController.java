@@ -1061,8 +1061,8 @@ public class ServiceController {
 				LOG.debug("给rc添加存储卷信息");
 				if (service.getServiceType().equals("1")) {
 					controller = this.setVolumeStorage(controller, service.getId());
+					controller = setCephRbd(controller, service.getId());
 				}
-				controller = setCephRbd(controller, service.getId());
 				controller = client.createReplicationController(controller);
 			} else {
 				List<com.bonc.epm.paas.kubernetes.model.Container> containers = controller.getSpec().getTemplate()
