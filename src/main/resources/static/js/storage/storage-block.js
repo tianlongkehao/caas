@@ -384,7 +384,7 @@ function formatStrategy(obj){
 		content: "是否确定格式化该磁盘？",
 		btn: ['确定', '取消'],
 		yes: function(index, layero){
-			$.ajax({
+			/*$.ajax({
 					url:""+ctx+"/ceph/clearcephrbd?imgName="+rbdname,
 					type:"get",
 					success:function(data){
@@ -396,7 +396,7 @@ function formatStrategy(obj){
 							location.reload();
 						}
 					}
-				});
+				});*/
 			}
 })
 }

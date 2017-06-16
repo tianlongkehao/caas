@@ -422,8 +422,6 @@ public class CephController {
 			try {
 				Rbd rbd = new Rbd(ioctx); // RBD
 				RbdImage rbdImage = rbd.open(imgName);
-				long size = rbdImage.stat().size;
-				rbdImage.getPointer().clear(size);
 				rbd.close(rbdImage);
 				return JSON.toJSONString(map);
 			} catch (RbdException e) {

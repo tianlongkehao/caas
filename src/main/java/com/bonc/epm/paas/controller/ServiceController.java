@@ -2765,9 +2765,7 @@ public class ServiceController {
 				volume.setName("rbd-" + i);
 				CephRbd cephrbd = new CephRbd();
 				List<String> monitors = new ArrayList<String>();
-				String temp ="192.168.0.21:6789,192.168.0.22:6789,192.168.0.23:6789";
-				String[] ceph_monitors = temp.split(",");
-				//String[] ceph_monitors = CEPH_MONITOR.split(",");
+				String[] ceph_monitors = CEPH_MONITOR.split(",");
 				for (String ceph_monitor : ceph_monitors) {
 					monitors.add(ceph_monitor);
 				}
