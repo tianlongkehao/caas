@@ -23,6 +23,8 @@ public class CephRbdInfo {
 
 	private String pool;
 
+	private long creator;
+
 	private long size;
 
 	private String detail;
@@ -36,6 +38,14 @@ public class CephRbdInfo {
 	private String mountpath;
 
 	private String mappath;
+
+	public long getCreator() {
+		return creator;
+	}
+
+	public void setCreator(long creator) {
+		this.creator = creator;
+	}
 
 	public long getStrategyId() {
 		return strategyId;

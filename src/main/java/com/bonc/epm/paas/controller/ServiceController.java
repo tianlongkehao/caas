@@ -688,6 +688,9 @@ public class ServiceController {
 			}
 		}
 
+		//获取未挂载的块设备
+        List<CephRbdInfo> cephRbdList =cephController.getUnUsedCephRbd();
+
 		// 获取监控配置
 		UserFavor userFavor = userFavorDao.findByUserId(currentUser.getId());
 		Integer monitor;
@@ -723,6 +726,7 @@ public class ServiceController {
 		model.addAttribute("memorySizeList", memorySizeList);
 		model.addAttribute("userName", currentUser.getUserName());
 		model.addAttribute("storageList", storageList);
+		model.addAttribute("cephRbdList", cephRbdList);
 		model.addAttribute("imgID", imgID);
 		model.addAttribute("resourceName", resourceName);
 		model.addAttribute("imageName", imageName);

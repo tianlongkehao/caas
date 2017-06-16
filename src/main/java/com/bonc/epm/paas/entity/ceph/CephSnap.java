@@ -26,6 +26,16 @@ public class CephSnap {
 
 	private long imgId;
 
+	private long creator;
+
+	public long getCreator() {
+		return creator;
+	}
+
+	public void setCreator(long creator) {
+		this.creator = creator;
+	}
+
 	/**
 	 * 创建时间
 	 */

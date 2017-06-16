@@ -16,6 +16,12 @@ public interface CephSnapDao extends CrudRepository<CephSnap, Long> {
 	@Query("select i from CephSnap i where i.pool = ?1 order by createDate desc")
 	public List<CephSnap> findByPoolDesc(String pool);
 
+	@Query("select i from CephSnap i where i.creator = ?1 order by createDate desc")
+	public List<CephSnap> findByCreatorDesc(long creator);
+
+	@Query("select i from CephSnap i where i.imgId = ?1 order by createDate desc")
+	public List<CephSnap> findByImgIdDesc(long imgId);
+
 	public void deleteByName(String name);
 
 	public void deleteByImgname(String imgname);

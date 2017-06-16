@@ -11,11 +11,13 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.poi.hssf.record.PageBreakRecord.Break;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +31,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.alibaba.fastjson.JSON;
 import com.bonc.epm.paas.SnapListener;
 import com.bonc.epm.paas.constant.CommConstant;
+import com.bonc.epm.paas.constant.UserConstant;
 import com.bonc.epm.paas.dao.CephRbdInfoDao;
 import com.bonc.epm.paas.dao.CephSnapDao;
 import com.bonc.epm.paas.dao.CommonOperationLogDao;
@@ -36,6 +39,7 @@ import com.bonc.epm.paas.dao.ServiceRbdDao;
 import com.bonc.epm.paas.dao.SnapStrategyDao;
 import com.bonc.epm.paas.entity.CommonOperationLog;
 import com.bonc.epm.paas.entity.CommonOprationLogUtils;
+import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.entity.ceph.CephRbdInfo;
 import com.bonc.epm.paas.entity.ceph.CephSnap;
 import com.bonc.epm.paas.entity.ceph.ServiceCephRbd;
@@ -50,6 +54,8 @@ import com.ceph.rbd.Rbd;
 import com.ceph.rbd.RbdException;
 import com.ceph.rbd.RbdImage;
 import com.ceph.rbd.jna.RbdSnapInfo;
+
+import io.netty.handler.codec.http.HttpContentEncoder.Result;
 
 /**
  * CephController
@@ -805,6 +811,7 @@ public class CephController {
 		CephRbdInfo info = new CephRbdInfo();
 		info.setName(imgname);
 		info.setPool(CurrentUserUtils.getInstance().getUser().getNamespace());
+		info.setCreator(CurrentUserUtils.getInstance().getUser().getId());
 		info.setSize(disksize);
 		info.setDetail(diskdetail);
 		info.setCreateDate(new Date());
@@ -825,6 +832,7 @@ public class CephController {
 		snap.setImgname(imgname);
 		snap.setName(snapname);
 		snap.setPool(CurrentUserUtils.getInstance().getUser().getNamespace());
+		snap.setCreator(CurrentUserUtils.getInstance().getUser().getId());
 		snap.setSnapdetail(snapdetail);
 		snap.setCreateDate(new Date());
 
@@ -1871,14 +1879,34 @@ public class CephController {
 
 	/**
 	 * 块存储主页面
-	 *
+	 * 管理员获取所有，租户和用户分别获取自己创建的，用户不共享租户的块设备
 	 * @param model
 	 * @return
 	 */
 	@RequestMapping(value = { "storage/storageBlock" }, method = RequestMethod.GET)
 	public String storageQuick(Model model) {
-		String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
-		List<CephRbdInfo> cephRbdInfos = cephRbdInfoDao.findByPool(namespace);
+		User user = CurrentUserUtils.getInstance().getUser();
+		List<CephRbdInfo> cephRbdInfos=null;
+		if(user.getUser_autority().equals(UserConstant.AUTORITY_MANAGER)){
+			Iterable<CephRbdInfo> iterable = cephRbdInfoDao.findAll();
+			if(null != iterable){
+			Iterator<CephRbdInfo> iterator = iterable.iterator();
+			cephRbdInfos = new ArrayList<CephRbdInfo>();
+			while(iterator.hasNext()){
+				cephRbdInfos.add(iterator.next());
+			}
+			}
+		}else{
+			cephRbdInfos= cephRbdInfoDao.findByPool("longlong");
+			//cephRbdInfos = cephRbdInfoDao.findByCreator(user.getId());
+			/*long parentId = user.getParent_id();
+			List<CephRbdInfo> parentCeph = cephRbdInfoDao.findByCreator(parentId);
+			if(CollectionUtils.isNotEmpty(parentCeph)){
+				for(CephRbdInfo cephRbdInfo : parentCeph){
+					cephRbdInfos.add(cephRbdInfo);
+				}
+			}*/
+		}
 
 		model.addAttribute("cephRbdInfos", cephRbdInfos);
 		model.addAttribute("menu_flag", "storage");
@@ -1888,14 +1916,30 @@ public class CephController {
 
 	/**
 	 * 快照主页面
-	 *
+	 * 管理员获取所有，租户获取租户自建，用户获取用户自建
 	 * @param model
 	 * @return
 	 */
 	@RequestMapping(value = { "storage/storageSnap" }, method = RequestMethod.GET)
 	public String storageSnap(Model model) {
-		String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
-		List<CephSnap> cephSnaps = cephSnapDao.findByPoolDesc(namespace);
+		User user = CurrentUserUtils.getInstance().getUser();
+		List<CephSnap> cephSnaps = new ArrayList<CephSnap>();
+		if(user.getUser_autority().equals(UserConstant.AUTORITY_MANAGER)){
+			Iterable<CephSnap> iterable = cephSnapDao.findAll();
+			if(null != iterable){
+			Iterator<CephSnap> iterator = iterable.iterator();
+			while(iterator.hasNext()){
+				cephSnaps.add(iterator.next());
+			}
+			}
+		}else{
+			List<CephRbdInfo> cephRbdInfos = cephRbdInfoDao.findByCreator(user.getId());
+			if(CollectionUtils.isNotEmpty(cephRbdInfos)){
+				for(CephRbdInfo cephRbdInfo:cephRbdInfos){
+					cephSnaps.addAll(cephSnapDao.findByImgIdDesc(cephRbdInfo.getId()));
+				}
+			}
+		}
 
 		model.addAttribute("cephSnaps", cephSnaps);
 		model.addAttribute("menu_flag", "storage");
@@ -1911,8 +1955,20 @@ public class CephController {
 	 */
 	@RequestMapping(value = { "storage/snapStrategy" }, method = RequestMethod.GET)
 	public String storageSnapStrategy(Model model) {
-		String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
-		List<SnapStrategy> snapStrategies = snapStrategyDao.findByNamespace(namespace);
+		User user = CurrentUserUtils.getInstance().getUser();
+		List<SnapStrategy> snapStrategies = null;
+		if(user.getUser_autority().equals(UserConstant.AUTORITY_MANAGER)){
+			Iterable<SnapStrategy> iterable = snapStrategyDao.findAll();
+			if(null != iterable){
+			Iterator<SnapStrategy> iterator = iterable.iterator();
+			snapStrategies = new ArrayList<SnapStrategy>();
+			while(iterator.hasNext()){
+				snapStrategies.add(iterator.next());
+			}
+			}
+		}else{
+			snapStrategies = snapStrategyDao.findByUserId(user.getId());
+		}
 
 		if (!CollectionUtils.isEmpty(snapStrategies)) {
 			for (SnapStrategy strategy : snapStrategies) {
@@ -1952,8 +2008,8 @@ public class CephController {
 		Map<String, Object> map = new HashMap<>();
 		map.put("status", "200");
 
-		String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
-		List<CephRbdInfo> cephRbdInfos = cephRbdInfoDao.findByPool(namespace);
+		SnapStrategy snapStrategy = snapStrategyDao.findOne(strategyId);
+		List<CephRbdInfo> cephRbdInfos = cephRbdInfoDao.findByCreator(snapStrategy.getUserId());
 		List<CephRbdInfo> bindedRbd = new ArrayList<CephRbdInfo>();
 		List<CephRbdInfo> unbindedRbd = new ArrayList<CephRbdInfo>();
 		if (!CollectionUtils.isEmpty(cephRbdInfos)) {
@@ -1997,5 +2053,24 @@ public class CephController {
 		map.put("excuting", excuting);
 
 		return JSON.toJSONString(map);
+	}
+
+	/**
+	 * 获取租户或者用户，没有被使用的块设备
+	 * @return
+	 */
+	public List<CephRbdInfo> getUnUsedCephRbd(){
+		User user = CurrentUserUtils.getInstance().getUser();
+		List<CephRbdInfo> temp = cephRbdInfoDao.findByCreator(user.getId());
+		List<CephRbdInfo> result = new ArrayList<CephRbdInfo>();
+		if(CollectionUtils.isNotEmpty(temp)){
+			for(CephRbdInfo cephRbdInfo:temp){
+				if(serviceRbdDao.findByCephrbdId(cephRbdInfo.getId())==null){
+					result.add(cephRbdInfo);
+				}
+			}
+		}
+
+		return result;
 	}
 }

@@ -18,6 +18,8 @@ public interface CephRbdInfoDao extends CrudRepository<CephRbdInfo, Long>{
 
 	public List<CephRbdInfo> findByStrategyId(long strategyId);
 
+	public List<CephRbdInfo> findByCreator(long creator);
+
 	public CephRbdInfo deleteByName(String name);
 
 	public void deleteByPool(String pool);
