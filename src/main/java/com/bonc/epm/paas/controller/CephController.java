@@ -2063,7 +2063,7 @@ public class CephController {
 		List<CephRbdInfo> result = new ArrayList<CephRbdInfo>();
 		if(CollectionUtils.isNotEmpty(temp)){
 			for(CephRbdInfo cephRbdInfo:temp){
-				if(serviceRbdDao.findByCephrbdId(cephRbdInfo.getId())==null){
+				if(CollectionUtils.isEmpty(serviceRbdDao.findByCephrbdId(cephRbdInfo.getId()))){
 					result.add(cephRbdInfo);
 				}
 			}
