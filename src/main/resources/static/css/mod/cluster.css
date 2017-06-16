@@ -1381,4 +1381,20 @@ table.table tr td textarea{
 #chkitem .testItemCon{
 	width:80%;
 }
-
+.clusterImg{
+	height: 18px;
+    margin-bottom: 3px;
+}
+i.fa-toggle-onORoff{
+ 	background:url(../../images/off_on.png) no-repeat;
+ 	width:49px;
+ 	height: 22px;
+    float: left;
+    margin-left:16px;
+ }
+ i.fa-on{
+ 	background-position: 2px -23px;
+ }
+ i.fa-off{
+ 	background-position: 2px -1px;
+}

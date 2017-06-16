@@ -78,8 +78,8 @@ function loadRoute() {
 						 problemHtml = "未知";
 					 }
 					 routeHtmlTr += '<tr>'
-						+'<td><input type="checkbox" class="chkItem" nodeIp="'+nodeIp+'" nodeName="'+nodeName+'"/></td>'
-						+'<td>'+nodeName+'（'+nodeIp+'）</td>'
+						//+'<td><input type="checkbox" class="chkItem" nodeIp="'+nodeIp+'" nodeName="'+nodeName+'"/></td>'
+						+'<td style="text-indent:10px">'+nodeName+'（'+nodeIp+'）</td>'
 						+'<th>&nbsp;</th>'
 						+'<th>&nbsp;</th>'
 						+'<td>'+problemHtml+'</td>'
@@ -91,8 +91,8 @@ function loadRoute() {
 				 }
 				 $("#routeList").empty().append(routeHtmlTr);
 				 $('.dataTables-example').dataTable({
-					    "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0,2,3,5] }],
-					    "aaSorting": [[ 1, "desc" ]]
+					    "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 1,2,4] }],
+					    "aaSorting": [[ 0, "desc" ]]
 				 });
 				$("#checkallbox").parent().removeClass("sorting_asc");
 			 }
@@ -120,8 +120,8 @@ function nodeTargetIPDetail(obj){
 				 if(data.status == "200"){
 					 var targetNum = data.checkRoutetable.items;
 					 var htmlTr = '<tr class="targetDetail '+targetTrClass+'">'
-							+'<td>&nbsp;</td>'
-							+'<td>targetIP</td>'
+							//+'<td>&nbsp;</td>'
+							+'<td style="text-indent:10px">targetIP</td>'
 							+'<td>期望网关</td>'
 							+'<td>实际网关</td>'
 							+'<td>结果</td>'
@@ -139,8 +139,8 @@ function nodeTargetIPDetail(obj){
 							 successResult = "失败";
 						 }
 						 htmlTr += '<tr class="targetDetail '+targetTrClass+'">'
-							+'<td>&nbsp;</td>'
-							+'<td>'+targetIP+'</td>'
+							//+'<td>&nbsp;</td>'
+							+'<td style="text-indent:10px">'+targetIP+'</td>'
 							+'<td>'+expectedGW+'</td>'
 							+'<td>'+realGW+'</td>'
 							+'<td>'+successResult+'</td>'
