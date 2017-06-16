@@ -33,7 +33,7 @@
 									</h5>
 
 									<div class="ibox-tools">
-										<a id="createSheraBtn" href="/shera/add" title="创建shera"><i
+										<a id="createSheraBtn" href="<%=path%>/shera/add" title="创建shera"><i
 											class="fa fa-plus"></i></a>
 										<a href="javascript:delSheras()" title="删除"><i
 											class="fa fa-trash"></i></a>
@@ -61,7 +61,7 @@
 													<td style="width: 5%; text-indent: 30px;"><input
 														type="checkbox" class="chkItem" name="ids"
 														value="${shera.id }"></td>
-													<td style="width: 20%;cursor:pointer"><a class="link" title="查看详细信息" href="/user/shera/detail/${shera.id}" onclick="sheraDetail(${shera.id})" keyName="name"
+													<td style="width: 20%;cursor:pointer"><a class="link" title="查看详细信息" href="<%=path%>/user/shera/detail/${shera.id}" onclick="sheraDetail(${shera.id})" keyName="name"
 														onmousemove="style.textDecoration='underline'"
 														onmouseout="style.textDecoration='none'">${shera.sheraUrl }</a></td>
 													<td style="width: 13%;">${shera.port }</td>
