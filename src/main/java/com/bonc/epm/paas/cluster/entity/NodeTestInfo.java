@@ -1,9 +1,12 @@
 package com.bonc.epm.paas.cluster.entity;
 
+import javax.persistence.Basic;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 
 @Entity
 public class NodeTestInfo {
@@ -20,6 +23,8 @@ public class NodeTestInfo {
 
     //是否测试ping项目
 	private boolean ping;
+	@Lob
+	@Basic(fetch = FetchType.LAZY)
 	private String pingoutmsg;
 	private double pingtime;
     //ping是否通过
@@ -29,6 +34,9 @@ public class NodeTestInfo {
 
 	//是否测试trace项目
 	private boolean tracepath;
+
+	@Lob
+	@Basic(fetch = FetchType.LAZY)
 	private String tracepathoutmsg;
 	private double tracetime;
 	private boolean tracepass;
@@ -36,6 +44,9 @@ public class NodeTestInfo {
 	private int tracetimetarget;
 
 	private boolean qperf;
+
+	@Lob
+	@Basic(fetch = FetchType.LAZY)
 	private String qperfoutmsg;
 	private double speed;
 	private double latency;
@@ -44,12 +55,18 @@ public class NodeTestInfo {
 	private int latencytarget;
 
 	private boolean curl;
+
+	@Lob
+	@Basic(fetch = FetchType.LAZY)
 	private String curloutmsg;
 	private double curltime;
     private boolean curlpass;
     private int curltimetarget;
 
     private boolean docker;
+
+    @Lob
+	@Basic(fetch = FetchType.LAZY)
 	private String dockermsg;
 	private boolean dockerpass;
 
@@ -86,7 +103,11 @@ public class NodeTestInfo {
 	private int dockerDeferredDeletedDeviceCountTarget;
 
 	private boolean dns;
+	@Lob
+	@Basic(fetch = FetchType.LAZY)
 	private String masterdnsoutmsg;
+	@Lob
+	@Basic(fetch = FetchType.LAZY)
 	private String standbydnsoutmsg;
 	private boolean masterdns;
 	private boolean standbydns;

@@ -15,7 +15,6 @@ import java.util.Properties;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.tools.ant.taskdefs.Execute;
 import org.influxdb.InfluxDB;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +28,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.bonc.epm.paas.cluster.api.ClusterHealthyClient;
 import com.bonc.epm.paas.cluster.api.LocalHealthyClient;
@@ -1137,25 +1135,9 @@ public class ClusterController {
 					nodeInfo.setTeststatus(true);
 					nodeInfo.setNodeTestInfo(nodeTestInfos.get(0));
 				}
-				/*
-				 * NodeTestInfo nodeTestInfo =
-				 * nodeInfoDao.findByNodename(node.getMetadata().getName()); if
-				 * (nodeTestInfo==null) { nodeInfo.setTeststatus(true);
-				 * nodeInfo.setNodeTestInfo(nodeTestInfo); }
-				 */
 				nodeInfos.add(nodeInfo);
 			}
 		}
-
-		List<NodeTestInfo> nodeTestInfos = nodeInfoDao.findByNodename("all");
-		if (!CollectionUtils.isEmpty(nodeTestInfos)) {
-			model.addAttribute("testparam", nodeTestInfos.get(0));// 执行过批量测试，则返回测试参数信息
-		}
-		/*
-		 * NodeTestInfo nodeTestInfo = nodeInfoDao.findByNodename("all"); if
-		 * (null!=nodeTestInfo) { model.addAttribute("testparam",
-		 * nodeTestInfo);// 执行过批量测试，则返回测试参数信息 }
-		 */
 
 		model.addAttribute("nodeList", nodeInfos);// 节点信息list
 		model.addAttribute("menu_flag", "cluster");
@@ -1357,7 +1339,7 @@ public class ClusterController {
 					break;
 				}
 				long end = System.currentTimeMillis();
-				if ((end - start) > 60000) {// 1分钟即为超时
+				if ((end - start) > 120000) {// 2分钟即为超时
 					LOG.info("******************************部署超时************************************");
 					// deletePodsForTest();
 					map.put("msg", "部署超时！");
@@ -1385,7 +1367,7 @@ public class ClusterController {
 	 *
 	 * @return map： status(200 :成功 , 500 :失败 ) msg(错误消息)
 	 */
-	@RequestMapping(value = { "/clearspecifiedpod" }, method = RequestMethod.GET)
+	/*@RequestMapping(value = { "/clearspecifiedpod" }, method = RequestMethod.GET)
 	@ResponseBody
 	public String deleteSpecifiedPodsForTest(String nodenames) {
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -1434,7 +1416,7 @@ public class ClusterController {
 		}
 
 		return JSON.toJSONString(map);
-	}
+	}*/
 
 	/**
 	 * 清除用于集群测试的所有pod和service 返回码： status:200 - 成功 500 - 失败 msg: 错误消息
@@ -1450,75 +1432,80 @@ public class ClusterController {
 		NodeList nodes = client.getAllNodes();
 		List<Node> nodeList = nodes.getItems();
 
-		PodList podList = client.getPods();
-		List<Pod> pods = podList.getItems();
-
 		boolean clear = true;// 是否清楚干净标记
 		String msg = "";
 
+		LOG.info("******************************开始清理*******************************************");
+
 		for (Node node : nodeList) {
-			for (Pod pod : pods) {
-				if (pod.getMetadata().getName().equals(node.getMetadata().getName())) {
-					try {
-						client.deletePodOfNamespace("kube-system", node.getMetadata().getName());
-						LOG.info("pod:" + node.getMetadata().getName() + "被删除！");
-					} catch (KubernetesClientException e) {
-						LOG.info("pod:" + node.getMetadata().getName() + "删除失败！");
-						msg = msg + "pod:" + node.getMetadata().getName() + "删除失败！";
-						clear = false;
-					}
-					// ************************数据库中删除检测记录************
-					nodeInfoDao.deleteByNodename(node.getMetadata().getName());
-					break;
+			Pod pod = null;
+			try {
+				pod = client.getPodOfNamespace("kube-system", node.getMetadata().getName());
+				client.deletePodOfNamespace("kube-system", node.getMetadata().getName());
+				LOG.info("pod:" + node.getMetadata().getName() + "删除成功！");
+			} catch (Exception e) {
+				if (pod == null) {
+					LOG.info("pod:" + node.getMetadata().getName() + "不存在！");
+				} else {
+					LOG.info("pod:" + node.getMetadata().getName() + "删除失败！");
+					msg = msg + "pod:" + node.getMetadata().getName() + "删除失败！";
+					clear = false;
 				}
+			}
+
+			// ************************数据库中删除检测记录************
+			nodeInfoDao.deleteByNodename(node.getMetadata().getName());
+		}
+
+		Pod pod = null;
+		try {
+			pod = client.getPodOfNamespace("kube-system", "clusterhealthy");
+			client.deletePodOfNamespace("kube-system", "clusterhealthy");
+			LOG.info("pod:clusterhealthy删除成功！");
+		} catch (Exception e) {
+			if (pod == null) {
+				LOG.info("pod:clusterhealthy不存在！");
+			} else {
+				LOG.info("pod:clusterhealthy删除失败！");
+				msg = msg + "pod:clusterhealthy删除失败！";
+				clear = false;
 			}
 		}
 
-		for (Pod pod : pods) {
-			if (pod.getMetadata().getName().equals("clusterhealthy")) {
-				try {
-					client.deletePodOfNamespace("kube-system", "clusterhealthy");
-					LOG.info("pod:clusterhealthy被删除！");
-				} catch (KubernetesClientException e) {
-					LOG.info("pod:clusterhealthy删除失败！");
-					msg = msg + "pod:clusterhealthy删除失败！";
-					clear = false;
-				}
-				break;
+		Service localService = null;
+		try {
+			localService = client.getServiceOfNamespace("kube-system", "localhealthy");
+			client.deleteServiceOfNamespace("kube-system", "localhealthy");
+			LOG.info("Service:localhealthy删除成功！");
+		} catch (Exception e) {
+			if (localService == null) {
+				LOG.info("Service:localhealthy不存在！");
+			} else {
+				LOG.info("Service:localhealthy删除失败！");
+				msg = msg + "Service:localhealthy删除失败！";
+				clear = false;
 			}
 		}
 
-		List<Service> services = client.getAllServicesOfNamespace("kube-system").getItems();
-		for (Service service : services) {
-			if (service.getMetadata().getName().equals("localhealthy")) {
-				try {
-					client.deleteServiceOfNamespace("kube-system", "localhealthy");
-					LOG.info("Service:localhealthy被删除！");
-				} catch (KubernetesClientException e) {
-					LOG.info("Service:localhealthy删除失败！");
-					msg = msg + "Service:localhealthy删除失败！";
-					clear = false;
-				}
-				continue;
-			} else if (service.getMetadata().getName().equals("clusterhealthy")) {
-				try {
-					client.deleteServiceOfNamespace("kube-system", "clusterhealthy");
-					LOG.info("Service:clusterhealthy被删除！");
-				} catch (Exception e) {
-					LOG.info("Service:clusterhealthy删除失败！");
-					msg = msg + "Service:clusterhealthy删除失败！";
-					clear = false;
-				}
-				continue;
+		Service clusterService = null;
+		try {
+			clusterService = client.getServiceOfNamespace("kube-system", "clusterhealthy");
+			client.deleteServiceOfNamespace("kube-system", "clusterhealthy");
+			LOG.info("Service:clusterhealthy删除成功！");
+		} catch (Exception e) {
+			if (clusterService == null) {
+				LOG.info("Service:clusterhealthy不存在！");
+			} else {
+				LOG.info("Service:clusterhealthy删除失败！");
+				msg = msg + "Service:clusterhealthy删除失败！";
+				clear = false;
 			}
 		}
-
-		nodeInfoDao.deleteByNodename("all");// 删除批量测试的测试参数记录
 
 		if (clear) {
-			LOG.info("Service:clusterhealthy删除失败！");
+			LOG.info("******************************清理成功!*******************************************");
 		} else {
-			LOG.info("Service:clusterhealthy删除失败！");
+			LOG.info("******************************清理异常!*******************************************");
 			map.put("msg", msg);
 			map.put("status", 500);
 		}
@@ -1688,8 +1675,10 @@ public class ClusterController {
 			nodeInfo.setTracepathoutmsg(traceresponse.getOutmsg());
 			String tracemsg = traceresponse.getOutmsg();
 			tracemsg = tracemsg.subSequence(tracemsg.indexOf("real"), tracemsg.indexOf("user")).toString().trim();
-			tracemsg = tracemsg.split("0m")[1].split("s")[0];
-			nodeInfo.setTracetime(Double.parseDouble(tracemsg));
+			tracemsg = tracemsg.replace("real", "").trim();
+			int minute = Integer.parseInt(tracemsg.split("m")[0]);
+			float second = Float.parseFloat(tracemsg.split("m")[1].split("s")[0]);
+			nodeInfo.setTracetime(second+minute*60);
 			if (nodeInfo.getTracepathoutmsg().contains("hops")) {
 				nodeInfo.setTracepass(nodeInfo.getTracetime() <= nodeTestInfo.getTracetimetarget());// trace通过
 			}
@@ -2207,6 +2196,7 @@ public class ClusterController {
 
 	/**
 	 * 获取执行测试的参数
+	 *
 	 * @return
 	 */
 	@RequestMapping(value = { "/testparam" }, method = RequestMethod.GET)
