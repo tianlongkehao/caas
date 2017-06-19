@@ -324,64 +324,74 @@ $(document).ready(function(){
 	});
 
 	//添加认证按钮
+	var layerBtn = "";
 	$("#addCredentialsCon").hide();
 	$(document).on('click','#addCredentialsBtn',function(){
+		var type = $("#CredentialsType").val();
+		if(type == 1){
+			layerBtn = [ '添加', '取消' ];
+		}else{
+			layerBtn = [ '关闭', '取消' ];
+		}
 		layer.open({
 			type : 1,
 			title : '添加认证',
 			content : $("#addCredentialsCon"),
 			area: ['500px'],
-			btn : [ '添加', '取消' ],
+			btn : layerBtn,
 			scrollbar:false,
 			yes:function(index, layero){
-				if (!judgeCredData()) {
-					return;
-				}
-				var type = $("#CredentialsType").val();
-				var codeType = $("#codeType").val();
-				var username = $("#userNameCred").val();
-				var password = $("#passwordCred").val();
-				var privateKey = $("#privateKey").val();
-				var remark = $("#keyRemark").val();
-				var code = type==1?"HTTP":"SSH";
-				$.ajax({
-					url : ctx + "/secret/addCredential.do",
-					data : {
-						"type" : type,
-						"codeType" : codeType,
-						"userName" : username,
-						"password" : password,
-						"privateKey" : privateKey,
-						"remark" : remark
-					},
-					success : function(data) {
-						data = eval("(" + data + ")");
-						if (data.status == "200") {
-							if(type == 2){
-								$("#sshPassword").val(data.sshKey);
-								layer.open({
-									type : 1,
-									title : 'ssh密钥',
-									content : $("#sshPwdInfo"),
-									area : ['500px'],
-									btn : ['确认'],
-									scrollbar : false,
-									yes : function(index, layero) {
-										var html = "<option value='"+data.id+"'>"+username +" ("+code+") ("+remark+")"+"</option>";
-										$("#codeCredentials").append(html);
-										layer.closeAll();
-									}
-								});
-							} else {
-								var html = "<option value='"+data.id+"'>"+username +" ("+code+") ("+remark+")"+"</option>";
-								$("#codeCredentials").append(html);
-								layer.closeAll();
-							}
-						} else {
-							layer.alert("代码认证导入失败");
-						}
+				if(type == 1){
+					if (!judgeCredData()) {
+						return;
 					}
-				});
+					var codeType = $("#codeType").val();
+					var username = $("#userNameCred").val();
+					var password = $("#passwordCred").val();
+					var privateKey = $("#privateKey").val();
+					var remark = $("#keyRemark").val();
+					var code = type==1?"HTTP":"SSH";
+					$.ajax({
+						url : ctx + "/secret/addCredential.do",
+						data : {
+							"type" : type,
+							"codeType" : codeType,
+							"userName" : username,
+							"password" : password,
+							"privateKey" : privateKey,
+							"remark" : remark
+						},
+						success : function(data) {
+							data = eval("(" + data + ")");
+							if (data.status == "200") {
+								if(type == 2){
+									$("#sshPassword").val(data.sshKey);
+									layer.open({
+										type : 1,
+										title : 'ssh密钥',
+										content : $("#sshPwdInfo"),
+										area : ['500px'],
+										btn : ['确认'],
+										scrollbar : false,
+										yes : function(index, layero) {
+											var html = "<option value='"+data.id+"'>"+username +" ("+code+") ("+remark+")"+"</option>";
+											$("#codeCredentials").append(html);
+											layer.closeAll();
+										}
+									});
+								} else {
+									var html = "<option value='"+data.id+"'>"+username +" ("+code+") ("+remark+")"+"</option>";
+									$("#codeCredentials").append(html);
+									layer.closeAll();
+								}
+							} else {
+								layer.alert("代码认证导入失败");
+							}
+						}
+					});
+				}else{
+					layer.closeAll();
+				}
 			}
 		});
 	});
@@ -453,19 +463,49 @@ $(document).ready(function(){
 //
 //		});
 //	});
-	//选择认证类型
+	//选择认证类型   2ssh
 	$(".ssh").hide();
+	$(".sshInfoCred").hide();
 	$(document).on('change','#CredentialsType',function(){
 		var credentialsType = $("#CredentialsType").val();
 		if(credentialsType == 1){
 			$(".normal").show();
-			$(".ssh").hide();
-			$("#SSHpasswordCred").val("");
+			$(".sshInfoCred").hide();
+			$("#privateKey").val("");
+			$(".layui-layer-btn0").html("添加");
 		}else{
+			$(".layui-layer-btn0").html("关闭");
 			$(".normal").hide();
-			$(".ssh").show();
-			$("#passwordCred").val("");
+			$(".sshInfoCred").show();
+			$.ajax({
+				url:ctx+"/secret/getSshKeyList.do",
+				type:'get',
+				success : function(data){
+					var creList = eval("("+data+")");
+					var creListHtml = "";
+					for(var i=0; i<creList.length; i++){
+						var creId = creList[i].id;
+						var userName = creList[i].userName;
+						creListHtml+= '<option value="'+creId+'">'+userName+'</option>';
+					}
+					$("#sshKeyList").empty().append(creListHtml);
+					$("#sshPassword").val(creList[0].privateKey);
+				}
+			});
+			
 		}
+	});
+	//更改密钥生成对应公钥
+	$(document).on('change','#sshKeyList',function(){
+		var thisId = $(this).val();
+		$.ajax({
+			url:ctx+"/secret/detailCredential.do?id="+thisId,
+			type:'get',
+			success : function(data){
+				var privateKey = eval("("+data+")");
+				$("#sshPassword").val(privateKey.credential.privateKey);
+			}
+		});
 	});
 	//镜像信息
 	$("#imageInfo").click(function(){

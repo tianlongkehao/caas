@@ -135,7 +135,7 @@
 					</ul></li>
 				<c:if test="${!cas_enable}">
 					<c:if test="${cur_user.user_autority == 1}">
-						<li id="menu_user">
+						<li id="menu_usermanage">
 							<a href="#" class="first-a">
 								<i class="fa-nav fa-nav-user"></i>
 								<span class="nav-label">租户信息</span>

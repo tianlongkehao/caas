@@ -67,6 +67,10 @@ $(function(){
 										var html = "<option value='"+data.id+"'>"+username +" ("+code+") ("+remark+")"+"</option>";
 										$("#codeCredentials").append(html);
 										layer.closeAll();
+										layer.msg("创建成功！", {
+											icon : 6
+										});
+										setTimeout('window.location.reload()', 1500);
 									}
 								});
 							} else {

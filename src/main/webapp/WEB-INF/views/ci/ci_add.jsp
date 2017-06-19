@@ -323,9 +323,8 @@
 			</div>
 			<div class="infoCred sshInfoCred" style="display:none">
 				<span class="labelCred1">密钥：</span> <select
-					class="form-control conCred" id="CredentialsType" name="type">
-					<option value="1">3333333333</option>
-					<option value="2">44444444444</option>
+					class="form-control conCred" id="sshKeyList" name="type">
+					
 				</select>
 			</div>
 			<div class="infoCred sshInfoCred" id="sshPwdInfo" style="display:none">
