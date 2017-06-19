@@ -137,7 +137,7 @@
 					<c:if test="${cur_user.user_autority == 1}">
 						<li id="menu_usermanage">
 							<a href="#" class="first-a">
-								<i class="fa-nav fa-nav-user"></i>
+								<i class="fa-nav fa-nav-usermanage"></i>
 								<span class="nav-label">租户信息</span>
 							</a>
 							<ul class="nav nav-second-level">

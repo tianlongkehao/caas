@@ -113,6 +113,7 @@
 	
 	</article>
 	</div>
+	<input type="hidden" id="userAutority" value="${cur_user.user_autority}">
 	<div id="createKeyCon" style="display: none">
 		<div style="margin: 15px 15px">
 		    <div class="infoCred">
@@ -122,27 +123,61 @@
                     <option value="2">SVN</option>
                 </select>
             </div>
-			<div class="infoCred">   
+			<div class="infoCred userLimit">   
 				<span class="labelCred">认证：</span> 
-				<select class="form-control conCred" id="CredentialsType" name="type">
+				<select class="form-control conCred" id="CredentialsType" name="type" disabled>
 					<option value="1">用户名和密码</option>
+				</select>
+			</div>
+			<div class="infoCred adminLimit">   
+				<span class="labelCred">认证：</span> 
+				<select class="form-control conCred" id="CredentialsType" name="type" disabled>
 					<option value="2">SSH用户名和密钥</option>
 				</select>
 			</div>
 			<div class="infoCred">
-				<span class="labelCred">用户名：</span> <input type="text"
+				<span class="labelCred">用户名：<font color="red">*</font></span> <input type="text"
 					class="form-control conCred" id="userNameCred" name="userName"
 					value="">
 			</div>
-			<div class="infoCred normal">
-				<span class="labelCred">密码：</span> <input type="password"
+			<div class="infoCred userLimit">
+				<span class="labelCred">密码：<font color="red">*</font></span> <input type="password"
 					class="form-control conCred" id="passwordCred" name="password"
 					value="">
 			</div>
 			<div class="infoCred">
-				<span class="labelCred">描述：</span>
+				<span class="labelCred">描述：<font color="red">*</font></span>
 				<textarea type="text" class="form-control conCred"
 					id="keyRemark" name="keyRemark" rows="4" value=""></textarea>
+			</div>
+			<div class="infoCred adminLimit">
+				<span class="labelCred">代理：</span>
+				<div class="conCred"><input type="checkbox" id="proxy"></div>
+			</div>
+			<div class="infoCred adminLimitproxy">
+				<span class="labelCred">host：<font color="red">*</font></span> 
+				<input type="text" class="form-control conCred" id="host" name="host"
+					value="">
+			</div>
+			<div class="infoCred adminLimitproxy">
+				<span class="labelCred">IP：<font color="red">*</font></span> 
+				<input type="text" class="form-control conCred" id="ip" name="ip"
+					value="">
+			</div>
+			<div class="infoCred adminLimitproxy">
+				<span class="labelCred">port：<font color="red">*</font></span> 
+				<input type="text" class="form-control conCred" id="port" name="port"
+					value="">
+			</div>
+			<div class="infoCred adminLimitproxy">
+				<span class="labelCred">policy：</span> 
+				<input type="text" class="form-control conCred" id="policy" name="policy"
+					value="">
+			</div>
+			<div class="infoCred adminLimitproxy">
+				<span class="labelCred">identifyFile：</span> 
+				<input type="text" class="form-control conCred" id="identifyFile" name="identifyFile"
+					value="">
 			</div>
 		</div>
 	</div>
