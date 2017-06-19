@@ -256,6 +256,7 @@ $(document).ready(function () {
 	//添加认证按钮
 	$("#addCredentialsCon").hide();
 	$(document).on('click','#addCredentialsBtn',function(){
+		$(".sshInfoCred").hide();
 		delData();
 		layer.open({
 			type : 1,
@@ -317,18 +318,26 @@ $(document).ready(function () {
 		});
 	});
 
-	//选择认证类型
+	//选择认证类型   2ssh
 	$(".ssh").hide();
+	$(".sshInfoCred").hide();
 	$(document).on('change','#CredentialsType',function(){
 		var credentialsType = $("#CredentialsType").val();
 		if(credentialsType == 1){
 			$(".normal").show();
-			$(".ssh").hide();
+			$(".sshInfoCred").hide();
 			$("#privateKey").val("");
 		}else{
 			$(".normal").hide();
-			$(".ssh").show();
-			$("#passwordCred").val("");
+			$(".sshInfoCred").show();
+			$.ajax({
+				url:ctx+"secret/getSshKeyList.do",
+				success : function(data){
+					var data = eval("("+data+")");
+					
+				}
+			});
+			
 		}
 	});
 
