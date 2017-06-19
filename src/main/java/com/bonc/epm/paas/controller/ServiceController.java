@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.conn.ManagedHttpClientConnection;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -852,19 +853,22 @@ public class ServiceController {
 		try {
 			ResourceQuota quota = client.getResourceQuota(currentUser.getNamespace());
 			if (quota.getStatus() != null) {
-				long hard = kubernetesClientService.transMemory(quota.getStatus().getHard().get("memory"));
-				long used = kubernetesClientService.transMemory(quota.getStatus().getUsed().get("memory"));
+				double hard = ConvertUtil.convertMemory(quota.getStatus().getHard().get("memory"));
+				double used = ConvertUtil.convertMemoryBy2(quota.getStatus().getUsed().get("memory"));
 
 				double leftCpu = ConvertUtil.convertCpu(quota.getStatus().getHard().get("cpu"))
 						- ConvertUtil.convertCpu(quota.getStatus().getUsed().get("cpu"));
 
-				long leftmemory = hard - used;
+				double leftmemory = hard - used;
 
-				leftCpu = leftCpu * RATIO_LIMITTOREQUESTCPU - REST_RESOURCE_CPU;
+				leftCpu = leftCpu * RATIO_LIMITTOREQUESTCPU;
+				long tempCpu = (long)Math.ceil(leftCpu)-REST_RESOURCE_CPU;
+
 				leftmemory = leftmemory * RATIO_LIMITTOREQUESTMEMORY;
+				long tempMem = (long)Math.ceil(leftmemory) -REST_RESOURCE_MEMORY;
 
-				model.addAttribute("leftcpu", leftCpu);
-				model.addAttribute("leftmemory", Math.ceil(leftmemory / 1000.0 - REST_RESOURCE_MEMORY));
+				model.addAttribute("leftcpu", tempCpu);
+				model.addAttribute("leftmemory", tempMem);
 			} else {
 				LOG.info("用户 " + currentUser.getUserName() + " 没有定义名称为 " + currentUser.getNamespace() + " 的Namespace ");
 			}

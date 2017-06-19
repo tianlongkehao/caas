@@ -885,7 +885,7 @@ function showCompIptablesList(){
 						problemHtml = '有问题<i class="fa fa-question" style="color:red;margin-left:8px;font-size:20px;"></i>';
 					}
 					tableHtml += '<tr>'
-									+'<td><input type="checkbox" class="chkItem" nodeName="'+nodeName+'"/></td>'
+									//+'<td><input type="checkbox" class="chkItem" nodeName="'+nodeName+'"/></td>'
 									+'<td><a class="checkResult" onclick="checkResultDetail(this)" nodeName="'+nodeName+'">'+nodeName+'</a></td>'
 									+'<td>'+problemHtml+'</td>'
 									+'<td class="iptableOpr">'
@@ -896,8 +896,8 @@ function showCompIptablesList(){
 				}
 				$("#compIptablesList").empty().append(tableHtml);
 				$('.dataTables-checkIptables').dataTable({
-				    "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0,3] }],
-				    "aaSorting": [[ 1, "desc" ]]
+				    "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0,2] }],
+				    "aaSorting": [[ 0, "desc" ]]
 				});
 				$("#checkallbox").parent().removeClass("sorting_asc");
 			}
@@ -978,6 +978,11 @@ function recoverOneIptables(obj){
 			}
 		}
 	})
+}
+//批量测试
+function testIptables(){
+	loading = layer.load(0, {shade: false});
+	showCompIptablesList();
 }
 
 

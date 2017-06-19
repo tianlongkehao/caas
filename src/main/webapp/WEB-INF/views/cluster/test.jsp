@@ -42,9 +42,10 @@
 										<i class="fa fa-map-marker" style="margin-right: 6px;"></i>集群测试
 									</h5>
 									<div class="ibox-tools">
-										<a id="deployBtn" style="cursor: pointer"><i>部署</i></a>
-										<a id="excuteBtn" style="cursor: pointer"><i>执行</i></a>
-										<a id="deleteBtn" style="cursor: pointer"><i>清除部署</i></a>
+										<a style="cursor: pointer"><i id="continueYesOrNoBtn" class="fa fa-toggle-onORoff fa-on" value="true"></i><span>出错停止</span></a>
+										<a id="deployBtn" style="cursor: pointer" title="一键部署"><img src="<%=path %>/images/cluster-deploy.png" alt="cluster-test" class="clusterImg"></a>
+										<a onclick="testNodes()" style="cursor: pointer" title="执行"><img src="<%=path %>/images/cluster-execute.png" alt="cluster-test" class="clusterImg"></a>
+										<a id="deleteBtn" style="cursor: pointer" title="一键清理部署"><i class="fa fa-eraser"></i></a>
 										<a href="javascript:window.location.reload(true);" title="刷新"><i
 											class="fa fa-repeat"></i></a>
 									</div>
@@ -62,79 +63,15 @@
 										<th style="width:5%;text-indent:20px">
 											<input type="checkbox" class="chkAll" id="checkallbox" />
 										</th>
-										<th style="width:15%;">集群节点</th>
-										<th style="width:40%;">测试进度</th>
-										<th style="width:20%;text-indent:20px">测试结果</th>
-										<th>操作</th>
+										<th style="width:12%;">集群节点</th>
+										<th style="width:70%;">测试进度</th>
+										<th style="width:12%;text-indent:20px">测试结果</th>
 									</tr>
 								</thead>
 								<tbody id="routeList">
-									<c:forEach items="${nodeList}" var="node">
-									<input type="hidden" value="${node.nodeTestInfo}">
-										<tr class="thisTr">
-											<td style="width:5%;text-indent:20px">
-												<input class="chkItem" name="node" type="checkbox" value="${node.nodename }" testStatus="${node.teststatus }" deployStatus="${node.deploystatus }">
-											</td>
-											<td style="width:15%;">${node.nodename }</td>
-											<td style="width:40%;" nodeName="${node.nodename }" class="nodeProgressBar">
-									        	<div id="progress_${node.nodename }" class="progress nodeProgress" style="margin:0 auto">
-									        		<div class="progress-bar" role="progressbar"
-														 aria-valuenow="60" aria-valuemin="0" aria-valuemax="100">
-													</div>
-													<c:if test="${node.deploystatus ==true}">
-														<div class="progress-bar progress-bar-warning" role="progressbar"
-															 aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"
-															 style="width: 15%;">
-															<span >部署完成</span>
-														</div>
-														<c:if test="${node.teststatus == true}">
-															<c:if test="${node.nodeTestInfo.allpass == true}">
-																<div class="progress-bar progress-bar-success" role="progressbar"
-																	 aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"
-																	 style="width: 85%;">
-																	<span>执行完成</span>
-																</div>
-															</c:if>
-															<c:if test="${node.nodeTestInfo.allpass == false}">
-																<div class="progress-bar progress-bar-danger" role="progressbar"
-																	 aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"
-																	 style="width: 85%;">
-																	<span>执行失败</span>
-																</div>
-															</c:if>
-														</c:if>
-													</c:if>
-													<c:if test="${node.deploystatus ==false}">
-														<div class="progress-bar progress-bar-warning" role="progressbar"
-															 aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"
-															 style="width: 0%;">
-														</div>
-													</c:if>
-												</div>
-									        </td>
-
-											<td class="clusterTestOpr" style="width:20%;text-indent:20px">
-												<a id="${node.nodename }"  nodename="${node.nodename }"
-													onclick="detail(this)" title="查看详细信息">
-													<c:if test="${node.deploystatus == true}">
-														<c:if test="${node.teststatus == true}">
-															<c:if test="${node.nodeTestInfo.allpass == true}">
-																<font color="#33CC33" style="font-weight:bold;cursor:pointer" id="nodeTestInfo" nodeTestInfo="${node.nodeTestInfo}">通过<i class="fa fa-question-circle"></i></font>
-															</c:if>
-															<c:if test="${node.nodeTestInfo.allpass == false}">
-																<font color="#FF0033" style="font-weight:bold;cursor:pointer">未通过<i class="fa fa-question-circle"></i></font>
-															</c:if>
-														</c:if>
-													</c:if>
-												</a>
-											</td>
-											<td class="clusterTestOprBtns" nodeName="${node.nodename }" testStatus="${node.teststatus }" deployStatus="${node.deploystatus }">
-												<a onclick="deployOneNode(this)"><i>部署</i></a>
-												<a onclick="testOneNode(this)"><i>执行</i></a>
-												<a onclick="clearOneNode(this)"><i>清理部署</i></a>
-											</td>
-										</tr>
-									</c:forEach>
+									<tr>
+										<td>数据加载中...</td>
+									</tr>
 								</tbody>
 							</table>
 						</div>
@@ -199,89 +136,212 @@
 				</div>
 
                 <div id="chkitem" style="display: none; text-align: center">
-					<table class="table clusterTestTable" style="width: 580px; padding: 5px; margin: 10px">
+					<table class="table clusterTestTable" style="width: 570px; padding: 5px; margin: 10px">
 						<tbody>
 							<tr>
-								<th colspan="4" style="padding-left:5px">
+								<th colspan="2" style="padding-left:5px">
 									<label style="float:left"><input id="selectitem" type="checkbox" value="" style="float:left">全选</label>
 								</th>
 							</tr>
 							<tr>
-								<th style="width: 20%">
-									<input name="item" class="checkItem" type="checkbox" value="pingitem" id="pingitem">&nbsp;ping地址：
+								<th class="testItemTit">
+									<input name="item" class="checkItem" type="checkbox" value="pingitem" id="ping">&nbsp;ping地址：
 								</th>
 								<td>
-									<input type="text" id="pingip" placeholder="主机IP" value="" />
+									<input type="text" style="width: 80%" id="pingip" placeholder="主机IP" value="" />
 								</td>
-								<th style="width: 20%">平均响应时间：</th>
+							</tr>
+							<tr>
+								<th class="testItemTit testItemTitNoCheckbox">平均响应时间：</th>
 								<td>
-									<input type="number" style="width: 80%"
+									<input type="number" class="testItemCon"
 									value="10" class="number" min="1" autocomplete="off" max=""
-									placeholder="1" id="pingtime"
+									 id="pingtime"
 									onkeyup="this.value=this.value.replace(/\D/g,'')"
 									name="instanceNum"><span class="s-unit">ms</span>
 								</td>
 							</tr>
 							<tr>
-								<th style="width: 20%"><input name="item" class="checkItem" type="checkbox" value="traceitem" id="traceitem">&nbsp;trace地址：</th>
+								<th class="testItemTit"><input name="item" class="checkItem" type="checkbox" value="traceitem" id="trace">&nbsp;trace地址：</th>
 								<td>
-									<input type="text" id="tracepathip" placeholder="主机IP" value="" />
+									<input type="text" class="testItemCon" id="tracepathip" placeholder="主机IP" value="" />
 								</td>
-								<th style="width: 20%">平均响应时间：</th>
+							</tr>
+							<tr>
+								<th class="testItemTit testItemTitNoCheckbox">平均响应时间：</th>
 								<td>
-									<input style="width: 80%"
-									type="number" value="2" class="number" min="1"
-									autocomplete="off" max="" placeholder="1" id="tracepathtime"
+									<input type="number" value="2" class="number testItemCon" min="1"
+									autocomplete="off" max=""  id="tracepathtime"
 									onkeyup="this.value=this.value.replace(/\D/g,'')"
 									name="instanceNum"><span class="s-unit">s</span>
 								</td>
 							</tr>
 							<tr>
-								<th style="width: 20%">
-									<input name="item" class="checkItem" type="checkbox" value="curlitem" id="curlitem">&nbsp;curl响应时间：
+								<th class="testItemTit">
+									<input name="item" class="checkItem" type="checkbox" value="curlitem" id="curl">&nbsp;curl响应时间：
 								</th>
-								<td colspan="3" style="width: 80%">
-									<input type="number" style="width: 80%;" value="2" class="number"
-									min="1" autocomplete="off" max="" placeholder="1" id="curltime"
+								<td style="width: 80%">
+									<input type="number" value="2" class="number testItemCon"
+									min="1" autocomplete="off" max=""  id="curltime"
 									onkeyup="this.value=this.value.replace(/\D/g,'')"
 									name="instanceNum"><span class="s-unit">s</span>
 								</td>
 							</tr>
 							<tr>
-								<th style="width: 20%">
-									<input name="item" class="checkItem" type="checkbox" value="qperfitem" id="qperfitem">&nbsp;qperf带宽：
+								<th class="testItemTit">
+									<input name="item" class="checkItem" type="checkbox" value="qperfitem" id="qperf">&nbsp;qperf带宽：
 								</th>
 								<td>
-									<input style="width: 80%" type="number" value="2000" class="number"
-											min="1" autocomplete="off" max="" placeholder="1" id="qperf"
+									<input type="number" value="2000" class="number testItemCon"
+											min="1" autocomplete="off" max=""  id="speed"
 											onkeyup="this.value=this.value.replace(/\D/g,'')"
 											name="instanceNum"><span class="s-unit">MB</span>
 								</td>
-								<th style="width: 20%">延迟：</th>
+							</tr>
+							<tr>
+								<th class="testItemTit testItemTitNoCheckbox">延迟：</th>
 								<td>
-									<input style="width: 80%"
-										type="number" value="10" class="number" min="1"
-										autocomplete="off" max="" placeholder="1" id="qperftime"
+									<input type="number" value="10" class="number testItemCon" min="1"
+										autocomplete="off" max=""  id="qperftime"
 										onkeyup="this.value=this.value.replace(/\D/g,'')"
 										name="instanceNum"><span class="s-unit">ms</span>
 								</td>
+							</tr>
+								<tr>
+									<th colspan="2" class="testItemTit">
+										<input name="item" class="checkItem" type="checkbox" value="dockeritem" id="docker">&nbsp;Docker
+									</th>
 								</tr>
 								<tr>
-									<th style="width: 25%">
-										<input name="item" class="checkItem" type="checkbox" value="dockeritem" id="dockeritem">&nbsp;docker磁盘大小：
-									</th>
-									<td colspan="3" style="width: 75%">
-										<input style="width: 80%" type="number" value="" class="number" min="1"
-											autocomplete="off" max="" placeholder="1" id="docker"
+									<th class="testItemTit testItemTitNoCheckbox">Pool Blocksize：</th>
+									<td>
+										<input type="number" value="60" class="number testItemCon" min="1"
+											autocomplete="off" max="" id="PoolBlocksizeTarget"
+											onkeyup="this.value=this.value.replace(/\D/g,'')"
+											name="instanceNum"><span class="s-unit">KB</span>
+									</td>
+								</tr>
+								<tr>
+									<th class="testItemTit testItemTitNoCheckbox">Base Device Size：</th>
+									<td>
+										<input type="number" value="100" class="number testItemCon" min="1"
+											autocomplete="off" max="" id="BaseDeviceSizeTarget"
 											onkeyup="this.value=this.value.replace(/\D/g,'')"
 											name="instanceNum"><span class="s-unit">GB</span>
 									</td>
 								</tr>
 								<tr>
-									<th colspan="4" style="width: 25%">
-										<input name="item" class="checkItem" type="checkbox" value="dnsitem" id="dnsitem">&nbsp;dns
-									</th>
+									<th class="testItemTit testItemTitNoCheckbox">Backing Filesystem：</th>
+									<td>
+										<input type="text" value="xfs" class="number testItemCon" min="1"
+											autocomplete="off" max="" id="BackingFilesystemTarget"
+											name="instanceNum">
+									</td>
 								</tr>
+								<tr>
+									<th class="testItemTit testItemTitNoCheckbox">Data file：</th>
+									<td>
+										<input type="text" value="/dev/loop0" class="number testItemCon" min="1"
+											autocomplete="off" max="" id="DatafileTarget"
+											name="instanceNum">
+									</td>
+								</tr>
+								<tr>
+									<th class="testItemTit testItemTitNoCheckbox">Data Space Used：</th>
+									<td>
+										<input type="number" value="0" class="number testItemCon" min="1"
+											autocomplete="off" max="" id="DataSpaceUsedTarget"
+											name="instanceNum"><span class="s-unit">GB</span>
+									</td>
+								</tr>
+								<tr>
+									<th class="testItemTit testItemTitNoCheckbox">Data Space Total：</th>
+									<td>
+										<input type="number" value="100" class="number testItemCon" min="1"
+											autocomplete="off" max="" id="DataSpaceTotalTarget"
+											name="instanceNum"><span class="s-unit">GB</span>
+									</td>
+								</tr>
+								<tr>
+									<th class="testItemTit testItemTitNoCheckbox">Data Space Available：</th>
+									<td>
+										<input type="number" value="100" class="number testItemCon" min="1"
+											autocomplete="off" max="" id="DataSpaceAvailableTarget"
+											name="instanceNum"><span class="s-unit">GB</span>
+									</td>
+								</tr>
+								<tr>
+									<th class="testItemTit testItemTitNoCheckbox">Metadata file：</th>
+									<td>
+										<input type="text" value="/dev/loop1" class="number testItemCon" min="1"
+											autocomplete="off" max="" id="MetadatafileTarget"
+											name="instanceNum">
+									</td>
+								</tr>
+								<tr>
+									<th class="testItemTit testItemTitNoCheckbox">Meta Space Used：</th>
+									<td>
+										<input type="number" value="0" class="number testItemCon" min="1"
+											autocomplete="off" max="" id="MetaSpaceUsedTarget"
+											name="instanceNum"><span class="s-unit">MB</span>
+									</td>
+								</tr>
+								<tr>
+									<th class="testItemTit testItemTitNoCheckbox">Meta Space Total：</th>
+									<td>
+										<input type="number" value="2" class="number testItemCon" min="1"
+											autocomplete="off" max="" id="MetaSpaceTotalTarget"
+											name="instanceNum"><span class="s-unit">GB</span>
+									</td>
+								</tr>
+								<tr>
+									<th class="testItemTit testItemTitNoCheckbox">Meta Space Available：</th>
+									<td>
+										<input type="number" value="2" class="number testItemCon" min="1"
+											autocomplete="off" max="" id="MetaSpaceAvailableTarget"
+											name="instanceNum"><span class="s-unit">GB</span>
+									</td>
+								</tr>
+								<tr>
+									<th class="testItemTit testItemTitNoCheckbox">Deferred Removal Enable：</th>
+									<td>
+										<select id="DeferredRemovalEnableTarget" class="testItemCon">
+											<option value="false">false</option>
+											<option value="true">true</option>
+										</select>
+									</td>
+								</tr>
+								<tr>
+									<th class="testItemTit testItemTitNoCheckbox">Udev Sync Supported：</th>
+									<td>
+										<select id="UdevSyncSupportedTarget" class="testItemCon">
+											<option value="false">false</option>
+											<option value="true">true</option>
+										</select>
+									</td>
+								</tr>
+								<tr>
+									<th class="testItemTit testItemTitNoCheckbox">Deferred Deletion Enable：</th>
+									<td>
+										<select id="DeferredDeletionEnableTarget" class="testItemCon">
+											<option value="false">false</option>
+											<option value="true">true</option>
+										</select>
+									</td>
+								</tr>
+								<tr>
+									<th class="testItemTit testItemTitNoCheckbox">Deferred Deleted Device Count：</th>
+									<td>
+										<input type="number" value="0" class="number testItemCon" min="1"
+											autocomplete="off" max="" id="DeferredDeletedDeviceCountTarget"
+											name="instanceNum">
+									</td>
+								</tr>
+							<tr>
+								<th colspan="2" style="width: 25%">
+									<input name="item" class="checkItem" type="checkbox" value="dnsitem" id="dns">&nbsp;dns
+								</th>
+							</tr>
 						</tbody>
 					</table>
                 </div>
@@ -296,12 +356,7 @@
 		</article>
 	</div>
 <script type="text/javascript">
-	$('.dataTables-example').dataTable({
-	    "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0,4] }],
-	    //"searching":false
-	    //"aaSorting": [[ 2, "desc" ]]
-	});
-	$("#checkallbox").parent().removeClass("sorting_asc");
+	
 </script>
 </body>
 </html>
