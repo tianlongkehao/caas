@@ -32,13 +32,17 @@ import com.alibaba.fastjson.JSON;
 import com.bonc.epm.paas.constant.CommConstant;
 import com.bonc.epm.paas.dao.CiCodeCredentialDao;
 import com.bonc.epm.paas.dao.CommonOperationLogDao;
+import com.bonc.epm.paas.dao.SheraDao;
 import com.bonc.epm.paas.entity.CiCodeCredential;
 import com.bonc.epm.paas.entity.CommonOperationLog;
 import com.bonc.epm.paas.entity.CommonOprationLogUtils;
+import com.bonc.epm.paas.entity.Shera;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.shera.api.SheraAPIClientInterface;
+import com.bonc.epm.paas.shera.exceptions.SheraClientException;
 import com.bonc.epm.paas.shera.model.CredentialKey;
 import com.bonc.epm.paas.shera.model.GitCredential;
+import com.bonc.epm.paas.shera.model.SshConfig;
 import com.bonc.epm.paas.shera.model.SshKey;
 import com.bonc.epm.paas.shera.util.SheraClientService;
 import com.bonc.epm.paas.util.CurrentUserUtils;
@@ -51,11 +55,15 @@ public class CredentialController {
      */
     private static final Logger LOG = LoggerFactory.getLogger(CredentialController.class);
 
+    private static final int SSH_USER_ID = 1;
     /**
      * shera客户端接口
      */
     @Autowired
     private SheraClientService sheraClientService;
+
+	@Autowired
+	private SheraDao sheraDao;
 
     /**
      * ciCodeCredential数据持久化接口
@@ -97,8 +105,9 @@ public class CredentialController {
     public String loadCredentialData(int codeType){
         Map<String,Object> map = new HashMap<>();
         User user = CurrentUserUtils.getInstance().getUser();
-        List<CiCodeCredential> creList = ciCodeCredentialDao.findByCreateByAndCodeType(user.getId(),codeType);
-        map.put("data", creList);
+        List<CiCodeCredential> creList = ciCodeCredentialDao.findByCreateBy(SSH_USER_ID);
+        List<CiCodeCredential> creList2 = ciCodeCredentialDao.findByCreateByAndCodeType(user.getId(),codeType);
+        map.put("data", creList.addAll(creList2));
         return JSON.toJSONString(map);
     }
 
@@ -111,7 +120,7 @@ public class CredentialController {
      */
     @RequestMapping(value = {"secret/addCredential.do"} , method = RequestMethod.GET)
     @ResponseBody
-	public String saveCiCodeCredential(CiCodeCredential ciCodeCredential) {
+	public String saveCiCodeCredential(CiCodeCredential ciCodeCredential, SshConfig sshConfig) {
 		Map<String, Object> result = new HashMap<String, Object>();
 		try {
 			SheraAPIClientInterface client = sheraClientService.getClient();
@@ -125,9 +134,14 @@ public class CredentialController {
 			GitCredential gitCredential;
 			//使用ssh的时候
 			if (ciCodeCredential.getType() == 2) {
+				//创建sshkey
 				String keyName = CurrentUserUtils.getInstance().getUser().getNamespace() + "_" + ciCodeCredential.getUserName();
 				SshKey sshKey = sheraClientService.generateSshKey(keyName);
 				sshKey = client.createSshKey(sshKey);
+				//创建sshconfig
+				if (sshConfig != null) {
+					client.createSshConfig(sshConfig);
+				}
 				result.put("sshKey", sshKey.getKey());
 				ciCodeCredential.setPrivateKey(sshKey.getKey());
 				gitCredential = sheraClientService.generateGitCredential(sshKey.getKeyPrivate(),
@@ -280,4 +294,74 @@ public class CredentialController {
         map.put("credential", ciCodeCredential);
         return JSON.toJSONString(map);
     }
+
+    /**
+     * getSshKeys:获取指定shera的指定SshKey和SshConfig. <br/>
+     *
+     * @param sheraId
+     * @param credentialid
+     * @return String
+     */
+    @RequestMapping(value = "secret/getSshKeys.do", method = RequestMethod.GET)
+    @ResponseBody
+    public String getSshKeys(Long sheraId, Long credentialid) {
+    	Map<String, Object> map = new HashMap<>();
+    	Shera shera = sheraDao.findOne(sheraId);
+    	SheraAPIClientInterface client = sheraClientService.getClient(shera);
+
+    	CiCodeCredential ciCodeCredential = ciCodeCredentialDao.findOne(credentialid);
+    	String userName = ciCodeCredential.getUserName();
+    	SshKey sshKey = null;
+    	try {
+    		sshKey = client.getSshKey(userName);
+    	} catch (SheraClientException e) {
+    		e.printStackTrace();
+    	}
+    	SshConfig sshConfig = null;
+    	try {
+    		sshConfig = client.getSshConfig(userName);
+    	} catch (SheraClientException e) {
+    		e.printStackTrace();
+    	}
+
+    	map.put("status", "200");
+    	map.put("sshKey", sshKey);
+    	map.put("sshConfig", sshConfig);
+
+    	return JSON.toJSONString(map);
+    }
+
+    /**
+     * deleteSshKeys:删除指定shera的指定SshKey和SshConfig. <br/>
+     *
+     * @param sheraId
+     * @param credentialid
+     * @return String
+     */
+    @RequestMapping(value = "secret/deleteSshKeys.do", method = RequestMethod.GET)
+    @ResponseBody
+	public String deleteSshKeys(Long sheraId, Long credentialid) {
+		Map<String, Object> map = new HashMap<>();
+		Shera shera = sheraDao.findOne(sheraId);
+		SheraAPIClientInterface client = sheraClientService.getClient(shera);
+
+		CiCodeCredential ciCodeCredential = ciCodeCredentialDao.findOne(credentialid);
+		String userName = ciCodeCredential.getUserName();
+		try {
+			client.deleteSshKey(userName);
+		} catch (SheraClientException e) {
+			map.put("status", "300");
+			e.printStackTrace();
+			return JSON.toJSONString(map);
+		}
+		try {
+			client.deleteSshConfig(userName);
+		} catch (SheraClientException e) {
+			e.printStackTrace();
+		}
+
+		map.put("status", "200");
+		return JSON.toJSONString(map);
+	}
+
 }
