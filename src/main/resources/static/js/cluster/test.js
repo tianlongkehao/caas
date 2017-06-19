@@ -69,18 +69,18 @@ $(document).ready(function() {
 				 +'style="width: 35%;">'
 				 +'<span >正在部署</span>'
 				 +'</div>';
-			var defer = $.Deferred();  
-			//这一步必须要写，要不然下面的then无法使用  
-			defer.resolve();  
-			$.each(selectednodes,function(i,e){  
-				
-				defer = defer.then(function () {  
+			var defer = $.Deferred();
+			//这一步必须要写，要不然下面的then无法使用
+			defer.resolve();
+			$.each(selectednodes,function(i,e){
+
+				defer = defer.then(function () {
 					var checkNode = $('input:checkbox[id="'+e+'"]');
 					checkNode.parent().parent().find(".nodeProgress").empty().append(deployingHtml);
-				  return $.ajax({  
-			      url:ctx + "/cluster/deploypodfortest?nodenames="+e,  
-			      method:'get',  
-			      success:function(data){  
+				  return $.ajax({
+			      url:ctx + "/cluster/deploypodfortest?nodenames="+e,
+			      method:'get',
+			      success:function(data){
 			    	  var data = eval("(" + data + ")");
 			    	  if (data.status == '200') {
 						checkNode.parent().parent().find(".nodeProgress").empty().append(deployHtmlSuccess);
@@ -92,15 +92,15 @@ $(document).ready(function() {
 							return;
 						}
 					 }
-			      }  
-			    })  
-			  });  
-			});  
-			defer.done(function(){  
+			      }
+			    })
+			  });
+			});
+			defer.done(function(){
 				layer.closeAll();
-			});  
+			});
 		}
-		
+
 	});
 
 	// 批量 清除部署
@@ -306,7 +306,7 @@ function detail(obj) {
 					tabHtml += '<li id="tab'+count+'"><a href="#dockerTab" data-toggle="tab">Docker</a></li>';
 					var dockerpass=nodetestresult.dockerpass ? '通过' : '未通过';
 					var dockerdetail=nodetestresult.dockermsg;
-					
+
 					var PoolBlocksize = nodetestresult.dockerPoolBlocksize;
 					var BaseDeviceSize = nodetestresult.dockerBaseDeviceSize;
 					var BackingFilesystem = nodetestresult.dockerBackingFilesystem;
@@ -322,7 +322,7 @@ function detail(obj) {
 					var UdevSyncSupported = nodetestresult.dockerUdevSyncSupported;
 					var DeferredDeletionEnable = nodetestresult.docekrDeferredDeletionEnable;
 					var DeferredDeletedDeviceCount=nodetestresult.dockerDeferredDeletedDeviceCount;
-					
+
 					tabInfoHtml += '<div class="tab-pane fade tabInfo'+count+'" id="dockerTab">'
 						+'<table class="table">'
 						+'<tbody class="dockerTable">'
@@ -662,7 +662,7 @@ function showTestListData(data){
 					 	+'style="width: 40%;">'
 					 	+'<span >部署完成</span>'
 					 	+'</div>';
-				
+
 			}else{
 				testListHtml +='<div class="progress-bar progress-bar-warning" role="progressbar"'
 					+'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
@@ -682,14 +682,14 @@ function showTestListData(data){
 			var curlpass = nodeTestInfo.curlpass;
 			var dockerpass = nodeTestInfo.dockerpass;
 			var dnspass = nodeTestInfo.dnspass;
-			
+
 			var ping = nodeTestInfo.ping;
 			var trace = nodeTestInfo.tracepath;
 			var qperf = nodeTestInfo.qperf;
 			var curl = nodeTestInfo.curl;
 			var docker = nodeTestInfo.docker;
 			var dns = nodeTestInfo.dns;
-			
+
 			if(ping == true){
 				testCount++;
 			}
@@ -709,8 +709,8 @@ function showTestListData(data){
 				testCount++;
 			}
 			var progressWidth = 60/testCount+'%';
-			
-			
+
+
 			if(deploystatus == true){
 				//deploy=true
 				testListHtml +='<div class="progress-bar progress-bar-warning" role="progressbar"'
@@ -732,7 +732,7 @@ function showTestListData(data){
 							 +'<span>ping失败</span>'
 							 +'</div>';
 						failCount++;
-					} 
+					}
 				}
 				if(trace == true){
 					if(tracepass == true){
@@ -748,7 +748,7 @@ function showTestListData(data){
 							 +'<span>trace失败</span>'
 							 +'</div>';
 						failCount++;
-					} 
+					}
 				}
 				if(qperf == true){
 					if(qperfpass == true){
@@ -764,7 +764,7 @@ function showTestListData(data){
 							 +'<span>qperf失败</span>'
 							 +'</div>';
 						failCount++;
-					} 
+					}
 				}
 				if(curl == true){
 					if(curlpass == true){
@@ -780,7 +780,7 @@ function showTestListData(data){
 							 +'<span>curl失败</span>'
 							 +'</div>';
 						failCount++;
-					} 
+					}
 				}
 				if(docker == true){
 					if(dockerpass == true){
@@ -796,7 +796,7 @@ function showTestListData(data){
 							 +'<span>docker失败</span>'
 							 +'</div>';
 						failCount++;
-					} 
+					}
 				}
 				if(dns == true){
 					if(dnspass == true){
@@ -814,7 +814,7 @@ function showTestListData(data){
 						failCount++;
 					}
 				}
-				
+
 				testListHtml += '</div>'
 						+'</td>'
 						+'<td class="clusterTestOpr" style="width:12%;text-indent:20px">'
@@ -827,7 +827,7 @@ function showTestListData(data){
 				}
 				testListHtml +='</a>'
 						+'</td>'
-						+'</tr>';	
+						+'</tr>';
 			}else{
 				//deploy=false
 				testListHtml +='<div class="progress-bar progress-bar-warning" role="progressbar"'
@@ -883,7 +883,7 @@ function testNodes(obj){
 					$("#qperf").prop("checked",false);
 					$("#docker").prop("checked",false);
 					$("#dns").prop("checked",false);
-					
+
 					var pingitem = "";
 					var traceitem = "";
 					var qperfitem = "";
@@ -891,7 +891,7 @@ function testNodes(obj){
 					var dockeritem = "";
 					var dnsitem = "";
 					var nodetestresult = data.testparam;
-					
+
 					if(nodetestresult ==undefined){
 						pingitem = false;
 						traceitem = false;
@@ -914,7 +914,7 @@ function testNodes(obj){
 					$("#qperf").prop("checked",qperfitem);
 					$("#docker").prop("checked",dockeritem);
 					$("#dns").prop("checked",dnsitem);
-					
+
 					if ($(".checkItem:checked").length == $(".checkItem").length) {
 		                $("#selectitem").prop("checked", "checked");
 		            }
@@ -928,7 +928,7 @@ function testNodes(obj){
 						$("#tracepathtime").val(nodetestresult.tracetimetarget);
 					}
 					if(qperfitem){
-						$("#qperf").val(nodetestresult.speedtarget);
+						$("#speed").val(nodetestresult.speedtarget);
 						$("#qperftime").val(nodetestresult.latencytarget);
 					}
 					if(curlitem){
@@ -952,12 +952,50 @@ function testNodes(obj){
 						$("#DeferredDeletedDeviceCountTarget").val(nodetestresult.dockerDeferredDeletedDeviceCountTarget);
 					}
 				}
-				
+				if(flag == true){
+					layer.open({
+						type : 1,
+						title : '检测项信息',
+						content : $("#chkitem"),
+						area : [ '600px','500px' ],
+						btn :  [ '确定', '取消' ],
+						yes : function(index, layero) {
+							if (!checkitems()) {
+								return;// 校验没通过
+							}
+							layer.close(index);
+							//遮挡层
+							var loading = layer.load(0,{shade : [ 0.3, '#000' ]});
+							//假同步执行清理节点
+							var deferClear = $.Deferred();
+							deferClear.resolve();
+							$.each(selectednodes,function(i,e){
+
+
+								deferClear = deferClear.then(function () {
+								    return $.ajax({
+										url:ctx + "/cluster/deleteTestInfo?nodename="+e,
+										type:"get",
+										success:function(){
+											console.log("清理节点"+i+"==="+e);//TODO
+
+										}
+									})
+							  });
+							});
+							deferClear.done(function(){
+								var deferTest = $.Deferred();
+								deferTest.resolve();
+								times(selectednodes,0);
+							});
+						}
+					})
+				}
 			}
 		})
 	}
-	
-	if(flag == true){
+
+	/*if(flag == true){
 		layer.open({
 			type : 1,
 			title : '检测项信息',
@@ -972,34 +1010,34 @@ function testNodes(obj){
 				//遮挡层
 				var loading = layer.load(0,{shade : [ 0.3, '#000' ]});
 				//假同步执行清理节点
-				var deferClear = $.Deferred();  
-				deferClear.resolve();  
+				var deferClear = $.Deferred();
+				deferClear.resolve();
 				$.each(selectednodes,function(i,e){
-					
-					
-					deferClear = deferClear.then(function () {  
+
+
+					deferClear = deferClear.then(function () {
 					    return $.ajax({
 							url:ctx + "/cluster/deleteTestInfo?nodename="+e,
 							type:"get",
 							success:function(){
 								console.log("清理节点"+i+"==="+e);//TODO
-								
+
 							}
 						})
-				  });  
-				});  
+				  });
+				});
 				deferClear.done(function(){
-					var deferTest = $.Deferred();  
+					var deferTest = $.Deferred();
 					deferTest.resolve();
 					times(selectednodes,0);
-				});  
+				});
 			}
 		})
-	}
+	}*/
 }
 function times(selectednodes,j){
 	if(j >= selectednodes.length){
-		return; 
+		return;
 	}
 	debugger;
 	var pingIp = $("#pingip").val();
@@ -1009,7 +1047,7 @@ function times(selectednodes,j){
 	var curltime = $("#curltime").val()=="" ? 0 : $("#curltime").val();
 	var speed = $("#speed").val()=="" ? 0 : $("#speed").val();
 	var latency = $("#qperftime").val()=="" ? 0 : $("#qperftime").val();
-	
+
 	var dockerPoolBlocksize = $("#PoolBlocksizeTarget").val()=="" ? 0 : $("#PoolBlocksizeTarget").val();
 	var dockerBaseDeviceSize  = $("#BaseDeviceSizeTarget").val()=="" ? 0 : $("#BaseDeviceSizeTarget").val();
 	var dockerBackingFilesystem = $("#BackingFilesystemTarget").val();
@@ -1025,7 +1063,7 @@ function times(selectednodes,j){
 	var dockerUdevSyncSupported = $("#UdevSyncSupportedTarget").val();
 	var docekrDeferredDeletionEnable = $("#DeferredDeletionEnableTarget").val();
 	var dockerDeferredDeletedDeviceCount = $("#DeferredDeletedDeviceCountTarget").val()=="" ? 0 : $("#DeferredDeletedDeviceCountTarget").val();
-	
+
 	var thisNodeName = selectednodes[j];
 	var nodeTestInfo = {
 			"nodename":thisNodeName,
@@ -1052,7 +1090,7 @@ function times(selectednodes,j){
 			"docekrDeferredDeletionEnableTarget":docekrDeferredDeletionEnable,
 			"dockerDeferredDeletedDeviceCountTarget":dockerDeferredDeletedDeviceCount //0
 		};
-	
+
 	var successInfoBtn = '<a id="'+thisNodeName+'"  nodename="'+thisNodeName+'" onclick="detail(this)" title="查看详细信息">'
 					+'<font color="#33CC33" style="font-weight:bold">通过<i class="fa fa-question-circle"></i></font></a>';
 	var failInfoBtn = '<a id="'+thisNodeName+'"  nodename="'+thisNodeName+'" onclick="detail(this)" title="查看详细信息">'
@@ -1099,7 +1137,7 @@ function times(selectednodes,j){
 				setTimeout("layer.closeAll()",2000);
 				return;
 			}else{
-				
+
 				var passStatus = passStatusFun(ids[count],data.nodeInfo);
 				if (passStatus == true) {
 					testHtmlResule = testHtmlResule
@@ -1190,7 +1228,7 @@ function times(selectednodes,j){
 							data:nodeTestInfo,
 							success : function(data) {
 								var data = eval("(" + data + ")");
-								
+
 								var passStatus = passStatusFun(ids[count],data.nodeInfo);
 								if (passStatus == true) {
 									testHtmlResule = testHtmlResule
@@ -1208,7 +1246,7 @@ function times(selectednodes,j){
 										 +'</div>';
 									failNum++;
 								}
-								console.log("节点==="+thisNodeName+"的"+ids[count]+"测试完成");//TODO	
+								console.log("节点==="+thisNodeName+"的"+ids[count]+"测试完成");//TODO
 								count++;
 								nodeProgressDiv.empty().append(testHtmlResule);
 								if(count == progressLength){
@@ -1253,7 +1291,7 @@ function times(selectednodes,j){
 												 +'</div>';
 											failNum++;
 										}
-										console.log("节点==="+thisNodeName+"的"+ids[count]+"测试完成");//TODO	
+										console.log("节点==="+thisNodeName+"的"+ids[count]+"测试完成");//TODO
 										count++;
 										nodeProgressDiv.empty().append(testHtmlResule);
 										if(count == progressLength){
@@ -1343,7 +1381,7 @@ function times(selectednodes,j){
 																 +'</div>';
 															failNum++;
 														}
-														console.log("节点==="+thisNodeName+"的"+ids[count]+"测试完成");//TODO	
+														console.log("节点==="+thisNodeName+"的"+ids[count]+"测试完成");//TODO
 														count++;
 														nodeProgressDiv.empty().append(testHtmlResule);
 														if(count == progressLength){
@@ -1359,7 +1397,7 @@ function times(selectednodes,j){
 															}
 															return;
 														}
-														
+
 													}
 												})
 											}
