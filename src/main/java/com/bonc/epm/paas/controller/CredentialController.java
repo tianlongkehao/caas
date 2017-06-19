@@ -23,7 +23,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -255,58 +254,58 @@ public class CredentialController {
 		return JSON.toJSONString(map);
 	}
 
-	/**
-	 * Description: <br>
-	 * 更新credential信息
-	 *
-	 * @param ciCodeCredential
-	 *            数据
-	 * @return String
-	 */
-	@RequestMapping("secret/updateCredential.do")
-	@ResponseBody
-	public String updateCredential(CiCodeCredential ciCodeCredential) {
-		Map<String, Object> map = new HashMap<String, Object>();
-		try {
-			SheraAPIClientInterface client = sheraClientService.getClient();
-			client.deleteCredential(ciCodeCredentialDao.findOne(ciCodeCredential.getId()).getUniqueKey());
-			GitCredential gitCredential;
-			Integer Credential = 0;
-			if (ciCodeCredential.getCodeType() == 1) {
-				Credential = ciCodeCredential.getType(); // 1 : git http
-															// 类型，2：git ssh类型
-			} else {
-				Credential = ciCodeCredential.getType() + 2; // 3 ：svn
-																// http类型，4：svn
-																// ssh类型
-			}
-			if (StringUtils.isEmpty(ciCodeCredential.getPassword())) {
-				gitCredential = sheraClientService.generateGitCredential(ciCodeCredential.getPrivateKey(),
-						ciCodeCredential.getUserName(), Credential, ciCodeCredential.getRemark());
-			} else {
-				String password = URLEncoder.encode(ciCodeCredential.getPassword(), "UTF-8");
-				gitCredential = sheraClientService.generateGitCredential(password, ciCodeCredential.getUserName(),
-						Credential, ciCodeCredential.getRemark());
-			}
-			CredentialKey credentialKey = client.addCredential(gitCredential);
-			ciCodeCredential.setUniqueKey(credentialKey.getUuid());
-			ciCodeCredential.setCreateBy(CurrentUserUtils.getInstance().getUser().getId());
-			ciCodeCredential.setCreateDate(new Date());
-			ciCodeCredentialDao.save(ciCodeCredential);
-
-			// 记录添加密钥操作
-			String extraInfo = "更新密钥信息：" + JSON.toJSONString(ciCodeCredential);
-			CommonOperationLog log = CommonOprationLogUtils.getOprationLog(ciCodeCredential.getUserName(), extraInfo,
-					CommConstant.USER_SCRETKEY, CommConstant.OPERATION_TYPE_UPDATE);
-			commonOperationLogDao.save(log);
-
-			map.put("status", "200");
-		} catch (Exception e) {
-			LOG.error("update credential error : " + e.getMessage());
-			map.put("status", "400");
-		}
-		return JSON.toJSONString(map);
-	}
+//	/**
+//	 * Description: <br>
+//	 * 更新credential信息
+//	 *
+//	 * @param ciCodeCredential
+//	 *            数据
+//	 * @return String
+//	 */
+//	@RequestMapping("secret/updateCredential.do")
+//	@ResponseBody
+//	public String updateCredential(CiCodeCredential ciCodeCredential) {
+//		Map<String, Object> map = new HashMap<String, Object>();
+//		try {
+//			SheraAPIClientInterface client = sheraClientService.getClient();
+//			client.deleteCredential(ciCodeCredentialDao.findOne(ciCodeCredential.getId()).getUniqueKey());
+//			GitCredential gitCredential;
+//			Integer Credential = 0;
+//			if (ciCodeCredential.getCodeType() == 1) {
+//				Credential = ciCodeCredential.getType(); // 1 : git http
+//															// 类型，2：git ssh类型
+//			} else {
+//				Credential = ciCodeCredential.getType() + 2; // 3 ：svn
+//																// http类型，4：svn
+//																// ssh类型
+//			}
+//			if (StringUtils.isEmpty(ciCodeCredential.getPassword())) {
+//				gitCredential = sheraClientService.generateGitCredential(ciCodeCredential.getPrivateKey(),
+//						ciCodeCredential.getUserName(), Credential, ciCodeCredential.getRemark());
+//			} else {
+//				String password = URLEncoder.encode(ciCodeCredential.getPassword(), "UTF-8");
+//				gitCredential = sheraClientService.generateGitCredential(password, ciCodeCredential.getUserName(),
+//						Credential, ciCodeCredential.getRemark());
+//			}
+//			CredentialKey credentialKey = client.addCredential(gitCredential);
+//			ciCodeCredential.setUniqueKey(credentialKey.getUuid());
+//			ciCodeCredential.setCreateBy(CurrentUserUtils.getInstance().getUser().getId());
+//			ciCodeCredential.setCreateDate(new Date());
+//			ciCodeCredentialDao.save(ciCodeCredential);
+//
+//			// 记录添加密钥操作
+//			String extraInfo = "更新密钥信息：" + JSON.toJSONString(ciCodeCredential);
+//			CommonOperationLog log = CommonOprationLogUtils.getOprationLog(ciCodeCredential.getUserName(), extraInfo,
+//					CommConstant.USER_SCRETKEY, CommConstant.OPERATION_TYPE_UPDATE);
+//			commonOperationLogDao.save(log);
+//
+//			map.put("status", "200");
+//		} catch (Exception e) {
+//			LOG.error("update credential error : " + e.getMessage());
+//			map.put("status", "400");
+//		}
+//		return JSON.toJSONString(map);
+//	}
 
 	/**
 	 * Description: <br>
