@@ -1191,6 +1191,11 @@ function loadServices() {
 						}
 						html += '</li>' + '</ul>' + '</li>' + '</ul>';
 					}
+					if (row.status == 3 || row.status == 6) {
+						html += '<a id="' + row.id + '_apm" class="a-live deleteButton_a "' + 'href="javascript:oneApmContainer(' + row.id + ')"' + 'style="margin-left: 5px" title="APM监控"><img src="'+ctx +'/images/service-apm.png"></a>';
+					} else {
+						html += '<a id="' + row.id + '_apm" class="no-drop deleteButton_a "' + 'style="margin-left: 5px" title="APM监控"><img src="'+ctx +'/images/service-apmG.png"></a>';
+					}
 					html += '<a id="' + row.id + '_del" class="a-live deleteButton_a "' + 'href="javascript:oneDeleteContainer(' + row.id + ')"' + 'style="margin-left: 5px" title="删除"> <i class="fa fa-trash"></i></a>';
 				}
 				return html;
@@ -1400,6 +1405,11 @@ function loadServicesNoSonar() {
 							html += '<a id="' + row.id + '_autoFlex" class="a-live autoFlex_a " ' + 'href="javascript:oneSetAutoFlexInfo(' + row.id + ',&apos;' + row.serviceName + '&apos;,' + row.minReplicas + ',' + row.maxReplicas + ',' + row.targetCPUUtilizationPercentage + ',' + row.status + ');" title="自动伸缩"' + '><i class="fa fa-arrows-h"></i>自动伸缩</a> ';
 						}
 						html += '</li>' + '</ul>' + '</li>' + '</ul>';
+					}
+					if (row.status == 3 || row.status == 6) {
+						html += '<a id="' + row.id + '_apm" class="a-live deleteButton_a "' + 'href="javascript:oneApmContainer(' + row.id + ')"' + 'style="margin-left: 5px" title="APM监控"><img src="'+ctx +'/images/service-apm.png"></a>';
+					} else {
+						html += '<a id="' + row.id + '_apm" class="no-drop deleteButton_a "' + 'style="margin-left: 5px" title="APM监控"><img src="'+ctx +'/images/service-apmG.png"></a>';
 					}
 					html += '<a id="' + row.id + '_del" class="a-live deleteButton_a "' + 'href="javascript:oneDeleteContainer(' + row.id + ')"' + 'style="margin-left: 5px" title="删除"> <i class="fa fa-trash"></i></a>';
 				}
@@ -1734,6 +1744,7 @@ function onePodEvent(obj){
 		}
 	});
 }
+
 
 
 
