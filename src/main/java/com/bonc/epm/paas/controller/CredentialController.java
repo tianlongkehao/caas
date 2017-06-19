@@ -18,6 +18,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -148,12 +150,13 @@ public class CredentialController {
 			// 使用ssh的时候
 			if (ciCodeCredential.getType() == 2) {
 				// 创建sshkey
-				String keyName = CurrentUserUtils.getInstance().getUser().getNamespace() + "_"
-						+ ciCodeCredential.getUserName();
+				String keyName = ciCodeCredential.getUserName();
 				SshKey sshKey = sheraClientService.generateSshKey(keyName);
 				sshKey = client.createSshKey(sshKey);
 				// 创建sshconfig
-				if (sshConfig != null) {
+				if (sshConfig != null && StringUtils.isNoneBlank(sshConfig.getUser())
+						&& StringUtils.isNoneBlank(sshConfig.getHost()) && BooleanUtils.isTrue(sshConfig.getProxy())
+						&& StringUtils.isNotBlank(sshConfig.getIp()) && StringUtils.isNotBlank(sshConfig.getPort())) {
 					client.createSshConfig(sshConfig);
 				}
 				result.put("sshKey", sshKey.getKey());
@@ -206,6 +209,34 @@ public class CredentialController {
 		CiCodeCredential ciCodeCredential = ciCodeCredentialDao.findOne(id);
 		try {
 			SheraAPIClientInterface client = sheraClientService.getClient();
+
+			if (ciCodeCredential.getType().equals(2)) {
+				//删除sshkey
+				String userName = ciCodeCredential.getUserName();
+				try {
+					client.deleteSshKey(userName);
+				} catch (SheraClientException e) {
+					map.put("status", "400");
+					e.printStackTrace();
+					return JSON.toJSONString(map);
+				}
+				SshConfig sshConfig = null;
+				try {
+					sshConfig = client.getSshConfig(userName);
+				} catch (SheraClientException e) {
+					sshConfig = null;
+				}
+				if (sshConfig != null) {
+					try {
+						client.deleteSshConfig(userName);
+					} catch (SheraClientException e) {
+						map.put("status", "400");
+						e.printStackTrace();
+						return JSON.toJSONString(map);
+					}
+				}
+			}
+
 			client.deleteCredential(ciCodeCredential.getUniqueKey());
 			ciCodeCredentialDao.delete(ciCodeCredential);
 
@@ -371,49 +402,49 @@ public class CredentialController {
 		return JSON.toJSONString(map);
 	}
 
-	/**
-	 * deleteSshKeys:删除指定shera的指定SshKey和SshConfig. <br/>
-	 *
-	 * @param sheraId
-	 * @param credentialid
-	 * @return String
-	 */
-	@RequestMapping(value = "secret/deleteSshKeys.do", method = RequestMethod.GET)
-	@ResponseBody
-	public String deleteSshKeys(Long sheraId, Long credentialid) {
-		Map<String, Object> map = new HashMap<>();
-		Shera shera = sheraDao.findOne(sheraId);
-		SheraAPIClientInterface client = sheraClientService.getClient(shera);
-
-		CiCodeCredential ciCodeCredential = ciCodeCredentialDao.findOne(credentialid);
-		String userName = ciCodeCredential.getUserName();
-		try {
-			client.deleteSshKey(userName);
-		} catch (SheraClientException e) {
-			map.put("status", "300");
-			e.printStackTrace();
-			return JSON.toJSONString(map);
-		}
-		SshConfig sshConfig = null;
-		try {
-			sshConfig = client.getSshConfig(userName);
-		} catch (SheraClientException e) {
-			sshConfig = null;
-		}
-		if (sshConfig != null) {
-			try {
-				client.deleteSshConfig(userName);
-			} catch (SheraClientException e) {
-				map.put("status", "300");
-				e.printStackTrace();
-				return JSON.toJSONString(map);
-			}
-		}
-
-		ciCodeCredentialDao.delete(credentialid);
-		map.put("status", "200");
-		return JSON.toJSONString(map);
-	}
+//	/**
+//	 * deleteSshKeys:删除指定shera的指定SshKey和SshConfig. <br/>
+//	 *
+//	 * @param sheraId
+//	 * @param credentialid
+//	 * @return String
+//	 */
+//	@RequestMapping(value = "secret/deleteSshKeys.do", method = RequestMethod.GET)
+//	@ResponseBody
+//	public String deleteSshKeys(Long sheraId, Long credentialid) {
+//		Map<String, Object> map = new HashMap<>();
+//		Shera shera = sheraDao.findOne(sheraId);
+//		SheraAPIClientInterface client = sheraClientService.getClient(shera);
+//
+//		CiCodeCredential ciCodeCredential = ciCodeCredentialDao.findOne(credentialid);
+//		String userName = ciCodeCredential.getUserName();
+//		try {
+//			client.deleteSshKey(userName);
+//		} catch (SheraClientException e) {
+//			map.put("status", "300");
+//			e.printStackTrace();
+//			return JSON.toJSONString(map);
+//		}
+//		SshConfig sshConfig = null;
+//		try {
+//			sshConfig = client.getSshConfig(userName);
+//		} catch (SheraClientException e) {
+//			sshConfig = null;
+//		}
+//		if (sshConfig != null) {
+//			try {
+//				client.deleteSshConfig(userName);
+//			} catch (SheraClientException e) {
+//				map.put("status", "300");
+//				e.printStackTrace();
+//				return JSON.toJSONString(map);
+//			}
+//		}
+//
+//		ciCodeCredentialDao.delete(credentialid);
+//		map.put("status", "200");
+//		return JSON.toJSONString(map);
+//	}
 
 	/**
 	 * getSshKeyList:获取ssh密钥列表. <br/>
