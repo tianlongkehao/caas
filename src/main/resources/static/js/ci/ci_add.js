@@ -430,6 +430,7 @@ $(document).ready(function () {
 		}
 		editor_one.setValue(allToolCode);
 	});
+	//显示和隐藏提示
 	$(document).on('click','.questionInfoBtn',function(){
 		$(this).parent().parent().parent().find("div.questionInfoCon").toggle();
 	});
@@ -583,17 +584,17 @@ function loadAnt(count){
 							'<input id="antProperties-'+count+'" name="antProperties" type="text" class="form-control c-project-con" value=""><i class="fa fa-question-circle fa-questionBtn"></i>'+
 						'</div>'+
 						'<div class="form-group col-md-12 fa-questionCon">'+
-						'<p>您可以在此处指定您的ant构建所需的属性（以标准属性文件格式）：</p>'+
-						'<p>＃comment</p>'+
-						'<p>name1 = value1</p>'+
-						'<p>name2 = $ VAR2</p>'+
-						'<p>这些被传递给Ant像“-Dname1 = value1 -Dname2 = value2”。 始终'+
-						'使用$ VAR样式（甚至在Windows上）引用Jenkins定义的环境变量。 '+
-						'在Windows上，％VAR％样式引用可用于存在于Jenkins之外的环境变量。 '+
-						'反斜杠用于转义，因此对于单个反斜杠使用\\。 应该避免双引号（“），因为ant on * nix将引号'+
-						'中的参数封装在引号中，并通过eval运行它们，而且Windows也有自己的转义问题，在任何一种情况下，'+
-						'使用引号都可能导致构建失败。 属性，只需写入varname =</p>'+
-					 '</div>'+
+							'<p>您可以在此处指定您的ant构建所需的属性（以标准属性文件格式）：</p>'+
+							'<p>＃comment</p>'+
+							'<p>name1 = value1</p>'+
+							'<p>name2 = $ VAR2</p>'+
+							'<p>这些被传递给Ant像“-Dname1 = value1 -Dname2 = value2”。 始终'+
+							'使用$ VAR样式（甚至在Windows上）引用Jenkins定义的环境变量。 '+
+							'在Windows上，％VAR％样式引用可用于存在于Jenkins之外的环境变量。 '+
+							'反斜杠用于转义，因此对于单个反斜杠使用\\。 应该避免双引号（“），因为ant on * nix将引号'+
+							'中的参数封装在引号中，并通过eval运行它们，而且Windows也有自己的转义问题，在任何一种情况下，'+
+							'使用引号都可能导致构建失败。 属性，只需写入varname =</p>'+
+						 '</div>'+
 						'<div class="form-group col-md-12">'+
 							'<label class="c-project-tit">java选项</label>'+
 							'<input id="antJavaOpts-'+count+'" name="antJavaOpts" type="text" class="form-control c-project-con" value=""><i class="fa fa-question-circle fa-questionBtn"></i>'+

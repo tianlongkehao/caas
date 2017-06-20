@@ -192,7 +192,7 @@
 									<input name="item" class="checkItem" type="checkbox" value="qperfitem" id="qperf">&nbsp;qperf带宽：
 								</th>
 								<td>
-									<input type="number" value="2000" class="number testItemCon"
+									<input type="number" value="1000" class="number testItemCon"
 											min="1" autocomplete="off" max=""  id="speed"
 											onkeyup="this.value=this.value.replace(/\D/g,'')"
 											name="instanceNum"><span class="s-unit">MB</span>
@@ -246,14 +246,14 @@
 											name="instanceNum">
 									</td>
 								</tr>
-								<tr>
+								<!-- <tr>
 									<th class="testItemTit testItemTitNoCheckbox">Data Space Used：</th>
 									<td>
 										<input type="number" value="0" class="number testItemCon" min="1"
 											autocomplete="off" max="" id="DataSpaceUsedTarget"
 											name="instanceNum"><span class="s-unit">GB</span>
 									</td>
-								</tr>
+								</tr> -->
 								<tr>
 									<th class="testItemTit testItemTitNoCheckbox">Data Space Total：</th>
 									<td>
@@ -262,14 +262,14 @@
 											name="instanceNum"><span class="s-unit">GB</span>
 									</td>
 								</tr>
-								<tr>
+								<!-- <tr>
 									<th class="testItemTit testItemTitNoCheckbox">Data Space Available：</th>
 									<td>
 										<input type="number" value="100" class="number testItemCon" min="1"
 											autocomplete="off" max="" id="DataSpaceAvailableTarget"
 											name="instanceNum"><span class="s-unit">GB</span>
 									</td>
-								</tr>
+								</tr> -->
 								<tr>
 									<th class="testItemTit testItemTitNoCheckbox">Metadata file：</th>
 									<td>
@@ -278,14 +278,14 @@
 											name="instanceNum">
 									</td>
 								</tr>
-								<tr>
+								<!-- <tr>
 									<th class="testItemTit testItemTitNoCheckbox">Meta Space Used：</th>
 									<td>
 										<input type="number" value="0" class="number testItemCon" min="1"
 											autocomplete="off" max="" id="MetaSpaceUsedTarget"
 											name="instanceNum"><span class="s-unit">MB</span>
 									</td>
-								</tr>
+								</tr> -->
 								<tr>
 									<th class="testItemTit testItemTitNoCheckbox">Meta Space Total：</th>
 									<td>
@@ -294,14 +294,14 @@
 											name="instanceNum"><span class="s-unit">GB</span>
 									</td>
 								</tr>
-								<tr>
+								<!-- <tr>
 									<th class="testItemTit testItemTitNoCheckbox">Meta Space Available：</th>
 									<td>
 										<input type="number" value="2" class="number testItemCon" min="1"
 											autocomplete="off" max="" id="MetaSpaceAvailableTarget"
 											name="instanceNum"><span class="s-unit">GB</span>
 									</td>
-								</tr>
+								</tr> -->
 								<tr>
 									<th class="testItemTit testItemTitNoCheckbox">Deferred Removal Enable：</th>
 									<td>
@@ -356,7 +356,7 @@
 		</article>
 	</div>
 <script type="text/javascript">
-	
+
 </script>
 </body>
 </html>

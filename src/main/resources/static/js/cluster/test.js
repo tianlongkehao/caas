@@ -69,18 +69,18 @@ $(document).ready(function() {
 				 +'style="width: 35%;">'
 				 +'<span >正在部署</span>'
 				 +'</div>';
-			var defer = $.Deferred();  
-			//这一步必须要写，要不然下面的then无法使用  
-			defer.resolve();  
-			$.each(selectednodes,function(i,e){  
-				
-				defer = defer.then(function () {  
+			var defer = $.Deferred();
+			//这一步必须要写，要不然下面的then无法使用
+			defer.resolve();
+			$.each(selectednodes,function(i,e){
+
+				defer = defer.then(function () {
 					var checkNode = $('input:checkbox[id="'+e+'"]');
 					checkNode.parent().parent().find(".nodeProgress").empty().append(deployingHtml);
-				  return $.ajax({  
-			      url:ctx + "/cluster/deploypodfortest?nodenames="+e,  
-			      method:'get',  
-			      success:function(data){  
+				  return $.ajax({
+			      url:ctx + "/cluster/deploypodfortest?nodenames="+e,
+			      method:'get',
+			      success:function(data){
 			    	  var data = eval("(" + data + ")");
 			    	  if (data.status == '200') {
 						checkNode.parent().parent().find(".nodeProgress").empty().append(deployHtmlSuccess);
@@ -92,15 +92,15 @@ $(document).ready(function() {
 							return;
 						}
 					 }
-			      }  
-			    })  
-			  });  
-			});  
-			defer.done(function(){  
+			      }
+			    })
+			  });
+			});
+			defer.done(function(){
 				layer.closeAll();
-			});  
+			});
 		}
-		
+
 	});
 
 	// 批量 清除部署
@@ -264,7 +264,7 @@ function detail(obj) {
 						+'</tr>'
 						+'<tr>'
 						+'<th style="width: 20%">带宽(MB)：</th>'
-						+'<td class="tableInput"><input class="" type="text" id="speed" readOnly value="'+speed+'"></td>'
+						+'<td class="tableInput"><input class="" type="text" id="speed2" readOnly value="'+speed+'"></td>'
 						+'</tr>'
 						+'<tr>'
 						+'<th style="width: 20%">延迟(ms)：</th>'
@@ -306,23 +306,23 @@ function detail(obj) {
 					tabHtml += '<li id="tab'+count+'"><a href="#dockerTab" data-toggle="tab">Docker</a></li>';
 					var dockerpass=nodetestresult.dockerpass ? '通过' : '未通过';
 					var dockerdetail=nodetestresult.dockermsg;
-					
+
 					var PoolBlocksize = nodetestresult.dockerPoolBlocksize;
 					var BaseDeviceSize = nodetestresult.dockerBaseDeviceSize;
 					var BackingFilesystem = nodetestresult.dockerBackingFilesystem;
 					var Datafile=nodetestresult.dockerDatafile;
-					var DataSpaceUsed = nodetestresult.dockerDataSpaceUsed;
+					//var DataSpaceUsed = nodetestresult.dockerDataSpaceUsed;
 					var DataSpaceTotal = nodetestresult.dockerDataSpaceTotal;
-					var DataSpaceAvailable=nodetestresult.dockerDataSpaceAvailable;
+					//var DataSpaceAvailable=nodetestresult.dockerDataSpaceAvailable;
 					var Metadatafile = nodetestresult.dockerMetadatafile;
-					var MetaSpaceUsed=nodetestresult.dockerMetaSpaceUsed;
+					//var MetaSpaceUsed=nodetestresult.dockerMetaSpaceUsed;
 					var MetaSpaceTotal = nodetestresult.dockerMetaSpaceTotal;
-					var MetaSpaceAvailable = nodetestresult.dockerMetaSpaceAvailable;
+					//var MetaSpaceAvailable = nodetestresult.dockerMetaSpaceAvailable;
 					var DeferredRemovalEnable=nodetestresult.dockerDeferredRemovalEnable;
 					var UdevSyncSupported = nodetestresult.dockerUdevSyncSupported;
 					var DeferredDeletionEnable = nodetestresult.docekrDeferredDeletionEnable;
 					var DeferredDeletedDeviceCount=nodetestresult.dockerDeferredDeletedDeviceCount;
-					
+
 					tabInfoHtml += '<div class="tab-pane fade tabInfo'+count+'" id="dockerTab">'
 						+'<table class="table">'
 						+'<tbody class="dockerTable">'
@@ -346,34 +346,34 @@ function detail(obj) {
 						+'<th style="width: 20%">Data file：</th>'
 						+'<td class="tableInput"><input class="" type="text" id="Datafile" readOnly value="'+Datafile+'"></td>'
 						+'</tr>'
-						+'<tr>'
-						+'<th style="width: 20%">Data Space Used(GB)：</th>'
-						+'<td class="tableInput"><input class="" type="text" id="DataSpaceUsed" readOnly value="'+DataSpaceUsed+'"></td>'
-						+'</tr>'
+						//+'<tr>'
+						//+'<th style="width: 20%">Data Space Used(GB)：</th>'
+						//+'<td class="tableInput"><input class="" type="text" id="DataSpaceUsed" readOnly value="'+DataSpaceUsed+'"></td>'
+						//+'</tr>'
 						+'<tr>'
 						+'<th style="width: 20%">Data Space Total(GB)：</th>'
 						+'<td class="tableInput"><input class="" type="text" id="DataSpaceTotal" readOnly value="'+DataSpaceTotal+'"></td>'
 						+'</tr>'
-						+'<tr>'
-						+'<th style="width: 20%">Data Space Available(GB)：</th>'
-						+'<td class="tableInput"><input class="" type="text" id="DataSpaceAvailable" readOnly value="'+DataSpaceAvailable+'"></td>'
-						+'</tr>'
+						//+'<tr>'
+						//+'<th style="width: 20%">Data Space Available(GB)：</th>'
+						//+'<td class="tableInput"><input class="" type="text" id="DataSpaceAvailable" readOnly value="'+DataSpaceAvailable+'"></td>'
+						//+'</tr>'
 						+'<tr>'
 						+'<th style="width: 20%">Metadata file：</th>'
 						+'<td class="tableInput"><input class="" type="text" id="Metadatafile" readOnly value="'+Metadatafile+'"></td>'
 						+'</tr>'
-						+'<tr>'
-						+'<th style="width: 20%">Meta Space Used(MB)：</th>'
-						+'<td class="tableInput"><input class="" type="text" id="MetaSpaceUsed" readOnly value="'+MetaSpaceUsed+'"></td>'
-						+'</tr>'
+						//+'<tr>'
+						//+'<th style="width: 20%">Meta Space Used(MB)：</th>'
+						//+'<td class="tableInput"><input class="" type="text" id="MetaSpaceUsed" readOnly value="'+MetaSpaceUsed+'"></td>'
+						//+'</tr>'
 						+'<tr>'
 						+'<th style="width: 20%">Meta Space Total(GB)：</th>'
 						+'<td class="tableInput"><input class="" type="text" id="MetaSpaceTotal" readOnly value="'+MetaSpaceTotal+'"></td>'
 						+'</tr>'
-						+'<tr>'
-						+'<th style="width: 44%">Meta Space Available(KB)：</th>'
-						+'<td class="tableInput"><input class="" type="text" id="MetaSpaceAvailable" readOnly value="'+MetaSpaceAvailable+'"></td>'
-						+'</tr>'
+						//+'<tr>'
+						//+'<th style="width: 44%">Meta Space Available(KB)：</th>'
+						//+'<td class="tableInput"><input class="" type="text" id="MetaSpaceAvailable" readOnly value="'+MetaSpaceAvailable+'"></td>'
+						//+'</tr>'
 						+'<tr>'
 						+'<th style="width: 44%">Deferred Removal Enable：</th>'
 						+'<td class="tableInput"><input class="" type="text" id="DeferredRemovalEnable" readOnly value="'+DeferredRemovalEnable+'"></td>'
@@ -455,7 +455,7 @@ function  clearDetailData(){
 
 	$('#qperfstatus').val('');
 	$('#qperfpass').val('');
-	$('#speed').val('');
+	$('#speed2').val('');
 	$('#latency').val('');
 	$('#qperfdetail').html('');
 
@@ -465,7 +465,7 @@ function  clearDetailData(){
 	$('#curldetail').html('');
 
 	$('#dockerstatus').val('');
-	$('#memory').val('');
+	//$('#memory').val('');
 	$('#dockerpass').val('');
 	$('#dockerdetail').html('');
 
@@ -662,7 +662,7 @@ function showTestListData(data){
 					 	+'style="width: 40%;">'
 					 	+'<span >部署完成</span>'
 					 	+'</div>';
-				
+
 			}else{
 				testListHtml +='<div class="progress-bar progress-bar-warning" role="progressbar"'
 					+'aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"'
@@ -682,14 +682,14 @@ function showTestListData(data){
 			var curlpass = nodeTestInfo.curlpass;
 			var dockerpass = nodeTestInfo.dockerpass;
 			var dnspass = nodeTestInfo.dnspass;
-			
+
 			var ping = nodeTestInfo.ping;
 			var trace = nodeTestInfo.tracepath;
 			var qperf = nodeTestInfo.qperf;
 			var curl = nodeTestInfo.curl;
 			var docker = nodeTestInfo.docker;
 			var dns = nodeTestInfo.dns;
-			
+
 			if(ping == true){
 				testCount++;
 			}
@@ -709,8 +709,8 @@ function showTestListData(data){
 				testCount++;
 			}
 			var progressWidth = 60/testCount+'%';
-			
-			
+
+
 			if(deploystatus == true){
 				//deploy=true
 				testListHtml +='<div class="progress-bar progress-bar-warning" role="progressbar"'
@@ -732,7 +732,7 @@ function showTestListData(data){
 							 +'<span>ping失败</span>'
 							 +'</div>';
 						failCount++;
-					} 
+					}
 				}
 				if(trace == true){
 					if(tracepass == true){
@@ -748,7 +748,7 @@ function showTestListData(data){
 							 +'<span>trace失败</span>'
 							 +'</div>';
 						failCount++;
-					} 
+					}
 				}
 				if(qperf == true){
 					if(qperfpass == true){
@@ -764,7 +764,7 @@ function showTestListData(data){
 							 +'<span>qperf失败</span>'
 							 +'</div>';
 						failCount++;
-					} 
+					}
 				}
 				if(curl == true){
 					if(curlpass == true){
@@ -780,7 +780,7 @@ function showTestListData(data){
 							 +'<span>curl失败</span>'
 							 +'</div>';
 						failCount++;
-					} 
+					}
 				}
 				if(docker == true){
 					if(dockerpass == true){
@@ -796,7 +796,7 @@ function showTestListData(data){
 							 +'<span>docker失败</span>'
 							 +'</div>';
 						failCount++;
-					} 
+					}
 				}
 				if(dns == true){
 					if(dnspass == true){
@@ -814,7 +814,7 @@ function showTestListData(data){
 						failCount++;
 					}
 				}
-				
+
 				testListHtml += '</div>'
 						+'</td>'
 						+'<td class="clusterTestOpr" style="width:12%;text-indent:20px">'
@@ -827,7 +827,7 @@ function showTestListData(data){
 				}
 				testListHtml +='</a>'
 						+'</td>'
-						+'</tr>';	
+						+'</tr>';
 			}else{
 				//deploy=false
 				testListHtml +='<div class="progress-bar progress-bar-warning" role="progressbar"'
@@ -883,7 +883,7 @@ function testNodes(obj){
 					$("#qperf").prop("checked",false);
 					$("#docker").prop("checked",false);
 					$("#dns").prop("checked",false);
-					
+
 					var pingitem = "";
 					var traceitem = "";
 					var qperfitem = "";
@@ -891,7 +891,7 @@ function testNodes(obj){
 					var dockeritem = "";
 					var dnsitem = "";
 					var nodetestresult = data.testparam;
-					
+
 					if(nodetestresult ==undefined){
 						pingitem = false;
 						traceitem = false;
@@ -914,7 +914,7 @@ function testNodes(obj){
 					$("#qperf").prop("checked",qperfitem);
 					$("#docker").prop("checked",dockeritem);
 					$("#dns").prop("checked",dnsitem);
-					
+
 					if ($(".checkItem:checked").length == $(".checkItem").length) {
 		                $("#selectitem").prop("checked", "checked");
 		            }
@@ -928,7 +928,7 @@ function testNodes(obj){
 						$("#tracepathtime").val(nodetestresult.tracetimetarget);
 					}
 					if(qperfitem){
-						$("#qperf").val(nodetestresult.speedtarget);
+						$("#speed").val(nodetestresult.speedtarget);
 						$("#qperftime").val(nodetestresult.latencytarget);
 					}
 					if(curlitem){
@@ -939,25 +939,63 @@ function testNodes(obj){
 						$("#BaseDeviceSizeTarget").val(nodetestresult.dockerBaseDeviceSizeTarget);
 						$("#BackingFilesystemTarget").val(nodetestresult.dockerBackingFilesystemTarget);
 						$("#DatafileTarget").val(nodetestresult.dockerDatafileTarget);
-						$("#MetaSpaceUsedTarget").val(nodetestresult.dockerMetaSpaceUsedTarget);
-						$("#MetaSpaceAvailableTarget").val(nodetestresult.dockerMetaSpaceAvailableTarget);
+						//$("#MetaSpaceUsedTarget").val(nodetestresult.dockerMetaSpaceUsedTarget);
+						//$("#MetaSpaceAvailableTarget").val(nodetestresult.dockerMetaSpaceAvailableTarget);
 						$("#DeferredRemovalEnableTarget").val(nodetestresult.dockerDeferredRemovalEnableTarget==false?'false':'true');
 						$("#MetadatafileTarget").val(nodetestresult.dockerMetadatafileTarget);
-						$("#DataSpaceUsedTarget").val(nodetestresult.dockerDataSpaceUsedTarget);
+						//$("#DataSpaceUsedTarget").val(nodetestresult.dockerDataSpaceUsedTarget);
 						$("#DataSpaceTotalTarget").val(nodetestresult.dockerDataSpaceTotalTarget);
-						$("#DataSpaceAvailableTarget").val(nodetestresult.dockerDataSpaceAvailableTarget);
+						//$("#DataSpaceAvailableTarget").val(nodetestresult.dockerDataSpaceAvailableTarget);
 						$("#MetaSpaceTotalTarget").val(nodetestresult.dockerMetaSpaceTotalTarget);
 						$("#UdevSyncSupportedTarget").val(nodetestresult.dockerUdevSyncSupportedTarget==false?'false':'true');
 						$("#DeferredDeletionEnableTarget").val(nodetestresult.docekrDeferredDeletionEnableTarget==false?'false':'true');
 						$("#DeferredDeletedDeviceCountTarget").val(nodetestresult.dockerDeferredDeletedDeviceCountTarget);
 					}
 				}
-				
+				if(flag == true){
+					layer.open({
+						type : 1,
+						title : '检测项信息',
+						content : $("#chkitem"),
+						area : [ '600px','500px' ],
+						btn :  [ '确定', '取消' ],
+						yes : function(index, layero) {
+							if (!checkitems()) {
+								return;// 校验没通过
+							}
+							layer.close(index);
+							//遮挡层
+							var loading = layer.load(0,{shade : [ 0.3, '#000' ]});
+							//假同步执行清理节点
+							var deferClear = $.Deferred();
+							deferClear.resolve();
+							$.each(selectednodes,function(i,e){
+
+
+								deferClear = deferClear.then(function () {
+								    return $.ajax({
+										url:ctx + "/cluster/deleteTestInfo?nodename="+e,
+										type:"get",
+										success:function(){
+											console.log("清理节点"+i+"==="+e);//TODO
+
+										}
+									})
+							  });
+							});
+							deferClear.done(function(){
+								var deferTest = $.Deferred();
+								deferTest.resolve();
+								times(selectednodes,0);
+							});
+						}
+					})
+				}
 			}
 		})
 	}
-	
-	if(flag == true){
+
+	/*if(flag == true){
 		layer.open({
 			type : 1,
 			title : '检测项信息',
@@ -972,34 +1010,34 @@ function testNodes(obj){
 				//遮挡层
 				var loading = layer.load(0,{shade : [ 0.3, '#000' ]});
 				//假同步执行清理节点
-				var deferClear = $.Deferred();  
-				deferClear.resolve();  
+				var deferClear = $.Deferred();
+				deferClear.resolve();
 				$.each(selectednodes,function(i,e){
-					
-					
-					deferClear = deferClear.then(function () {  
+
+
+					deferClear = deferClear.then(function () {
 					    return $.ajax({
 							url:ctx + "/cluster/deleteTestInfo?nodename="+e,
 							type:"get",
 							success:function(){
 								console.log("清理节点"+i+"==="+e);//TODO
-								
+
 							}
 						})
-				  });  
-				});  
+				  });
+				});
 				deferClear.done(function(){
-					var deferTest = $.Deferred();  
+					var deferTest = $.Deferred();
 					deferTest.resolve();
 					times(selectednodes,0);
-				});  
+				});
 			}
 		})
-	}
+	}*/
 }
 function times(selectednodes,j){
 	if(j >= selectednodes.length){
-		return; 
+		return;
 	}
 	debugger;
 	var pingIp = $("#pingip").val();
@@ -1009,23 +1047,23 @@ function times(selectednodes,j){
 	var curltime = $("#curltime").val()=="" ? 0 : $("#curltime").val();
 	var speed = $("#speed").val()=="" ? 0 : $("#speed").val();
 	var latency = $("#qperftime").val()=="" ? 0 : $("#qperftime").val();
-	
+
 	var dockerPoolBlocksize = $("#PoolBlocksizeTarget").val()=="" ? 0 : $("#PoolBlocksizeTarget").val();
 	var dockerBaseDeviceSize  = $("#BaseDeviceSizeTarget").val()=="" ? 0 : $("#BaseDeviceSizeTarget").val();
 	var dockerBackingFilesystem = $("#BackingFilesystemTarget").val();
 	var dockerDatafile = $("#DatafileTarget").val();
-	var dockerMetaSpaceUsed  = $("#MetaSpaceUsedTarget").val()=="" ? 0 : $("#MetaSpaceUsedTarget").val();
-	var dockerMetaSpaceAvailable = $("#MetaSpaceAvailableTarget").val()=="" ? 0 : $("#MetaSpaceAvailableTarget").val();
+	//var dockerMetaSpaceUsed  = $("#MetaSpaceUsedTarget").val()=="" ? 0 : $("#MetaSpaceUsedTarget").val();
+	//var dockerMetaSpaceAvailable = $("#MetaSpaceAvailableTarget").val()=="" ? 0 : $("#MetaSpaceAvailableTarget").val();
 	var dockerDeferredRemovalEnable = $("#DeferredRemovalEnableTarget").val();
 	var dockerMetadatafile = $("#MetadatafileTarget").val();
-	var dockerDataSpaceUsed = $("#DataSpaceUsedTarget").val()=="" ? 0 : $("#DataSpaceUsedTarget").val();
+	//var dockerDataSpaceUsed = $("#DataSpaceUsedTarget").val()=="" ? 0 : $("#DataSpaceUsedTarget").val();
 	var dockerDataSpaceTotal = $("#DataSpaceTotalTarget").val()=="" ? 0 : $("#DataSpaceTotalTarget").val();
-	var dockerDataSpaceAvailable = $("#DataSpaceAvailableTarget").val()=="" ? 0 : $("#DataSpaceAvailableTarget").val();
+	//var dockerDataSpaceAvailable = $("#DataSpaceAvailableTarget").val()=="" ? 0 : $("#DataSpaceAvailableTarget").val();
 	var dockerMetaSpaceTotal = $("#MetaSpaceTotalTarget").val()=="" ? 0 : $("#MetaSpaceTotalTarget").val();
 	var dockerUdevSyncSupported = $("#UdevSyncSupportedTarget").val();
 	var docekrDeferredDeletionEnable = $("#DeferredDeletionEnableTarget").val();
 	var dockerDeferredDeletedDeviceCount = $("#DeferredDeletedDeviceCountTarget").val()=="" ? 0 : $("#DeferredDeletedDeviceCountTarget").val();
-	
+
 	var thisNodeName = selectednodes[j];
 	var nodeTestInfo = {
 			"nodename":thisNodeName,
@@ -1040,19 +1078,19 @@ function times(selectednodes,j){
 			"dockerBaseDeviceSizeTarget":dockerBaseDeviceSize, //0
 			"dockerBackingFilesystemTarget":dockerBackingFilesystem,
 			"dockerDatafileTarget":dockerDatafile,
-			"dockerMetaSpaceUsedTarget":dockerMetaSpaceUsed, //0
-			"dockerMetaSpaceAvailableTarget":dockerMetaSpaceAvailable, //0
+			//"dockerMetaSpaceUsedTarget":dockerMetaSpaceUsed, //0
+			//"dockerMetaSpaceAvailableTarget":dockerMetaSpaceAvailable, //0
 			"dockerDeferredRemovalEnableTarget":dockerDeferredRemovalEnable,
 			"dockerMetadatafileTarget":dockerMetadatafile,
-			"dockerDataSpaceUsedTarget":dockerDataSpaceUsed, //0
+			//"dockerDataSpaceUsedTarget":dockerDataSpaceUsed, //0
 			"dockerDataSpaceTotalTarget":dockerDataSpaceTotal, //0
-			"dockerDataSpaceAvailableTarget":dockerDataSpaceAvailable, //0
+			//"dockerDataSpaceAvailableTarget":dockerDataSpaceAvailable, //0
 			"dockerMetaSpaceTotalTarget":dockerMetaSpaceTotal, //0
 			"dockerUdevSyncSupportedTarget":dockerUdevSyncSupported,
 			"docekrDeferredDeletionEnableTarget":docekrDeferredDeletionEnable,
 			"dockerDeferredDeletedDeviceCountTarget":dockerDeferredDeletedDeviceCount //0
 		};
-	
+
 	var successInfoBtn = '<a id="'+thisNodeName+'"  nodename="'+thisNodeName+'" onclick="detail(this)" title="查看详细信息">'
 					+'<font color="#33CC33" style="font-weight:bold">通过<i class="fa fa-question-circle"></i></font></a>';
 	var failInfoBtn = '<a id="'+thisNodeName+'"  nodename="'+thisNodeName+'" onclick="detail(this)" title="查看详细信息">'
@@ -1099,7 +1137,7 @@ function times(selectednodes,j){
 				setTimeout("layer.closeAll()",2000);
 				return;
 			}else{
-				
+
 				var passStatus = passStatusFun(ids[count],data.nodeInfo);
 				if (passStatus == true) {
 					testHtmlResule = testHtmlResule
@@ -1190,7 +1228,7 @@ function times(selectednodes,j){
 							data:nodeTestInfo,
 							success : function(data) {
 								var data = eval("(" + data + ")");
-								
+
 								var passStatus = passStatusFun(ids[count],data.nodeInfo);
 								if (passStatus == true) {
 									testHtmlResule = testHtmlResule
@@ -1208,7 +1246,7 @@ function times(selectednodes,j){
 										 +'</div>';
 									failNum++;
 								}
-								console.log("节点==="+thisNodeName+"的"+ids[count]+"测试完成");//TODO	
+								console.log("节点==="+thisNodeName+"的"+ids[count]+"测试完成");//TODO
 								count++;
 								nodeProgressDiv.empty().append(testHtmlResule);
 								if(count == progressLength){
@@ -1253,7 +1291,7 @@ function times(selectednodes,j){
 												 +'</div>';
 											failNum++;
 										}
-										console.log("节点==="+thisNodeName+"的"+ids[count]+"测试完成");//TODO	
+										console.log("节点==="+thisNodeName+"的"+ids[count]+"测试完成");//TODO
 										count++;
 										nodeProgressDiv.empty().append(testHtmlResule);
 										if(count == progressLength){
@@ -1343,7 +1381,7 @@ function times(selectednodes,j){
 																 +'</div>';
 															failNum++;
 														}
-														console.log("节点==="+thisNodeName+"的"+ids[count]+"测试完成");//TODO	
+														console.log("节点==="+thisNodeName+"的"+ids[count]+"测试完成");//TODO
 														count++;
 														nodeProgressDiv.empty().append(testHtmlResule);
 														if(count == progressLength){
@@ -1359,7 +1397,7 @@ function times(selectednodes,j){
 															}
 															return;
 														}
-														
+
 													}
 												})
 											}
