@@ -1949,13 +1949,13 @@ public class ClusterController {
 			nodeInfo.setDockerBackingFilesystemTarget(nodeTestInfo.getDockerBackingFilesystemTarget());
 			nodeInfo.setDockerBaseDeviceSizeTarget(nodeTestInfo.getDockerBaseDeviceSizeTarget());
 			nodeInfo.setDockerDatafileTarget(nodeTestInfo.getDockerDatafileTarget());
-			nodeInfo.setDockerDataSpaceAvailableTarget(nodeTestInfo.getDockerDataSpaceAvailableTarget());
-			nodeInfo.setDockerDataSpaceUsedTarget(nodeTestInfo.getDockerDataSpaceUsedTarget());
+			//nodeInfo.setDockerDataSpaceAvailableTarget(nodeTestInfo.getDockerDataSpaceAvailableTarget());
+			//nodeInfo.setDockerDataSpaceUsedTarget(nodeTestInfo.getDockerDataSpaceUsedTarget());
 			nodeInfo.setDockerDeferredRemovalEnableTarget(nodeTestInfo.isDockerDeferredRemovalEnableTarget());
 			nodeInfo.setDockerMetadatafileTarget(nodeTestInfo.getDockerMetadatafileTarget());
-			nodeInfo.setDockerMetaSpaceAvailableTarget(nodeTestInfo.getDockerMetaSpaceAvailableTarget());
+			//nodeInfo.setDockerMetaSpaceAvailableTarget(nodeTestInfo.getDockerMetaSpaceAvailableTarget());
 			nodeInfo.setDockerMetaSpaceTotalTarget(nodeTestInfo.getDockerMetaSpaceTotalTarget());
-			nodeInfo.setDockerMetaSpaceUsedTarget(nodeTestInfo.getDockerMetaSpaceUsedTarget());
+			//nodeInfo.setDockerMetaSpaceUsedTarget(nodeTestInfo.getDockerMetaSpaceUsedTarget());
 			nodeInfo.setDockerPoolBlocksizeTarget(nodeTestInfo.getDockerPoolBlocksizeTarget());
 			nodeInfo.setDockerUdevSyncSupportedTarget(nodeTestInfo.isDockerUdevSyncSupportedTarget());
 			nodeInfo.setDockerDeferredDeletedDeviceCountTarget(
@@ -1979,21 +1979,21 @@ public class ClusterController {
 			pass = pass && nodeInfo.getDockerDataSpaceTotal() == nodeTestInfo.getDockerDataSpaceTotalTarget();
 
 			// Data Space Used
-			String dockerDataSpaceUsed = dockermap.get("Data Space Used").toString();
-			nodeInfo.setDockerDataSpaceUsed(Math.round((float) ConvertUtil.convertMemoryBy2(dockerDataSpaceUsed)));
-			pass = pass && nodeInfo.getDockerDataSpaceUsed() == nodeTestInfo.getDockerDataSpaceUsedTarget();
+			//String dockerDataSpaceUsed = dockermap.get("Data Space Used").toString();
+			//nodeInfo.setDockerDataSpaceUsed(Math.round((float) ConvertUtil.convertMemoryBy2(dockerDataSpaceUsed)));
+			//pass = pass && nodeInfo.getDockerDataSpaceUsed() == nodeTestInfo.getDockerDataSpaceUsedTarget();
 
 			// Data Space Available
-			String dockerDataSpaceAvailable = dockermap.get("Data Space Available").toString();
-			nodeInfo.setDockerDataSpaceAvailable(
-					Math.round((float) ConvertUtil.convertMemoryBy2(dockerDataSpaceAvailable)));
-			pass = pass && nodeInfo.getDockerDataSpaceAvailable() == nodeTestInfo.getDockerDataSpaceAvailableTarget();
+			//String dockerDataSpaceAvailable = dockermap.get("Data Space Available").toString();
+			//nodeInfo.setDockerDataSpaceAvailable(
+			//		Math.round((float) ConvertUtil.convertMemoryBy2(dockerDataSpaceAvailable)));
+			//pass = pass && nodeInfo.getDockerDataSpaceAvailable() == nodeTestInfo.getDockerDataSpaceAvailableTarget();
 
 			// Metadata Space Used
-			String dockerMetadataSpaceUsed = dockermap.get("Metadata Space Used").toString();
-			nodeInfo.setDockerMetaSpaceUsed(
-					Math.round((float) ConvertUtil.convertMemoryBy2(dockerMetadataSpaceUsed) * 1024f));
-			pass = pass && nodeInfo.getDockerMetaSpaceUsed() == nodeTestInfo.getDockerMetaSpaceUsedTarget();
+			//String dockerMetadataSpaceUsed = dockermap.get("Metadata Space Used").toString();
+			//nodeInfo.setDockerMetaSpaceUsed(
+			//		Math.round((float) ConvertUtil.convertMemoryBy2(dockerMetadataSpaceUsed) * 1024f));
+			//pass = pass && nodeInfo.getDockerMetaSpaceUsed() == nodeTestInfo.getDockerMetaSpaceUsedTarget();
 
 			// Metadata Space Total
 			String dockerMetadataSpaceTotal = dockermap.get("Metadata Space Total").toString();
@@ -2002,10 +2002,10 @@ public class ClusterController {
 			pass = pass && nodeInfo.getDockerMetaSpaceTotal() == nodeTestInfo.getDockerMetaSpaceTotalTarget();
 
 			// Metadata Space Available
-			String dockerMetadataSpaceAvailable = dockermap.get("Metadata Space Available").toString();
-			nodeInfo.setDockerMetaSpaceAvailable(
-					Math.round((float) ConvertUtil.convertMemoryBy2(dockerMetadataSpaceAvailable)));
-			pass = pass && nodeInfo.getDockerMetaSpaceAvailable() == nodeTestInfo.getDockerMetaSpaceAvailableTarget();
+			//String dockerMetadataSpaceAvailable = dockermap.get("Metadata Space Available").toString();
+			//nodeInfo.setDockerMetaSpaceAvailable(
+			//		Math.round((float) ConvertUtil.convertMemoryBy2(dockerMetadataSpaceAvailable)));
+			//pass = pass && nodeInfo.getDockerMetaSpaceAvailable() == nodeTestInfo.getDockerMetaSpaceAvailableTarget();
 
 			// Pool Blocksize
 			String dockerPoolBlocksize = dockermap.get("Pool Blocksize").toString();
@@ -2022,36 +2022,36 @@ public class ClusterController {
 			String dockerBackingFilesystem = dockermap.get("Backing Filesystem").toString();
 			nodeInfo.setDockerBackingFilesystem(dockerBackingFilesystem);
 			pass = pass
-					&& nodeInfo.getDockerBackingFilesystem().equals(nodeTestInfo.getDockerBackingFilesystemTarget());
+					&& nodeInfo.getDockerBackingFilesystem().trim().equals(nodeTestInfo.getDockerBackingFilesystemTarget().trim());
 
 			// Data file
 			String dockerDatafile = dockermap.get("Data file").toString();
 			nodeInfo.setDockerDatafile(dockerDatafile);
-			pass = pass && nodeInfo.getDockerDatafile().equals(nodeTestInfo.getDockerDatafileTarget());
+			pass = pass && nodeInfo.getDockerDatafile().trim().equals(nodeTestInfo.getDockerDatafileTarget().trim());
 
 			// Metadata file
 			String dockerMetadatafile = dockermap.get("Metadata file").toString();
 			nodeInfo.setDockerMetadatafile(dockerMetadatafile);
-			pass = pass && nodeInfo.getDockerMetadatafile().equals(nodeTestInfo.getDockerMetadatafileTarget());
+			pass = pass && nodeInfo.getDockerMetadatafile().trim().equals(nodeTestInfo.getDockerMetadatafileTarget().trim());
 
 			// Udev Sync Supported
 			boolean dockerUdevSyncSupported = Boolean.parseBoolean(dockermap.get("Udev Sync Supported").toString());
 			nodeInfo.setDockerUdevSyncSupported(dockerUdevSyncSupported);
-			pass = pass && nodeInfo.isDockerUdevSyncSupported() && nodeTestInfo.isDockerUdevSyncSupportedTarget();
+			pass = pass && (nodeInfo.isDockerUdevSyncSupported() == nodeTestInfo.isDockerUdevSyncSupportedTarget());
 
 			// Deferred Removal Enabled
 			boolean dockerDeferredRemovalEnabled = Boolean
 					.parseBoolean(dockermap.get("Deferred Removal Enabled").toString());
 			nodeInfo.setDockerDeferredRemovalEnable(dockerDeferredRemovalEnabled);
-			pass = pass && nodeInfo.isDockerDeferredRemovalEnable()
-					&& nodeTestInfo.isDockerDeferredRemovalEnableTarget();
+			pass = pass && (nodeInfo.isDockerDeferredRemovalEnable()
+					== nodeTestInfo.isDockerDeferredRemovalEnableTarget());
 
 			// Deferred Deletion Enabled
 			boolean dockerDeferredDeletionEnabled = Boolean
 					.parseBoolean(dockermap.get("Deferred Deletion Enabled").toString());
 			nodeInfo.setDocekrDeferredDeletionEnable(dockerDeferredDeletionEnabled);
-			pass = pass && nodeInfo.isDocekrDeferredDeletionEnable()
-					&& nodeTestInfo.isDocekrDeferredDeletionEnableTarget();
+			pass = pass && (nodeInfo.isDocekrDeferredDeletionEnable()
+					== nodeTestInfo.isDocekrDeferredDeletionEnableTarget());
 
 			// Deferred Deleted Device Count
 			int dockerDeferredDeletedDeviceCount = Integer

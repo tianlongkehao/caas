@@ -264,7 +264,7 @@ function detail(obj) {
 						+'</tr>'
 						+'<tr>'
 						+'<th style="width: 20%">带宽(MB)：</th>'
-						+'<td class="tableInput"><input class="" type="text" id="speed" readOnly value="'+speed+'"></td>'
+						+'<td class="tableInput"><input class="" type="text" id="speed2" readOnly value="'+speed+'"></td>'
 						+'</tr>'
 						+'<tr>'
 						+'<th style="width: 20%">延迟(ms)：</th>'
@@ -311,13 +311,13 @@ function detail(obj) {
 					var BaseDeviceSize = nodetestresult.dockerBaseDeviceSize;
 					var BackingFilesystem = nodetestresult.dockerBackingFilesystem;
 					var Datafile=nodetestresult.dockerDatafile;
-					var DataSpaceUsed = nodetestresult.dockerDataSpaceUsed;
+					//var DataSpaceUsed = nodetestresult.dockerDataSpaceUsed;
 					var DataSpaceTotal = nodetestresult.dockerDataSpaceTotal;
-					var DataSpaceAvailable=nodetestresult.dockerDataSpaceAvailable;
+					//var DataSpaceAvailable=nodetestresult.dockerDataSpaceAvailable;
 					var Metadatafile = nodetestresult.dockerMetadatafile;
-					var MetaSpaceUsed=nodetestresult.dockerMetaSpaceUsed;
+					//var MetaSpaceUsed=nodetestresult.dockerMetaSpaceUsed;
 					var MetaSpaceTotal = nodetestresult.dockerMetaSpaceTotal;
-					var MetaSpaceAvailable = nodetestresult.dockerMetaSpaceAvailable;
+					//var MetaSpaceAvailable = nodetestresult.dockerMetaSpaceAvailable;
 					var DeferredRemovalEnable=nodetestresult.dockerDeferredRemovalEnable;
 					var UdevSyncSupported = nodetestresult.dockerUdevSyncSupported;
 					var DeferredDeletionEnable = nodetestresult.docekrDeferredDeletionEnable;
@@ -346,34 +346,34 @@ function detail(obj) {
 						+'<th style="width: 20%">Data file：</th>'
 						+'<td class="tableInput"><input class="" type="text" id="Datafile" readOnly value="'+Datafile+'"></td>'
 						+'</tr>'
-						+'<tr>'
-						+'<th style="width: 20%">Data Space Used(GB)：</th>'
-						+'<td class="tableInput"><input class="" type="text" id="DataSpaceUsed" readOnly value="'+DataSpaceUsed+'"></td>'
-						+'</tr>'
+						//+'<tr>'
+						//+'<th style="width: 20%">Data Space Used(GB)：</th>'
+						//+'<td class="tableInput"><input class="" type="text" id="DataSpaceUsed" readOnly value="'+DataSpaceUsed+'"></td>'
+						//+'</tr>'
 						+'<tr>'
 						+'<th style="width: 20%">Data Space Total(GB)：</th>'
 						+'<td class="tableInput"><input class="" type="text" id="DataSpaceTotal" readOnly value="'+DataSpaceTotal+'"></td>'
 						+'</tr>'
-						+'<tr>'
-						+'<th style="width: 20%">Data Space Available(GB)：</th>'
-						+'<td class="tableInput"><input class="" type="text" id="DataSpaceAvailable" readOnly value="'+DataSpaceAvailable+'"></td>'
-						+'</tr>'
+						//+'<tr>'
+						//+'<th style="width: 20%">Data Space Available(GB)：</th>'
+						//+'<td class="tableInput"><input class="" type="text" id="DataSpaceAvailable" readOnly value="'+DataSpaceAvailable+'"></td>'
+						//+'</tr>'
 						+'<tr>'
 						+'<th style="width: 20%">Metadata file：</th>'
 						+'<td class="tableInput"><input class="" type="text" id="Metadatafile" readOnly value="'+Metadatafile+'"></td>'
 						+'</tr>'
-						+'<tr>'
-						+'<th style="width: 20%">Meta Space Used(MB)：</th>'
-						+'<td class="tableInput"><input class="" type="text" id="MetaSpaceUsed" readOnly value="'+MetaSpaceUsed+'"></td>'
-						+'</tr>'
+						//+'<tr>'
+						//+'<th style="width: 20%">Meta Space Used(MB)：</th>'
+						//+'<td class="tableInput"><input class="" type="text" id="MetaSpaceUsed" readOnly value="'+MetaSpaceUsed+'"></td>'
+						//+'</tr>'
 						+'<tr>'
 						+'<th style="width: 20%">Meta Space Total(GB)：</th>'
 						+'<td class="tableInput"><input class="" type="text" id="MetaSpaceTotal" readOnly value="'+MetaSpaceTotal+'"></td>'
 						+'</tr>'
-						+'<tr>'
-						+'<th style="width: 44%">Meta Space Available(KB)：</th>'
-						+'<td class="tableInput"><input class="" type="text" id="MetaSpaceAvailable" readOnly value="'+MetaSpaceAvailable+'"></td>'
-						+'</tr>'
+						//+'<tr>'
+						//+'<th style="width: 44%">Meta Space Available(KB)：</th>'
+						//+'<td class="tableInput"><input class="" type="text" id="MetaSpaceAvailable" readOnly value="'+MetaSpaceAvailable+'"></td>'
+						//+'</tr>'
 						+'<tr>'
 						+'<th style="width: 44%">Deferred Removal Enable：</th>'
 						+'<td class="tableInput"><input class="" type="text" id="DeferredRemovalEnable" readOnly value="'+DeferredRemovalEnable+'"></td>'
@@ -455,7 +455,7 @@ function  clearDetailData(){
 
 	$('#qperfstatus').val('');
 	$('#qperfpass').val('');
-	$('#speed').val('');
+	$('#speed2').val('');
 	$('#latency').val('');
 	$('#qperfdetail').html('');
 
@@ -465,7 +465,7 @@ function  clearDetailData(){
 	$('#curldetail').html('');
 
 	$('#dockerstatus').val('');
-	$('#memory').val('');
+	//$('#memory').val('');
 	$('#dockerpass').val('');
 	$('#dockerdetail').html('');
 
@@ -939,13 +939,13 @@ function testNodes(obj){
 						$("#BaseDeviceSizeTarget").val(nodetestresult.dockerBaseDeviceSizeTarget);
 						$("#BackingFilesystemTarget").val(nodetestresult.dockerBackingFilesystemTarget);
 						$("#DatafileTarget").val(nodetestresult.dockerDatafileTarget);
-						$("#MetaSpaceUsedTarget").val(nodetestresult.dockerMetaSpaceUsedTarget);
-						$("#MetaSpaceAvailableTarget").val(nodetestresult.dockerMetaSpaceAvailableTarget);
+						//$("#MetaSpaceUsedTarget").val(nodetestresult.dockerMetaSpaceUsedTarget);
+						//$("#MetaSpaceAvailableTarget").val(nodetestresult.dockerMetaSpaceAvailableTarget);
 						$("#DeferredRemovalEnableTarget").val(nodetestresult.dockerDeferredRemovalEnableTarget==false?'false':'true');
 						$("#MetadatafileTarget").val(nodetestresult.dockerMetadatafileTarget);
-						$("#DataSpaceUsedTarget").val(nodetestresult.dockerDataSpaceUsedTarget);
+						//$("#DataSpaceUsedTarget").val(nodetestresult.dockerDataSpaceUsedTarget);
 						$("#DataSpaceTotalTarget").val(nodetestresult.dockerDataSpaceTotalTarget);
-						$("#DataSpaceAvailableTarget").val(nodetestresult.dockerDataSpaceAvailableTarget);
+						//$("#DataSpaceAvailableTarget").val(nodetestresult.dockerDataSpaceAvailableTarget);
 						$("#MetaSpaceTotalTarget").val(nodetestresult.dockerMetaSpaceTotalTarget);
 						$("#UdevSyncSupportedTarget").val(nodetestresult.dockerUdevSyncSupportedTarget==false?'false':'true');
 						$("#DeferredDeletionEnableTarget").val(nodetestresult.docekrDeferredDeletionEnableTarget==false?'false':'true');
@@ -1052,13 +1052,13 @@ function times(selectednodes,j){
 	var dockerBaseDeviceSize  = $("#BaseDeviceSizeTarget").val()=="" ? 0 : $("#BaseDeviceSizeTarget").val();
 	var dockerBackingFilesystem = $("#BackingFilesystemTarget").val();
 	var dockerDatafile = $("#DatafileTarget").val();
-	var dockerMetaSpaceUsed  = $("#MetaSpaceUsedTarget").val()=="" ? 0 : $("#MetaSpaceUsedTarget").val();
-	var dockerMetaSpaceAvailable = $("#MetaSpaceAvailableTarget").val()=="" ? 0 : $("#MetaSpaceAvailableTarget").val();
+	//var dockerMetaSpaceUsed  = $("#MetaSpaceUsedTarget").val()=="" ? 0 : $("#MetaSpaceUsedTarget").val();
+	//var dockerMetaSpaceAvailable = $("#MetaSpaceAvailableTarget").val()=="" ? 0 : $("#MetaSpaceAvailableTarget").val();
 	var dockerDeferredRemovalEnable = $("#DeferredRemovalEnableTarget").val();
 	var dockerMetadatafile = $("#MetadatafileTarget").val();
-	var dockerDataSpaceUsed = $("#DataSpaceUsedTarget").val()=="" ? 0 : $("#DataSpaceUsedTarget").val();
+	//var dockerDataSpaceUsed = $("#DataSpaceUsedTarget").val()=="" ? 0 : $("#DataSpaceUsedTarget").val();
 	var dockerDataSpaceTotal = $("#DataSpaceTotalTarget").val()=="" ? 0 : $("#DataSpaceTotalTarget").val();
-	var dockerDataSpaceAvailable = $("#DataSpaceAvailableTarget").val()=="" ? 0 : $("#DataSpaceAvailableTarget").val();
+	//var dockerDataSpaceAvailable = $("#DataSpaceAvailableTarget").val()=="" ? 0 : $("#DataSpaceAvailableTarget").val();
 	var dockerMetaSpaceTotal = $("#MetaSpaceTotalTarget").val()=="" ? 0 : $("#MetaSpaceTotalTarget").val();
 	var dockerUdevSyncSupported = $("#UdevSyncSupportedTarget").val();
 	var docekrDeferredDeletionEnable = $("#DeferredDeletionEnableTarget").val();
@@ -1078,13 +1078,13 @@ function times(selectednodes,j){
 			"dockerBaseDeviceSizeTarget":dockerBaseDeviceSize, //0
 			"dockerBackingFilesystemTarget":dockerBackingFilesystem,
 			"dockerDatafileTarget":dockerDatafile,
-			"dockerMetaSpaceUsedTarget":dockerMetaSpaceUsed, //0
-			"dockerMetaSpaceAvailableTarget":dockerMetaSpaceAvailable, //0
+			//"dockerMetaSpaceUsedTarget":dockerMetaSpaceUsed, //0
+			//"dockerMetaSpaceAvailableTarget":dockerMetaSpaceAvailable, //0
 			"dockerDeferredRemovalEnableTarget":dockerDeferredRemovalEnable,
 			"dockerMetadatafileTarget":dockerMetadatafile,
-			"dockerDataSpaceUsedTarget":dockerDataSpaceUsed, //0
+			//"dockerDataSpaceUsedTarget":dockerDataSpaceUsed, //0
 			"dockerDataSpaceTotalTarget":dockerDataSpaceTotal, //0
-			"dockerDataSpaceAvailableTarget":dockerDataSpaceAvailable, //0
+			//"dockerDataSpaceAvailableTarget":dockerDataSpaceAvailable, //0
 			"dockerMetaSpaceTotalTarget":dockerMetaSpaceTotal, //0
 			"dockerUdevSyncSupportedTarget":dockerUdevSyncSupported,
 			"docekrDeferredDeletionEnableTarget":docekrDeferredDeletionEnable,
