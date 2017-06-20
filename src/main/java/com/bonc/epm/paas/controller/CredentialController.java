@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.bonc.epm.paas.constant.CommConstant;
 import com.bonc.epm.paas.constant.UserConstant;
 import com.bonc.epm.paas.dao.CiCodeCredentialDao;
@@ -132,8 +133,14 @@ public class CredentialController {
 	 */
 	@RequestMapping(value = { "secret/addCredential.do" }, method = RequestMethod.GET)
 	@ResponseBody
-	public String saveCiCodeCredential(CiCodeCredential ciCodeCredential, SshConfig sshConfig) {
+	public String saveCiCodeCredential(String ciCodeCredentialString, String sshConfigString) {
+		
 		Map<String, Object> result = new HashMap<String, Object>();
+		CiCodeCredential ciCodeCredential = JSONObject.parseObject(ciCodeCredentialString, CiCodeCredential.class);
+		SshConfig sshConfig = null;
+		if (StringUtils.isNotBlank(sshConfigString)) {
+			sshConfig = JSONObject.parseObject(sshConfigString, SshConfig.class);
+		}
 		try {
 			SheraAPIClientInterface client = sheraClientService.getClient();
 			Integer Credential = 0;

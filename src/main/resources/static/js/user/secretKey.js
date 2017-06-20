@@ -1,14 +1,16 @@
 $(function(){
-	var user,host,proxy,ip,port,policy,identifyFile;
+	var user,host,proxy,ip,port,policy,identifyFile,type;
 	//创建密钥
 	$("#createKeyBtn").click(function(){
 		var userAutority = $("#userAutority").val();
 		if(userAutority == 1){
 			$(".userLimit").hide();
 			$(".adminLimit").show();
+			type = 2;
 		}else{
 			$(".userLimit").show();
 			$(".adminLimit").hide();
+			type = 1;
 		}
 		
 		delData();
@@ -24,7 +26,7 @@ $(function(){
 //					return;
 //				}
 				
-				var type = $("#CredentialsType").val();
+				//var type = $("#CredentialsType").val();
 				var codeType = $("#codeType").val();
 				var username = $("#userNameCred").val();
 				var password = $("#passwordCred").val();
@@ -57,12 +59,12 @@ $(function(){
 				var addData = "";
 				if(proxy == false){
 					addData = {
-						"ciCodeCredential":ciCodeCredential	
+							"ciCodeCredentialString":JSON.stringify(ciCodeCredential)
 					}
 				}else{
 					addData = {
-							"ciCodeCredential":ciCodeCredential,
-							"sshConfig":sshConfig
+							"ciCodeCredentialString":JSON.stringify(ciCodeCredential),
+							"sshConfigString":JSON.stringify(sshConfig)
 						}
 				}
 				$.ajax({
@@ -96,10 +98,7 @@ $(function(){
 								layer.closeAll();
 							}
 						} else {
-							layer.alert("代码认证导入失败",
-								function(indexAlert){
-									layer.closeAll();
-							});
+							layer.alert("代码认证导入失败");
 						}
 					}
 				});
