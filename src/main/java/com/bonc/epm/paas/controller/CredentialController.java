@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -156,6 +157,10 @@ public class CredentialController {
 			GitCredential gitCredential;
 			// 使用ssh的时候
 			if (ciCodeCredential.getType() == 2) {
+				if (CollectionUtils.isNotEmpty(ciCodeCredentialDao.findRepeat(ciCodeCredential.getUserName()))) {
+					result.put("status", "300");
+					return JSON.toJSONString(result);
+				}
 				// 创建sshkey
 				String keyName = ciCodeCredential.getUserName();
 				SshKey sshKey = sheraClientService.generateSshKey(keyName);
@@ -227,13 +232,13 @@ public class CredentialController {
 					e.printStackTrace();
 					return JSON.toJSONString(map);
 				}
-				SshConfig sshConfig = null;
+				String sshConfig = null;
 				try {
 					sshConfig = client.getSshConfig(userName);
 				} catch (SheraClientException e) {
 					sshConfig = null;
 				}
-				if (sshConfig != null) {
+				if (StringUtils.isNotBlank(sshConfig)) {
 					try {
 						client.deleteSshConfig(userName);
 					} catch (SheraClientException e) {
@@ -360,7 +365,7 @@ public class CredentialController {
 		Map<String, Object> map = new HashMap<>();
 		CiCodeCredential ciCodeCredential = ciCodeCredentialDao.findOne(id);
 		if (ciCodeCredential.getType().equals(2)) {
-			SshConfig sshConfig = null;
+			String sshConfig = null;
 			try {
 				SheraAPIClientInterface client = sheraClientService.getClient();
 				sshConfig = client.getSshConfig(ciCodeCredential.getUserName());
@@ -395,7 +400,7 @@ public class CredentialController {
 		} catch (SheraClientException e) {
 			e.printStackTrace();
 		}
-		SshConfig sshConfig = null;
+		String sshConfig = null;
 		try {
 			sshConfig = client.getSshConfig(userName);
 		} catch (SheraClientException e) {

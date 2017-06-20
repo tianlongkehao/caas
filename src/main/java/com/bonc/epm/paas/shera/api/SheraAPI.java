@@ -599,25 +599,27 @@ public interface SheraAPI {
 	 *
 	 * @author longkaixiang
 	 * @param userid
+	 * @param identify
 	 * @return SshConfig
 	 */
 	@DELETE
-	@Path("/ssh/config/{userid}")
+	@Path("/ssh/config/{userid}/{identify}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public SshConfig deleteSshConfig(@PathParam("userid") String userid);
+	public SshConfig deleteSshConfig(@PathParam("userid") String userid, @PathParam("identify") String identify);
 
 	/**
 	 * getSshConfig:get  ssh config. <br/>
 	 *
 	 * @author longkaixiang
 	 * @param userid
+	 * @param identify
 	 * @return SshConfig
 	 */
 	@GET
-	@Path("/ssh/config/{userid}")
+	@Path("/ssh/config/{userid}/{identify}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public SshConfig getSshConfig(@PathParam("userid") String userid);
+	public String getSshConfig(@PathParam("userid") String userid, @PathParam("identify") String identify);
 
 }

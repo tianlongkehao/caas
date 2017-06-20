@@ -12,7 +12,7 @@ $(function(){
 			$(".adminLimit").hide();
 			type = 1;
 		}
-		
+
 		delData();
 		layer.open({
 			type: 1,
@@ -25,7 +25,7 @@ $(function(){
 //				if (!judgeCredData()) {
 //					return;
 //				}
-				
+
 				//var type = $("#CredentialsType").val();
 				var codeType = $("#codeType").val();
 				var username = $("#userNameCred").val();
@@ -33,7 +33,7 @@ $(function(){
 				var privateKey = $("#SSHpasswordCred").val();
 				var remark = $("#keyRemark").val();
 				var code = type==1?"HTTP":"SSH";
-				
+
 				var ciCodeCredential = {
 						"type" : type,
 						"codeType":codeType,
@@ -60,12 +60,12 @@ $(function(){
 				if(proxy == false){
 					addData = {
 							"ciCodeCredentialString":JSON.stringify(ciCodeCredential)
-					}
+					};
 				}else{
 					addData = {
 							"ciCodeCredentialString":JSON.stringify(ciCodeCredential),
 							"sshConfigString":JSON.stringify(sshConfig)
-						}
+					};
 				}
 				$.ajax({
 					url : ctx + "/secret/addCredential.do",
@@ -97,6 +97,8 @@ $(function(){
 								$("#codeCredentials").append(html);
 								layer.closeAll();
 							}
+						} else if(data.status == "300") {
+							layer.alert("用户名不能重复");
 						} else {
 							layer.alert("代码认证导入失败");
 						}
@@ -119,7 +121,7 @@ $(function(){
 //			$("#passwordCred").val("");
 //		}
 //	});
-	
+
 	//代理
 	$("#proxy").click(function(){
 		var proxyVal = $("#proxy:checked").length;
@@ -130,7 +132,7 @@ $(function(){
 			proxy = false;
 			$(".adminLimitproxy").hide();
 		}
-	})
+	});
 
 });
 
@@ -202,7 +204,7 @@ function delData(){
 	$("#SSHpasswordCred").val("");
 }
 
-//detail&修改 
+//detail&修改
 function keyDetail(obj){
 	var id = $(obj).attr("id");
 	findCredData(id);
@@ -270,6 +272,9 @@ function findCredData(id){
 				$(".normal").hide();
 				$(".ssh").show();
 				$("#SSHpasswordCredDetail").val(cred.privateKey);
+				if(data.sshConfig != null){
+					$("#SSHproxy").val(data.sshConfig);
+				}
 			}
 		}
 	});

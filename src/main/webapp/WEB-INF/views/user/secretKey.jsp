@@ -34,11 +34,11 @@
 
 									<div class="ibox-tools">
 										<a id="createKeyBtn" title="创建密钥"><i
-											class="fa fa-plus"></i></a> 
+											class="fa fa-plus"></i></a>
 										<a href="javascript:delSecretKey()" title="删除"><i
 											class="fa fa-trash"></i></a>
 										<a href="javascript:window.location.reload(true);"
-											id="userReloadBtn"><i class="fa fa-repeat" title="刷新"></i></a> 
+											id="userReloadBtn"><i class="fa fa-repeat" title="刷新"></i></a>
 									</div>
                             </div>
                             <div class="ibox-content">
@@ -105,32 +105,32 @@
                         </div>
                     </div>
                 </div>
-					
-					
+
+
 				</div>
 
 			</div>
-	
+
 	</article>
 	</div>
 	<input type="hidden" id="userAutority" value="${cur_user.user_autority}">
 	<div id="createKeyCon" style="display: none">
 		<div style="margin: 15px 15px">
 		    <div class="infoCred">
-                <span class="labelCred">仓库：</span> 
+                <span class="labelCred">仓库：</span>
                 <select class="form-control conCred" id="codeType" name="codeType">
                     <option value="1">Git</option>
                     <option value="2">SVN</option>
                 </select>
             </div>
-			<div class="infoCred userLimit">   
-				<span class="labelCred">认证：</span> 
+			<div class="infoCred userLimit">
+				<span class="labelCred">认证：</span>
 				<select class="form-control conCred" id="CredentialsType" name="type" disabled>
 					<option value="1">用户名和密码</option>
 				</select>
 			</div>
-			<div class="infoCred adminLimit">   
-				<span class="labelCred">认证：</span> 
+			<div class="infoCred adminLimit">
+				<span class="labelCred">认证：</span>
 				<select class="form-control conCred" id="CredentialsType" name="type" disabled>
 					<option value="2">SSH用户名和密钥</option>
 				</select>
@@ -155,27 +155,27 @@
 				<div class="conCred"><input type="checkbox" id="proxy"></div>
 			</div>
 			<div class="infoCred adminLimitproxy">
-				<span class="labelCred">host：<font color="red">*</font></span> 
+				<span class="labelCred">host：<font color="red">*</font></span>
 				<input type="text" class="form-control conCred" id="host" name="host"
 					value="">
 			</div>
 			<div class="infoCred adminLimitproxy">
-				<span class="labelCred">IP：<font color="red">*</font></span> 
+				<span class="labelCred">IP：<font color="red">*</font></span>
 				<input type="text" class="form-control conCred" id="ip" name="ip"
 					value="">
 			</div>
 			<div class="infoCred adminLimitproxy">
-				<span class="labelCred">port：<font color="red">*</font></span> 
+				<span class="labelCred">port：<font color="red">*</font></span>
 				<input type="text" class="form-control conCred" id="port" name="port"
 					value="">
 			</div>
 			<div class="infoCred adminLimitproxy">
-				<span class="labelCred">policy：</span> 
+				<span class="labelCred">policy：</span>
 				<input type="text" class="form-control conCred" id="policy" name="policy"
 					value="">
 			</div>
 			<div class="infoCred adminLimitproxy">
-				<span class="labelCred">identifyFile：</span> 
+				<span class="labelCred">identifyFile：</span>
 				<input type="text" class="form-control conCred" id="identifyFile" name="identifyFile"
 					value="">
 			</div>
@@ -184,14 +184,14 @@
 	<div id="secretKeyDetail" style="display: none">
 		<div style="margin: 15px 15px">
 		    <div class="infoCred">
-                <span class="labelCred">仓库：</span> 
+                <span class="labelCred">仓库：</span>
                 <select class="form-control conCred" id="codeTypeDetail" name="codeType" disabled>
                     <option value="1">Git</option>
                     <option value="2">SVN</option>
                 </select>
             </div>
-			<div class="infoCred">   
-				<span class="labelCred">认证：</span> 
+			<div class="infoCred">
+				<span class="labelCred">认证：</span>
 				<select class="form-control conCred" id="CredentialsTypeDetail" name="type" disabled>
 					<option value="1">用户名和密码</option>
 					<option value="2">SSH用户名和密钥</option>
@@ -213,9 +213,14 @@
 					id="keyRemarkDetail" name="keyRemark" rows="2" value="" readonly="readonly"></textarea>
 			</div>
 			<div class="infoCred ssh">
-				<span class="labelCred">公钥：<br><i class="fa fa-clipboard" onclick="copySshPwd(this)" style="margin-left:10px;cursor:pointer;color:#36C"></i>&nbsp;(复制)</span> 
+				<span class="labelCred">公钥：<br><i class="fa fa-clipboard" onclick="copySshPwd(this)" style="margin-left:10px;cursor:pointer;color:#36C"></i>&nbsp;(复制)</span>
 				<textarea type="text" class="form-control conCred"
 					id="SSHpasswordCredDetail" rows="4" value="" readonly="readonly"></textarea>
+			</div>
+			<div class="infoCred ssh">
+				<span class="labelCred">代理：</span>
+				<textarea type="text" class="form-control conCred"
+					id="SSHproxy" rows="4" value="" readonly="readonly"></textarea>
 			</div>
 		</div>
 	</div>
@@ -234,8 +239,8 @@
 	        "aaSorting": [[ 4, "desc" ]]
 		});
 		$("#checkallbox").parent().removeClass("sorting_asc");
-		
-		
+
+
 	});
 	</script>
 </body>
