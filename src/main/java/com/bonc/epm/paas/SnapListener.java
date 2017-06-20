@@ -28,6 +28,7 @@ public class SnapListener implements ApplicationListener<ContextRefreshedEvent> 
 
 	@Override
 	public void onApplicationEvent(ContextRefreshedEvent arg0) {
+		System.out.println("正在加载快照策略*****************************************");
 		map = new HashMap<CephRbdInfo, Timer>();
 		snapStrategyDao = SpringApplicationContext.getBean(SnapStrategyDao.class);
 		cephRbdInfoDao = SpringApplicationContext.getBean(CephRbdInfoDao.class);
