@@ -93,9 +93,16 @@ $(function(){
 									}
 								});
 							} else {
-								var html = "<option value='"+data.id+"'>"+username +" ("+code+") ("+remark+")"+"</option>";
-								$("#codeCredentials").append(html);
-								layer.closeAll();
+								if(document.getElementById("codeCredentials")){
+									var html = "<option value='"+data.id+"'>"+username +" ("+code+") ("+remark+")"+"</option>";
+									$("#codeCredentials").append(html);
+									layer.closeAll();
+								} else {
+									layer.msg("创建成功！", {
+										icon : 6
+									});
+									setTimeout('window.location.reload()', 1500);
+								}
 							}
 						} else if(data.status == "300") {
 							layer.alert("用户名不能重复");

@@ -118,9 +118,10 @@ public class CredentialController {
 	public String loadCredentialData(int codeType) {
 		Map<String, Object> map = new HashMap<>();
 		User user = CurrentUserUtils.getInstance().getUser();
-		List<CiCodeCredential> creList = ciCodeCredentialDao.findByCreateBy(MANAGER_ID);
+		List<CiCodeCredential> creList = ciCodeCredentialDao.findByCreateByAndCodeType(MANAGER_ID, codeType);
 		List<CiCodeCredential> creList2 = ciCodeCredentialDao.findByCreateByAndCodeType(user.getId(), codeType);
-		map.put("data", creList.addAll(creList2));
+		creList.addAll(creList2);
+		map.put("data", creList);
 		return JSON.toJSONString(map);
 	}
 
