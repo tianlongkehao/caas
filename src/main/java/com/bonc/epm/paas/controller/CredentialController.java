@@ -134,7 +134,7 @@ public class CredentialController {
 	@RequestMapping(value = { "secret/addCredential.do" }, method = RequestMethod.GET)
 	@ResponseBody
 	public String saveCiCodeCredential(String ciCodeCredentialString, String sshConfigString) {
-		
+
 		Map<String, Object> result = new HashMap<String, Object>();
 		CiCodeCredential ciCodeCredential = JSONObject.parseObject(ciCodeCredentialString, CiCodeCredential.class);
 		SshConfig sshConfig = null;
@@ -359,7 +359,7 @@ public class CredentialController {
 	public String detailCredential(long id) {
 		Map<String, Object> map = new HashMap<>();
 		CiCodeCredential ciCodeCredential = ciCodeCredentialDao.findOne(id);
-		if (ciCodeCredential.getCodeType().equals(2)) {
+		if (ciCodeCredential.getType().equals(2)) {
 			SshConfig sshConfig = null;
 			try {
 				SheraAPIClientInterface client = sheraClientService.getClient();
