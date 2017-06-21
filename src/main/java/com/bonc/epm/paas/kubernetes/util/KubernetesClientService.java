@@ -500,6 +500,18 @@ public class KubernetesClientService {
 		return service;
 	}
 
+	public Service generateService(Map<String, String> annotations, String name, String namespace, Map<String, String> labels) {
+		Service service = new Service();
+		//metadata
+		ObjectMeta metadata = new ObjectMeta();
+		metadata.setAnnotations(annotations);
+		metadata.setName(name);
+		metadata.setNamespace(namespace);
+		metadata.setLabels(labels);
+		service.setMetadata(metadata );
+
+		return service;
+	}
 	public Secret generateSecret(String name, String namespace, String key) {
 		Secret secret = new Secret();
 		ObjectMeta meta = new ObjectMeta();
