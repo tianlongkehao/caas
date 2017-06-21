@@ -1,25 +1,16 @@
 $(function(){
+	var user,host,proxy,ip,port,policy,identifyFile,type;
 	//创建密钥
 	$("#createKeyBtn").click(function(){
-		//判断租户是否添加了shera环境
-		var flag = false;
-//		$.ajax({
-//			url:ctx + "/ci/judgeShera.do",
-//			async : false,
-//			success : function(data){
-//				data = eval("("+data+")");
-//				if (data.status == "400") {
-//					layer.open({
-//						title: '提示',
-//						content: '当前租户没有添加shera环境，请您联系管理员',
-//						btn: ['确定', '取消']
-//					});
-//					flag = true;
-//				}
-//			}
-//		})
-		if (flag) {
-			return;
+		var userAutority = $("#userAutority").val();
+		if(userAutority == 1){
+			$(".userLimit").hide();
+			$(".adminLimit").show();
+			type = 2;
+		}else{
+			$(".userLimit").show();
+			$(".adminLimit").hide();
+			type = 1;
 		}
 
 		delData();
@@ -31,26 +22,54 @@ $(function(){
 			scrollbar:false,
 			btn: ['确定', '取消'],
 			yes: function(index, layero){
-				if (!judgeCredData()) {
-					return;
-				}
-				var type = $("#CredentialsType").val();
+//				if (!judgeCredData()) {
+//					return;
+//				}
+
+				//var type = $("#CredentialsType").val();
 				var codeType = $("#codeType").val();
 				var username = $("#userNameCred").val();
 				var password = $("#passwordCred").val();
 				var privateKey = $("#SSHpasswordCred").val();
 				var remark = $("#keyRemark").val();
 				var code = type==1?"HTTP":"SSH";
-				$.ajax({
-					url : ctx + "/secret/addCredential.do",
-					data : {
+
+				var ciCodeCredential = {
 						"type" : type,
 						"codeType":codeType,
 						"userName" : username,
 						"password" : password,
 						"privateKey" : privateKey,
 						"remark" : remark
-					},
+					};
+				host = $("#host").val();
+				ip = $("#ip").val();
+				port = $("#port").val();
+				policy = $("#policy").val();
+				identifyFile = $("#identifyFile").val();
+				var sshConfig = {
+						"user":username,
+						"host":host,
+						"proxy":proxy,
+						"ip":ip,
+						"port":port,
+						"policy":policy,
+						"identifyFile":identifyFile
+				};
+				var addData = "";
+				if(proxy == false){
+					addData = {
+							"ciCodeCredentialString":JSON.stringify(ciCodeCredential)
+					};
+				}else{
+					addData = {
+							"ciCodeCredentialString":JSON.stringify(ciCodeCredential),
+							"sshConfigString":JSON.stringify(sshConfig)
+					};
+				}
+				$.ajax({
+					url : ctx + "/secret/addCredential.do",
+					data : addData,
 					success : function(data) {
 						data = eval("(" + data + ")");
 						if (data.status == "200") {
@@ -67,13 +86,26 @@ $(function(){
 										var html = "<option value='"+data.id+"'>"+username +" ("+code+") ("+remark+")"+"</option>";
 										$("#codeCredentials").append(html);
 										layer.closeAll();
+										layer.msg("创建成功！", {
+											icon : 6
+										});
+										setTimeout('window.location.reload()', 1500);
 									}
 								});
 							} else {
-								var html = "<option value='"+data.id+"'>"+username +" ("+code+") ("+remark+")"+"</option>";
-								$("#codeCredentials").append(html);
-								layer.closeAll();
+								if(document.getElementById("codeCredentials")){
+									var html = "<option value='"+data.id+"'>"+username +" ("+code+") ("+remark+")"+"</option>";
+									$("#codeCredentials").append(html);
+									layer.closeAll();
+								} else {
+									layer.msg("创建成功！", {
+										icon : 6
+									});
+									setTimeout('window.location.reload()', 1500);
+								}
 							}
+						} else if(data.status == "300") {
+							layer.alert("用户名不能重复");
 						} else {
 							layer.alert("代码认证导入失败");
 						}
@@ -84,16 +116,28 @@ $(function(){
 	});
 	//选择认证类型
 	$(".ssh").hide();
-	$(document).on('change','#CredentialsType',function(){
-		var credentialsType = $("#CredentialsType").val();
-		if(credentialsType == 1){
-			$(".normal").show();
-			$(".ssh").hide();
-			$("#SSHpasswordCred").val("");
-		}else{
-			$(".normal").hide();
-			$(".ssh").show();
-			$("#passwordCred").val("");
+//	$(document).on('change','#CredentialsType',function(){
+//		var credentialsType = $("#CredentialsType").val();
+//		if(credentialsType == 1){
+//			$(".normal").show();
+//			$(".ssh").hide();
+//			$("#SSHpasswordCred").val("");
+//		}else{
+//			$(".normal").hide();
+//			$(".ssh").show();
+//			$("#passwordCred").val("");
+//		}
+//	});
+
+	//代理
+	$("#proxy").click(function(){
+		var proxyVal = $("#proxy:checked").length;
+		if(proxyVal == 1){
+			proxy = true;
+			$(".adminLimitproxy").show();
+		}else if(proxyVal == 0){
+			proxy = false;
+			$(".adminLimitproxy").hide();
 		}
 	});
 
@@ -167,7 +211,7 @@ function delData(){
 	$("#SSHpasswordCred").val("");
 }
 
-//detail&修改 
+//detail&修改
 function keyDetail(obj){
 	var id = $(obj).attr("id");
 	findCredData(id);
@@ -235,6 +279,9 @@ function findCredData(id){
 				$(".normal").hide();
 				$(".ssh").show();
 				$("#SSHpasswordCredDetail").val(cred.privateKey);
+				if(data.sshConfig != null){
+					$("#SSHproxy").val(data.sshConfig);
+				}
 			}
 		}
 	});

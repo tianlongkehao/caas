@@ -1,4 +1,5 @@
 $(document).ready(function () {
+	var load = layer.load(0, {shade: [0.3, '#000']});
 	$.ajax({
 		url:ctx + "/DNSController/getCheckDnsResult.do",
 		type:"get",
@@ -6,6 +7,7 @@ $(document).ready(function () {
 			var data = eval("("+data+")");
 			var status = data.status;
 			if(status=='200'){
+				layer.close(load);
 				var pingResultList = data.pingResultList;
 				var dnsHtml = "";
 				for(var i=0; i<pingResultList.length; i++){
@@ -181,10 +183,12 @@ function checkServerDomain(obj){
 //}
 //定时日志
 function dnsHistory(){
+	var loading = layer.load(0, {shade: [0.3, '#000']});
 	$.ajax({
 		url:ctx + "/DNSController/getMonitorLog.do",
 		type:"get",
 		success:function(data){
+			layer.close(loading);
 			var data = eval("("+data+")");
 			var historyHtml ="";
 			for(var i=0; i<data.length; i++){

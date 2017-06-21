@@ -27,7 +27,6 @@
 		                <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button"
 		                   aria-haspopup="true" aria-expanded="false" style="margin-right:57px">
 		                   <i class="fa fa-user"></i>
-		                   </span>
 		                </a>
                     </c:if>
                     <c:if test="${!cas_enable}">
@@ -136,23 +135,28 @@
 					</ul></li>
 				<c:if test="${!cas_enable}">
 					<c:if test="${cur_user.user_autority == 1}">
-						<li id="menu_user"><a href="#" class="first-a">
-							<i class="fa-nav fa-nav-user"></i>
-							<span class="nav-label">租户信息</span>
-						</a>
+						<li id="menu_usermanage">
+							<a href="#" class="first-a">
+								<i class="fa-nav fa-nav-usermanage"></i>
+								<span class="nav-label">租户信息</span>
+							</a>
 							<ul class="nav nav-second-level">
 								<li id="li_user"><a class="J_menuItem" href="<%=path %>/user/list"><i class="fa fa_circle"></i>租户管理</a></li>
-							</ul></li>
+								<li id="li_credential"><a class="J_menuItem" href="<%=path %>/secret/Credential"><i class="fa fa_circle"></i>密钥管理</a></li>
+							</ul>
+						</li>
 					</c:if>
 		        	<c:if test="${cur_user.user_autority == 2}">
-						<li id="menu_usermanage"><a href="#">
-							<i class="fa-nav fa-nav-usermanage"></i>
-							<span class="nav-label">用户管理</span>
-						</a>
+						<li id="menu_usermanage">
+							<a href="#">
+								<i class="fa-nav fa-nav-usermanage"></i>
+								<span class="nav-label">用户管理</span>
+							</a>
 							<ul class="nav nav-second-level">
 								<li id="li_manage"><a class="J_menuItem" href="<%=path %>/user/manage/list/${cur_user.id }"><i class="fa fa_circle"></i>用户管理</a></li>
 								<li id="li_credential"><a class="J_menuItem" href="<%=path %>/secret/Credential"><i class="fa fa_circle"></i>密钥管理</a></li>
-							</ul></li>
+							</ul>
+						</li>
 					</c:if>
 				</c:if>
 

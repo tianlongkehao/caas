@@ -40,14 +40,14 @@
 											<a href="<%=path%>/service/add" id="serviceCreateBtn" title="创建服务">
 												<i class="fa fa-plus"></i>
 											</a>
-											<a id="startContainer" class="no-drop" href="javascript:createContainer()" title="启动">
-												<i id = "startContainerFa" class="fa fa-play self_a"></i>
+											<a id="startContainer" class="a-live" href="javascript:createContainer()" title="启动">
+												<i id = "startContainerFa" class="fa fa-play "></i>
 											</a>
-											<a id="stopContainer" class="no-drop" href="javascript:stopContainer()" title="停止">
-												<i id = "stopContainerFa" class="fa fa-power-off self_a"></i>
+											<a id="stopContainer" class="a-live" href="javascript:stopContainer()" title="停止">
+												<i id = "stopContainerFa" class="fa fa-power-off "></i>
 											</a>
-											<a id="deleteButton" class="no-drop" href="javascript:delContainer()" title="删除">
-												<i id = "deleteButtonFa" class="fa fa-trash self_a"></i>
+											<a id="deleteButton" class="a-live" href="javascript:delContainer()" title="删除">
+												<i id = "deleteButtonFa" class="fa fa-trash "></i>
 											</a>
 										</c:if>
 										<a id="ExportBtn" title="导出EXCEL">

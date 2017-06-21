@@ -209,7 +209,7 @@ public class UserController {
 			userList = userDao.checkUser(CurrentUserUtils.getInstance().getUser().getId());
 		}
 		model.addAttribute("userList", userList);
-		model.addAttribute("menu_flag", "user");
+		model.addAttribute("menu_flag", "usermanage");
 		model.addAttribute("li_flag", "user");
 		return "user/user.jsp";
 	}

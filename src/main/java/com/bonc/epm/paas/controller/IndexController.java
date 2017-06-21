@@ -221,9 +221,9 @@ public class IndexController {
 				double cpuCount = 0;
 				double memoryCount = 0;
 				for (Node node : allNodes.getItems()) {
-					Map<String, String> capacity = node.getStatus().getCapacity();
-					cpuCount += ConvertUtil.convertCpu(capacity.get("cpu")) ;
-					memoryCount += ConvertUtil.convertMemory(capacity.get("memory"));
+					Map<String, String> allocatable = node.getStatus().getAllocatable();
+					cpuCount += ConvertUtil.convertCpu(allocatable.get("cpu")) ;
+					memoryCount += ConvertUtil.convertMemory(allocatable.get("memory"));
 				}
 				//获取所有quota
 				double usedCpuCount = 0;
