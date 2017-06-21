@@ -1580,7 +1580,7 @@ public class ClusterController {
 			nodeInfo.setPingIp(nodeTestInfo.getPingIp());
 			nodeInfo.setPingtimetarget(nodeTestInfo.getPingtimetarget());
 			nodeInfo.setPingoutmsg(pingresponse.getOutmsg());
-			if (!pingresponse.getOutmsg().contains("Unreachable")) {
+			if (!pingresponse.getOutmsg().contains("Unreachable")&&!pingresponse.getOutmsg().contains("100% packet loss")) {
 				String[] outmsg = pingresponse.getOutmsg().split("/");
 				nodeInfo.setPingtime(Double.parseDouble(outmsg[outmsg.length - 3]));
 				nodeInfo.setPingpass(nodeInfo.getPingtime() <= nodeTestInfo.getPingtimetarget());// ping通过
@@ -1671,7 +1671,7 @@ public class ClusterController {
 			tracemsg = tracemsg.replace("real", "").trim();
 			int minute = Integer.parseInt(tracemsg.split("m")[0]);
 			float second = Float.parseFloat(tracemsg.split("m")[1].split("s")[0]);
-			nodeInfo.setTracetime(second+minute*60);
+			nodeInfo.setTracetime((double)(Math.round((second+minute*60)*1000))/1000);//保留三位小数
 			if (nodeInfo.getTracepathoutmsg().contains("hops")) {
 				nodeInfo.setTracepass(nodeInfo.getTracetime() <= nodeTestInfo.getTracetimetarget());// trace通过
 			}
