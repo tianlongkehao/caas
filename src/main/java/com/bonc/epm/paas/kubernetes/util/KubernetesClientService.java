@@ -373,6 +373,19 @@ public class KubernetesClientService {
 		return configmap;
 	}
 
+	public ConfigMap generateConfigMap(String name, String namespace, Map<String, String> data) {
+		ConfigMap configmap = new ConfigMap();
+
+		ObjectMeta metadata = new ObjectMeta();
+		metadata.setName(name);
+		metadata.setNamespace(namespace);
+		configmap.setMetadata(metadata );
+
+		configmap.setData(data);
+
+		return configmap;
+	}
+
 	public ReplicationController generateSimpleReplicationController(String name, int replicas, String image,
 			int containerPort) {
 		ReplicationController replicationController = new ReplicationController();
@@ -500,18 +513,27 @@ public class KubernetesClientService {
 		return service;
 	}
 
-	public Service generateService(Map<String, String> annotations, String name, String namespace, Map<String, String> labels) {
+	public Service generateService(Map<String, String> annotations, String name, String namespace,
+			Map<String, String> labels, List<ServicePort> ports, String clusterIP, Map<String, String> selector) {
 		Service service = new Service();
-		//metadata
+		// metadata
 		ObjectMeta metadata = new ObjectMeta();
 		metadata.setAnnotations(annotations);
 		metadata.setName(name);
 		metadata.setNamespace(namespace);
 		metadata.setLabels(labels);
-		service.setMetadata(metadata );
+		service.setMetadata(metadata);
+
+		//spec
+		ServiceSpec spec = new ServiceSpec();
+		spec.setPorts(ports);
+		spec.setClusterIP(clusterIP);
+		spec.setSelector(selector);
+		service.setSpec(spec);
 
 		return service;
 	}
+
 	public Secret generateSecret(String name, String namespace, String key) {
 		Secret secret = new Secret();
 		ObjectMeta meta = new ObjectMeta();
