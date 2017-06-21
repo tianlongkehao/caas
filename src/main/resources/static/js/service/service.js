@@ -43,60 +43,60 @@ $(document).ready(function() {
 		}
 	});
 
-	$("#checkallbox").click(function() {
-		if ($(this).prop("checked")) {
-			$("input[type='checkbox']").prop("checked", true);
-			$('#deleteButton').removeClass('no-drop').addClass('a-live');
-			$('#deleteButtonFa').removeClass('self_a');
-			$('#ExportBtn').removeClass('no-drop').addClass('a-live');
-			$('#ExportButtonFa').removeClass('self_a');
-			var containersStatus = [];
-			var res = [];
-			$('input[name="chkItem"]:checked').each(function() {
-				var containerStatus = $(this).attr("status");
-				containersStatus.push(containerStatus);
-			});
-			containersStatus.sort();
-			for (var i = 0; i < containersStatus.length; ) {
-				var count = 0;
-				for (var j = 0; j < containersStatus.length; j++) {
-					if (containersStatus[i] == containersStatus[j]) {
-						count++;
-					}
-				}
-				res.push([containersStatus[i], count]);
-				i += count;
-			}
-			//alert(res.length+"res[0][0]"+res[0][0])
-			if (res.length == 1) {
-				if (res[0][0] == 3) {
-					$('#stopContainer').removeClass('no-drop').addClass('a-live');
-					$('#stopContainerFa').removeClass('self_a');
-				}
-				if (res[0][0] == 4) {
-					$('#startContainer').removeClass('no-drop').addClass('a-live');
-					$('#startContainerFa').removeClass('self_a');
-				}
-			} else {
-				$('#startContainer').removeClass('a-live').addClass('no-drop');
-				$('#startContainerFa').addClass('self_a');
-				$('#stopContainer').removeClass('a-live').addClass('no-drop');
-				$('#stopContainerFa').addClass('self_a');
-			}
-		} else {
-			$("input[type='checkbox']").prop("checked", false);
-			$('#startContainer').removeClass('a-live').addClass('no-drop');
-			$('#startContainerFa').addClass('self_a');
-			$('#stopContainer').removeClass('a-live').addClass('no-drop');
-			$('#stopContainerFa').addClass('self_a');
-			$('#deleteButton').removeClass('a-live').addClass('no-drop');
-			$('#deleteButtonFa').addClass('self_a');
-			$('#ExportBtn').removeClass('a-live').addClass('no-drop');
-			$('#ExportButtonFa').addClass('self_a');
-		}
-	});
+//	$("#checkallbox").click(function() {
+//		if ($(this).prop("checked")) {
+//			$("input[type='checkbox']").prop("checked", true);
+//			$('#deleteButton').removeClass('no-drop').addClass('a-live');
+//			$('#deleteButtonFa').removeClass('self_a');
+//			$('#ExportBtn').removeClass('no-drop').addClass('a-live');
+//			$('#ExportButtonFa').removeClass('self_a');
+//			var containersStatus = [];
+//			var res = [];
+//			$('input[name="chkItem"]:checked').each(function() {
+//				var containerStatus = $(this).attr("status");
+//				containersStatus.push(containerStatus);
+//			});
+//			containersStatus.sort();
+//			for (var i = 0; i < containersStatus.length; ) {
+//				var count = 0;
+//				for (var j = 0; j < containersStatus.length; j++) {
+//					if (containersStatus[i] == containersStatus[j]) {
+//						count++;
+//					}
+//				}
+//				res.push([containersStatus[i], count]);
+//				i += count;
+//			}
+//			//alert(res.length+"res[0][0]"+res[0][0])
+//			if (res.length == 1) {
+//				if (res[0][0] == 3) {
+//					$('#stopContainer').removeClass('no-drop').addClass('a-live');
+//					$('#stopContainerFa').removeClass('self_a');
+//				}
+//				if (res[0][0] == 4) {
+//					$('#startContainer').removeClass('no-drop').addClass('a-live');
+//					$('#startContainerFa').removeClass('self_a');
+//				}
+//			} else {
+//				$('#startContainer').removeClass('a-live').addClass('no-drop');
+//				$('#startContainerFa').addClass('self_a');
+//				$('#stopContainer').removeClass('a-live').addClass('no-drop');
+//				$('#stopContainerFa').addClass('self_a');
+//			}
+//		} else {
+//			$("input[type='checkbox']").prop("checked", false);
+//			$('#startContainer').removeClass('a-live').addClass('no-drop');
+//			$('#startContainerFa').addClass('self_a');
+//			$('#stopContainer').removeClass('a-live').addClass('no-drop');
+//			$('#stopContainerFa').addClass('self_a');
+//			$('#deleteButton').removeClass('a-live').addClass('no-drop');
+//			$('#deleteButtonFa').addClass('self_a');
+//			$('#ExportBtn').removeClass('a-live').addClass('no-drop');
+//			$('#ExportButtonFa').addClass('self_a');
+//		}
+//	});
 
-	checkbox();
+//	checkbox();
 
 	//服务查找
 
@@ -192,19 +192,27 @@ function loadContainersNoSonar(obj, serviceId) {
 }
 
 function createContainer() {
+	if(!checkboxCheck()){
+		return;
+	}
 	var serviceIDs = [];
+	var serviceName = [];
 	$('input[name="chkItem"]:checked').each(function() {
 		var id = $(this).val();
-		serviceIDs.push(id);
+		if($(this).attr("status") == '1'||$(this).attr("status") == '4'||$(this).attr("status") == '5'){
+			serviceIDs.push(id);
+			serviceName.push($(this).attr("serviceName"));
+			$(this).addClass("readyService");
+		}
+		var serviceLength = serviceName.length;
 		var $chkItem = $(this);
-		// alert(id);
 		layer.open({
 			title : '启动服务',
-			content : '确定启动服务？',
+			content : '确定启动<strong>'+serviceName+'</strong>'+serviceLength+'个服务？',
 			btn : ['确定', '取消'],
 			yes : function(index, layero) {
 				var cStatusHtml = "<i class='fa_success'></i>" + "启动中" + "<img src='" + ctx + "/images/loading4.gif' alt=''/>";
-				$('#containerStatus').find(".cStatusColumn").html(cStatusHtml);
+				$(".readyService").parents("tr").find(".cStatusColumn").html(cStatusHtml);
 				layer.close(index);
 				$.ajax({
 					url : "" + ctx + "/service/stratServices.do?serviceIDs=" + serviceIDs,
@@ -226,64 +234,79 @@ function createContainer() {
 }
 
 function stopContainer() {
+	//停止  运行中3和调试中6的服务
+	if(!checkboxCheck()){
+		return;
+	}
 	var serviceIDs = [];
+	var serviceName = [];
 	$('input[name="chkItem"]:checked').each(function() {
 		var id = $(this).val();
-		serviceIDs.push(id);
-		layer.open({
-			title : '停止服务',
-			content : '确定停止服务？',
-			btn : ['确定', '取消'],
-			yes : function(index, layero) {
-				layer.close(index);
-				$.ajax({
-					url : "" + ctx + "/service/stopServices.do?serviceIDs=" + serviceIDs,
-					success : function(data) {
-						data = eval("(" + data + ")");
-						if (data.status == "200") {
-							layer.msg("服务已停止", {
-								icon : 6
-							});
-							setTimeout('window.location.reload()', 1500);
-						} else {
-							layer.alert("服务停止失败，请检查服务器连接");
-						}
-
+		var thisStatus = $(this).attr("status");
+		if(thisStatus == '3' || thisStatus == '6'){
+			serviceIDs.push(id);
+			serviceName.push($(this).attr("serviceName"));
+		}
+	});
+	var serviceLength = serviceName.length;
+	layer.open({
+		title : '停止服务',
+		content : '确定停止<strong>'+serviceName+'</strong>'+serviceLength+'个服务？',
+		btn : ['确定', '取消'],
+		yes : function(index, layero) {
+			layer.close(index);
+			$.ajax({
+				url : "" + ctx + "/service/stopServices.do?serviceIDs=" + serviceIDs,
+				success : function(data) {
+					data = eval("(" + data + ")");
+					if (data.status == "200") {
+						layer.msg("服务已停止", {
+							icon : 6
+						});
+						setTimeout('window.location.reload()', 1500);
+					} else {
+						layer.alert("服务停止失败，请检查服务器连接");
 					}
-				});
-			}
-		});
+
+				}
+			});
+		}
 	});
 }
 
 function delContainer() {
+	if(!checkboxCheck()){
+		return;
+	}
 	var serviceIDs = [];
+	var serviceName = [];
 	$('input[name="chkItem"]:checked').each(function() {
 		var containerId = $(this).val();
 		serviceIDs.push(containerId);
-		layer.open({
-			title : '删除服务',
-			content : '确定删除服务？',
-			btn : ['确定', '取消'],
-			yes : function(index, layero) {
-				layer.close(index);
-				$.ajax({
-					url : "" + ctx + "/service/delServices.do?serviceIDs=" + serviceIDs,
-					success : function(data) {
-						data = eval("(" + data + ")");
-						if (data.status == "200") {
-							layer.msg("服务已删除", {
-								icon : 6
-							});
-							setTimeout('window.location.reload()', 1500);
-						} else {
-							layer.alert("服务删除失败，请检查服务器连接");
-						}
+		serviceName.push($(this).attr("serviceName"));
+		var serviceLength = serviceName.length;
+	});
+	layer.open({
+		title : '删除服务',
+		content : '确定删除<strong>'+serviceName+'</strong>'+serviceLength+'个服务？',
+		btn : ['确定', '取消'],
+		yes : function(index, layero) {
+			layer.close(index);
+			$.ajax({
+				url : "" + ctx + "/service/delServices.do?serviceIDs=" + serviceIDs,
+				success : function(data) {
+					data = eval("(" + data + ")");
+					if (data.status == "200") {
+						layer.msg("服务已删除", {
+							icon : 6
+						});
+						setTimeout('window.location.reload()', 1500);
+					} else {
+						layer.alert("服务删除失败，请检查服务器连接");
 					}
-				});
-			}
-		});
-
+				}
+			});
+		}
 	});
 }
 
@@ -1004,7 +1027,7 @@ function loadServices() {
 		"columns" : [{
 			data : null,
 			render : function(data, type, row) {
-				var html = '<input type= "checkbox" class="chkItem" style="margin-left:10px;" name="chkItem"' + 'autocomplete="off" id="checkboxID" value="' + row.id + '"' + 'serviceName="' + row.serviceName + '"' + 'serviceNum="' + row.instanceNum + '"' + 'confRam="' + row.ram + '" status="' + row.status + '"' + 'imagename="' + row.imgName + '"' + 'imageversion="' + row.imgVersion + '"' + 'confCpu="' + row.cpuNum + '"/>';
+				var html = '<input type= "checkbox" id="service'+row.id+'" class="chkItem" style="margin-left:10px;" name="chkItem"' + 'autocomplete="off" value="' + row.id + '"' + 'serviceName="' + row.serviceName + '"' + 'serviceNum="' + row.instanceNum + '"' + 'confRam="' + row.ram + '" status="' + row.status + '"' + 'imagename="' + row.imgName + '"' + 'imageversion="' + row.imgVersion + '"' + 'confCpu="' + row.cpuNum + '"/>';
 				return html;
 			}
 		}, {
@@ -1033,12 +1056,21 @@ function loadServices() {
 				if (curUserAutority == 1) {
 					html = '<span serviceId="' + row.id + '"' + 'class="cluster_mirrer_name" style="width: 10px;white-space: nowrap;text-overflow: ellipsis;overflow:hidden;">' + row.serviceName + '</span>' + '<span class="number-node">' + row.instanceNum + '</span>';
 				} else {
-					html = '<b ' + 'class="caret margin" style="transform: rotate(-90deg);" rotate="hide"></b>' + '<a href="' + ctx + '/service/detail/' + row.id + '" serviceId="' + row.id + '"' + 'class="cluster_mirrer_name link" style="width: 10px;white-space: nowrap;text-overflow: ellipsis;overflow:hidden;">' + row.serviceName + '</a>' + '<span class="number-node">' + row.instanceNum + '</span>';
+					html = '<b ' + 'class="caret margin" style="transform: rotate(-90deg);" rotate="hide"></b>' + '<a class="link" href="' + ctx + '/service/detail/' + row.id + '" serviceId="' + row.id + '"' + 'class="cluster_mirrer_name" style="width: 10px;white-space: nowrap;text-overflow: ellipsis;overflow:hidden;">' + row.serviceName + '</a>';
+
+					if(row.status == 1 || row.status == 4){
+						html += '<span class="number-node">0</span>';
+					}else{
+						if(row.targetCPUUtilizationPercentage == undefined || row.targetCPUUtilizationPercentage == null || row.targetCPUUtilizationPercentage == -1){
+							html += '<span class="number-node">' + row.instanceNum + '</span>';
+						}else{
+							html += '<span class="number-node">auto</span>';
+						}
+					}
 				}
 				if (row.updateImage == true) {
 					html += '<a id="' + row.id + '_code" class="margin cursor console-code-modal"' + 'href="' + ctx + 'ci/findCodeCiId.do?imgId=' + row.imgID + '"' + 'style="margin-left: 5px" ><img src="' + ctx + '/images/sd.gif" title="代码更新"></a>';
 				}
-
 				return html;
 			}
 		}, {
@@ -1182,6 +1214,11 @@ function loadServices() {
 						}
 						html += '</li>' + '</ul>' + '</li>' + '</ul>';
 					}
+					if (row.status == 3 || row.status == 6) {
+						html += '<a id="' + row.id + '_apm" class="a-live deleteButton_a "' + 'href="javascript:oneApmContainer(' + row.id + ')"' + 'style="margin-left: 5px" title="APM监控"><img src="'+ctx +'/images/service-apm.png"></a>';
+					} else {
+						html += '<a id="' + row.id + '_apm" class="no-drop deleteButton_a "' + 'style="margin-left: 5px" title="APM监控"><img src="'+ctx +'/images/service-apmG.png"></a>';
+					}
 					html += '<a id="' + row.id + '_del" class="a-live deleteButton_a "' + 'href="javascript:oneDeleteContainer(' + row.id + ')"' + 'style="margin-left: 5px" title="删除"> <i class="fa fa-trash"></i></a>';
 				}
 				return html;
@@ -1223,7 +1260,7 @@ function loadServicesNoSonar() {
 		"columns" : [{
 			data : null,
 			render : function(data, type, row) {
-				var html = '<input type= "checkbox" class="chkItem" style="margin-left:10px;" name="chkItem"' + 'autocomplete="off" id="checkboxID" value="' + row.id + '"' + 'serviceName="' + row.serviceName + '"' + 'serviceNum="' + row.instanceNum + '"' + 'confRam="' + row.ram + '" status="' + row.status + '"' + 'imagename="' + row.imgName + '"' + 'imageversion="' + row.imgVersion + '"' + 'confCpu="' + row.cpuNum + '"/>';
+				var html = '<input type= "checkbox" class="chkItem" style="margin-left:10px;" name="chkItem"' + 'autocomplete="off" value="' + row.id + '"' + 'serviceName="' + row.serviceName + '"' + 'serviceNum="' + row.instanceNum + '"' + 'confRam="' + row.ram + '" status="' + row.status + '"' + 'imagename="' + row.imgName + '"' + 'imageversion="' + row.imgVersion + '"' + 'confCpu="' + row.cpuNum + '"/>';
 				return html;
 			}
 		}, {
@@ -1392,6 +1429,11 @@ function loadServicesNoSonar() {
 						}
 						html += '</li>' + '</ul>' + '</li>' + '</ul>';
 					}
+					if (row.status == 3 || row.status == 6) {
+						html += '<a id="' + row.id + '_apm" class="a-live deleteButton_a "' + 'href="javascript:oneApmContainer(' + row.id + ')"' + 'style="margin-left: 5px" title="APM监控"><img src="'+ctx +'/images/service-apm.png"></a>';
+					} else {
+						html += '<a id="' + row.id + '_apm" class="no-drop deleteButton_a "' + 'style="margin-left: 5px" title="APM监控"><img src="'+ctx +'/images/service-apmG.png"></a>';
+					}
 					html += '<a id="' + row.id + '_del" class="a-live deleteButton_a "' + 'href="javascript:oneDeleteContainer(' + row.id + ')"' + 'style="margin-left: 5px" title="删除"> <i class="fa fa-trash"></i></a>';
 				}
 				return html;
@@ -1502,7 +1544,7 @@ function oneSetAutoFlexInfo(id, containerName, minReplicas, maxReplicas, targetC
 			var minReplicasChange = $("#minReplicas").val();
 			var maxReplicasChange = $("#maxReplicas").val();
 			var targetCPUUtilizationPercentageChange = $("#targetCPUUtilizationPercentage").val();
-			if (minReplicasChange >= maxReplicasChange) {
+			if (parseInt(minReplicasChange) >= parseInt(maxReplicasChange)) {
 				layer.alert("最小副本数不能大于最大副本数");
 				return;
 			}
@@ -1527,12 +1569,15 @@ function oneSetAutoFlexInfo(id, containerName, minReplicas, maxReplicas, targetC
 						layer.alert("自动伸缩失败，请检查服务器连接");
 					} else if (data.status == "402") {
 						layer.alert("最小副本数不能大于最大副本数");
+					} else if (data.status == "403") {
+						layer.alert("CPU使用率不能为空");
+					} else if (data.status == "404") {
+						layer.alert("副本数不能为空");
 					} else if (data.status == "400") {
 						layer.alert("未查询到该服务！", function() {
 							window.location.reload();
 						});
 					}
-
 				}
 			});
 		},
@@ -1722,6 +1767,7 @@ function onePodEvent(obj){
 		}
 	});
 }
+
 
 
 

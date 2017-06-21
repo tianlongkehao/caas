@@ -8,6 +8,7 @@ public class SshConfig {
 	private String port;
 	private String policy;
 	private String identifyFile;
+	private String identify;
 
 	public String getUser() {
 		return user;
@@ -63,5 +64,13 @@ public class SshConfig {
 
 	public void setIdentifyFile(String identifyFile) {
 		this.identifyFile = identifyFile;
+	}
+
+	public String getIdentify() {
+		return identify;
+	}
+
+	public void setIdentify(String identify) {
+		this.identify = identify;
 	}
 }

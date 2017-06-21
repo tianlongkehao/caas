@@ -34,6 +34,7 @@
 										<i class="fa fa-map-marker" style="margin-right: 6px;"></i>路由监控
 									</h5>
 									<div class="ibox-tools">
+										<a title="批量测试" onclick="testRoutes()"><img src="<%=path %>/images/cluster-test.png" alt="cluster-test" class="clusterImg"></a>
 										<a href="javascript:window.location.reload(true);" title="刷新"><i
 											class="fa fa-repeat"></i></a>
 									</div>
@@ -53,7 +54,6 @@
 							<table class="table table-striped table-hover dataTables-example">
 								<thead>
 									<tr>
-										<th><input type="checkbox" class="chkAll" id="checkallbox" /></th>
 										<th style="width:40%">集群节点</th>
 										<th style="width:15%">&nbsp;</th>
 										<th style="width:15%">&nbsp;</th>

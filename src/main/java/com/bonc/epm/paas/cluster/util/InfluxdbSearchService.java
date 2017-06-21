@@ -541,56 +541,89 @@ public class InfluxdbSearchService {
      * @see DetailResource
      */
     public DetailResource generateContainerMonitorInfo(InfluxDB influxDB,String timePeriod,
-                                                                    String nameSpace, String podName,String containerName) {
-        DetailResource containerDetailResource = new DetailResource();
-        containerDetailResource.setTitleText(containerName);
+			String nameSpace, String podName, String containerName) {
+		DetailResource containerDetailResource = new DetailResource();
+		containerDetailResource.setTitleText(containerName);
 
-        MonitorController monCon = new MonitorController();
+		MonitorController monCon = new MonitorController();
 
-        // memory
-        List<DetailInfo> memDetailInfos = new ArrayList<DetailInfo>();
-        DetailInfo memLimitCurrent = new DetailInfo();
-        memLimitCurrent.setLegendName(Kind.MEMORYLIMITCURRENT.toString());
-        memLimitCurrent.setyAxis(monCon.getContainerData(influxDB, dbName, timePeriod, Kind.GETMEMLIMIT.toString(), nameSpace, podName,containerName));
-        memDetailInfos.add(memLimitCurrent);
+		// memory
+		List<DetailInfo> memDetailInfos = new ArrayList<DetailInfo>();
+		DetailInfo memLimitCurrent = new DetailInfo();
+		memLimitCurrent.setLegendName(Kind.MEMORYLIMITCURRENT.toString());
+		memLimitCurrent.setyAxis(monCon.getContainerData(influxDB, dbName, timePeriod, Kind.GETMEMLIMIT.toString(),
+				nameSpace, podName, containerName));
+		memDetailInfos.add(memLimitCurrent);
 
-        DetailInfo memUsageCurrent = new DetailInfo();
-        memUsageCurrent.setLegendName(Kind.MEMORYUSAGECURRENT.toString());
-        memUsageCurrent.setyAxis(monCon.getContainerData(influxDB, dbName, timePeriod, Kind.GETMEMUSE.toString(), nameSpace, podName,containerName));
-        memDetailInfos.add(memUsageCurrent);
+		DetailInfo memUsageCurrent = new DetailInfo();
+		memUsageCurrent.setLegendName(Kind.MEMORYUSAGECURRENT.toString());
+		memUsageCurrent.setyAxis(monCon.getContainerData(influxDB, dbName, timePeriod, Kind.GETMEMUSE.toString(),
+				nameSpace, podName, containerName));
+		memDetailInfos.add(memUsageCurrent);
 
-        DetailInfo memWorkSet = new DetailInfo();
-        memWorkSet.setLegendName(Kind.MEMORYWORKINGSETCURRENT.toString());
-        memWorkSet.setyAxis(monCon.getContainerData(influxDB, dbName, timePeriod, Kind.GETMEMSET.toString(), nameSpace, podName,containerName));
-        memDetailInfos.add(memWorkSet);
+		DetailInfo memWorkSet = new DetailInfo();
+		memWorkSet.setLegendName(Kind.MEMORYWORKINGSETCURRENT.toString());
+		memWorkSet.setyAxis(monCon.getContainerData(influxDB, dbName, timePeriod, Kind.GETMEMSET.toString(), nameSpace,
+				podName, containerName));
+		memDetailInfos.add(memWorkSet);
 
-        Collectivity memCollectivity = new Collectivity();
-        memCollectivity.setTitle(Kind.MEMORY.toString());
-        memCollectivity.setVal(memDetailInfos);
+		Collectivity memCollectivity = new Collectivity();
+		memCollectivity.setTitle(Kind.MEMORY.toString());
+		memCollectivity.setVal(memDetailInfos);
 
+		// CPU
+		List<DetailInfo> cpuDetailInfos = new ArrayList<DetailInfo>();
+		DetailInfo cpuLimitCurrent = new DetailInfo();
+		cpuLimitCurrent.setLegendName(Kind.CPULIMITCURRENT.toString());
+		cpuLimitCurrent.setyAxis(monCon.getContainerData(influxDB, dbName, timePeriod, Kind.GETCPULIMIT.toString(),
+				nameSpace, podName, containerName));
+		cpuDetailInfos.add(cpuLimitCurrent);
 
-        // CPU
-        List<DetailInfo> cpuDetailInfos = new ArrayList<DetailInfo>();
-        DetailInfo cpuLimitCurrent = new DetailInfo();
-        cpuLimitCurrent.setLegendName(Kind.CPULIMITCURRENT.toString());
-        cpuLimitCurrent.setyAxis(monCon.getContainerData(influxDB, dbName, timePeriod, Kind.GETCPULIMIT.toString(), nameSpace, podName,containerName));
-        cpuDetailInfos.add(cpuLimitCurrent);
+		DetailInfo cpuUsageCurrent = new DetailInfo();
+		cpuUsageCurrent.setLegendName(Kind.CPUUSAGECURRENT.toString());
+		cpuUsageCurrent.setyAxis(monCon.getContainerData(influxDB, dbName, timePeriod, Kind.GETCPUUSE.toString(),
+				nameSpace, podName, containerName));
+		cpuDetailInfos.add(cpuUsageCurrent);
 
-        DetailInfo cpuUsageCurrent = new DetailInfo();
-        cpuUsageCurrent.setLegendName(Kind.CPUUSAGECURRENT.toString());
-        cpuUsageCurrent.setyAxis(monCon.getContainerData(influxDB, dbName, timePeriod, Kind.GETCPUUSE.toString(), nameSpace, podName,containerName));
-        cpuDetailInfos.add(cpuUsageCurrent);
+		Collectivity cpuCollectivity = new Collectivity();
+		cpuCollectivity.setTitle(Kind.LOWERCPU.toString());
+		cpuCollectivity.setVal(cpuDetailInfos);
 
-        Collectivity cpuCollectivity = new Collectivity();
-        cpuCollectivity.setTitle(Kind.LOWERCPU.toString());
-        cpuCollectivity.setVal(cpuDetailInfos);
+		// Sockets
+		List<DetailInfo> socketsDetailInfos = new ArrayList<DetailInfo>();
 
-        List<Collectivity> containerCollectivity = new ArrayList<Collectivity>();
-        containerCollectivity.add(memCollectivity);
-        containerCollectivity.add(cpuCollectivity);
+		DetailInfo socketsUsageCurrent = new DetailInfo();
+		socketsUsageCurrent.setLegendName(Kind.SOCKETSUSAGECURRENT.toString());
+		socketsUsageCurrent.setyAxis(monCon.getContainerData(influxDB, dbName, timePeriod,
+				Kind.GETSOCKETSUSE.toString(), nameSpace, podName, containerName));
+		socketsDetailInfos.add(socketsUsageCurrent);
 
-        containerDetailResource.setVal(containerCollectivity);
-        return containerDetailResource;
+		Collectivity socketsCollectivity = new Collectivity();
+		socketsCollectivity.setTitle(Kind.LOWERSOCKETS.toString());
+		socketsCollectivity.setVal(socketsDetailInfos);
 
-    }
+		// Threads
+		List<DetailInfo> threadsDetailInfos = new ArrayList<DetailInfo>();
+
+		DetailInfo threadsUsageCurrent = new DetailInfo();
+		threadsUsageCurrent.setLegendName(Kind.THREADSUSAGECURRENT.toString());
+		threadsUsageCurrent.setyAxis(monCon.getContainerData(influxDB, dbName, timePeriod,
+				Kind.GETTHREADSUSE.toString(), nameSpace, podName, containerName));
+		threadsDetailInfos.add(threadsUsageCurrent);
+
+		Collectivity threadsCollectivity = new Collectivity();
+		threadsCollectivity.setTitle(Kind.LOWERTHREADS.toString());
+		threadsCollectivity.setVal(threadsDetailInfos);
+
+		// 结果队列
+		List<Collectivity> containerCollectivity = new ArrayList<Collectivity>();
+		containerCollectivity.add(memCollectivity);
+		containerCollectivity.add(cpuCollectivity);
+		containerCollectivity.add(socketsCollectivity);
+		containerCollectivity.add(threadsCollectivity);
+
+		containerDetailResource.setVal(containerCollectivity);
+		return containerDetailResource;
+
+	}
 }

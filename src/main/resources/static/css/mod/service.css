@@ -1280,3 +1280,12 @@ p.portLabel input{
 	background-color:#e8504f;
 	color:#fff;
 }
+.logsli{
+	display:none;
+}
+#showLogs:hover > ul{
+	display: block;
+    position: absolute;
+    left: 200px;
+    top: 0px;
+}

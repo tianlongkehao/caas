@@ -37,6 +37,7 @@
 										<h5 class="ci-h5"><i class="fa fa-map-marker" style="margin-right: 6px;"></i>对比</h5>
 									</div>
 									<div class="ibox-tools">
+										<a onclick="testIptables()" title="批量测试"><img src="<%=path %>/images/cluster-test.png" alt="cluster-test" class="clusterImg"></a>
 										<a href="javascript:window.location.reload(true);" title="刷新"><i
 											class="fa fa-repeat"></i></a>
 									</div>
@@ -51,7 +52,7 @@
 							class="table table-stripped table-hover dataTables-checkIptables">
 							<thead>
 								<tr style="height: 40px;">
-									<th ><input type="checkbox" class="chkAll" id="checkallbox" /></th>
+									
 									<th >集群节点</th>
 									<th >检查结果</th>
 									<th >操作</th>

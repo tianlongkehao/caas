@@ -1,9 +1,12 @@
 package com.bonc.epm.paas.cluster.entity;
 
+import javax.persistence.Basic;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 
 @Entity
 public class NodeTestInfo {
@@ -20,6 +23,8 @@ public class NodeTestInfo {
 
     //是否测试ping项目
 	private boolean ping;
+	@Lob
+	@Basic(fetch = FetchType.LAZY)
 	private String pingoutmsg;
 	private double pingtime;
     //ping是否通过
@@ -29,6 +34,9 @@ public class NodeTestInfo {
 
 	//是否测试trace项目
 	private boolean tracepath;
+
+	@Lob
+	@Basic(fetch = FetchType.LAZY)
 	private String tracepathoutmsg;
 	private double tracetime;
 	private boolean tracepass;
@@ -36,6 +44,9 @@ public class NodeTestInfo {
 	private int tracetimetarget;
 
 	private boolean qperf;
+
+	@Lob
+	@Basic(fetch = FetchType.LAZY)
 	private String qperfoutmsg;
 	private double speed;
 	private double latency;
@@ -44,25 +55,76 @@ public class NodeTestInfo {
 	private int latencytarget;
 
 	private boolean curl;
+
+	@Lob
+	@Basic(fetch = FetchType.LAZY)
 	private String curloutmsg;
 	private double curltime;
     private boolean curlpass;
     private int curltimetarget;
 
     private boolean docker;
-	private int disk;
+
+    @Lob
+	@Basic(fetch = FetchType.LAZY)
 	private String dockermsg;
 	private boolean dockerpass;
-	private int memorytarget;
+
+	private int dockerPoolBlocksize;
+	private int dockerBaseDeviceSize;
+	private String dockerBackingFilesystem;
+	private String dockerDatafile;
+	private int dockerMetaSpaceUsed;
+	private int dockerMetaSpaceAvailable;
+	private boolean dockerDeferredRemovalEnable;
+	private String dockerMetadatafile;
+	private int dockerDataSpaceUsed;
+	private int dockerDataSpaceTotal;
+	private int dockerDataSpaceAvailable;
+	private int dockerMetaSpaceTotal;
+	private boolean dockerUdevSyncSupported;
+	private boolean docekrDeferredDeletionEnable;
+	private int dockerDeferredDeletedDeviceCount;
+
+	private int dockerPoolBlocksizeTarget;
+	private int dockerBaseDeviceSizeTarget;
+	private String dockerBackingFilesystemTarget;
+	private String dockerDatafileTarget;
+	private int dockerMetaSpaceUsedTarget;
+	private int dockerMetaSpaceAvailableTarget;
+	private boolean dockerDeferredRemovalEnableTarget;
+	private String dockerMetadatafileTarget;
+	private int dockerDataSpaceUsedTarget;
+	private int dockerDataSpaceTotalTarget;
+	private int dockerDataSpaceAvailableTarget;
+	private int dockerMetaSpaceTotalTarget;
+	private boolean dockerUdevSyncSupportedTarget;
+	private boolean docekrDeferredDeletionEnableTarget;
+	private int dockerDeferredDeletedDeviceCountTarget;
 
 	private boolean dns;
+	@Lob
+	@Basic(fetch = FetchType.LAZY)
 	private String masterdnsoutmsg;
+	@Lob
+	@Basic(fetch = FetchType.LAZY)
 	private String standbydnsoutmsg;
 	private boolean masterdns;
 	private boolean standbydns;
 	private boolean dnspass;
 
-
+	public int getDockerDeferredDeletedDeviceCount() {
+		return dockerDeferredDeletedDeviceCount;
+	}
+	public void setDockerDeferredDeletedDeviceCount(int dockerDeferredDeletedDeviceCount) {
+		this.dockerDeferredDeletedDeviceCount = dockerDeferredDeletedDeviceCount;
+	}
+	public int getDockerDeferredDeletedDeviceCountTarget() {
+		return dockerDeferredDeletedDeviceCountTarget;
+	}
+	public void setDockerDeferredDeletedDeviceCountTarget(int dockerDeferredDeletedDeviceCountTarget) {
+		this.dockerDeferredDeletedDeviceCountTarget = dockerDeferredDeletedDeviceCountTarget;
+	}
 	public String getPingIp() {
 		return pingIp;
 	}
@@ -104,12 +166,6 @@ public class NodeTestInfo {
 	}
 	public void setCurltimetarget(int curltimetarget) {
 		this.curltimetarget = curltimetarget;
-	}
-	public int getMemorytarget() {
-		return memorytarget;
-	}
-	public void setMemorytarget(int memorytarget) {
-		this.memorytarget = memorytarget;
 	}
 	public boolean isDns() {
 		return dns;
@@ -219,12 +275,6 @@ public class NodeTestInfo {
 	public void setCurltime(double curltime) {
 		this.curltime = curltime;
 	}
-	public int getDisk() {
-		return disk;
-	}
-	public void setDisk(int disk) {
-		this.disk = disk;
-	}
 	public String getDockermsg() {
 		return dockermsg;
 	}
@@ -290,6 +340,174 @@ public class NodeTestInfo {
 	}
 	public void setAllpass(boolean allpass) {
 		this.allpass = allpass;
+	}
+	public int getDockerPoolBlocksize() {
+		return dockerPoolBlocksize;
+	}
+	public void setDockerPoolBlocksize(int dockerPoolBlocksize) {
+		this.dockerPoolBlocksize = dockerPoolBlocksize;
+	}
+	public int getDockerBaseDeviceSize() {
+		return dockerBaseDeviceSize;
+	}
+	public void setDockerBaseDeviceSize(int dockerBaseDeviceSize) {
+		this.dockerBaseDeviceSize = dockerBaseDeviceSize;
+	}
+	public String getDockerBackingFilesystem() {
+		return dockerBackingFilesystem;
+	}
+	public void setDockerBackingFilesystem(String dockerBackingFilesystem) {
+		this.dockerBackingFilesystem = dockerBackingFilesystem;
+	}
+	public String getDockerDatafile() {
+		return dockerDatafile;
+	}
+	public void setDockerDatafile(String dockerDatafile) {
+		this.dockerDatafile = dockerDatafile;
+	}
+	public int getDockerMetaSpaceUsed() {
+		return dockerMetaSpaceUsed;
+	}
+	public void setDockerMetaSpaceUsed(int dockerMetaSpaceUsed) {
+		this.dockerMetaSpaceUsed = dockerMetaSpaceUsed;
+	}
+	public int getDockerMetaSpaceAvailable() {
+		return dockerMetaSpaceAvailable;
+	}
+	public void setDockerMetaSpaceAvailable(int dockerMetaSpaceAvailable) {
+		this.dockerMetaSpaceAvailable = dockerMetaSpaceAvailable;
+	}
+	public boolean isDockerDeferredRemovalEnable() {
+		return dockerDeferredRemovalEnable;
+	}
+	public void setDockerDeferredRemovalEnable(boolean dockerDeferredRemovalEnable) {
+		this.dockerDeferredRemovalEnable = dockerDeferredRemovalEnable;
+	}
+	public String getDockerMetadatafile() {
+		return dockerMetadatafile;
+	}
+	public void setDockerMetadatafile(String dockerMetadatafile) {
+		this.dockerMetadatafile = dockerMetadatafile;
+	}
+	public int getDockerDataSpaceUsed() {
+		return dockerDataSpaceUsed;
+	}
+	public void setDockerDataSpaceUsed(int dockerDataSpaceUsed) {
+		this.dockerDataSpaceUsed = dockerDataSpaceUsed;
+	}
+	public int getDockerDataSpaceTotal() {
+		return dockerDataSpaceTotal;
+	}
+	public void setDockerDataSpaceTotal(int dockerDataSpaceTotal) {
+		this.dockerDataSpaceTotal = dockerDataSpaceTotal;
+	}
+	public int getDockerDataSpaceAvailable() {
+		return dockerDataSpaceAvailable;
+	}
+	public void setDockerDataSpaceAvailable(int dockerDataSpaceAvailable) {
+		this.dockerDataSpaceAvailable = dockerDataSpaceAvailable;
+	}
+	public int getDockerMetaSpaceTotal() {
+		return dockerMetaSpaceTotal;
+	}
+	public void setDockerMetaSpaceTotal(int dockerMetaSpaceTotal) {
+		this.dockerMetaSpaceTotal = dockerMetaSpaceTotal;
+	}
+	public boolean isDockerUdevSyncSupported() {
+		return dockerUdevSyncSupported;
+	}
+	public void setDockerUdevSyncSupported(boolean dockerUdevSyncSupported) {
+		this.dockerUdevSyncSupported = dockerUdevSyncSupported;
+	}
+	public boolean isDocekrDeferredDeletionEnable() {
+		return docekrDeferredDeletionEnable;
+	}
+	public void setDocekrDeferredDeletionEnable(boolean docekrDeferredDeletionEnable) {
+		this.docekrDeferredDeletionEnable = docekrDeferredDeletionEnable;
+	}
+	public int getDockerPoolBlocksizeTarget() {
+		return dockerPoolBlocksizeTarget;
+	}
+	public void setDockerPoolBlocksizeTarget(int dockerPoolBlocksizeTarget) {
+		this.dockerPoolBlocksizeTarget = dockerPoolBlocksizeTarget;
+	}
+	public int getDockerBaseDeviceSizeTarget() {
+		return dockerBaseDeviceSizeTarget;
+	}
+	public void setDockerBaseDeviceSizeTarget(int dockerBaseDeviceSizeTarget) {
+		this.dockerBaseDeviceSizeTarget = dockerBaseDeviceSizeTarget;
+	}
+	public String getDockerBackingFilesystemTarget() {
+		return dockerBackingFilesystemTarget;
+	}
+	public void setDockerBackingFilesystemTarget(String dockerBackingFilesystemTarget) {
+		this.dockerBackingFilesystemTarget = dockerBackingFilesystemTarget;
+	}
+	public String getDockerDatafileTarget() {
+		return dockerDatafileTarget;
+	}
+	public void setDockerDatafileTarget(String dockerDatafileTarget) {
+		this.dockerDatafileTarget = dockerDatafileTarget;
+	}
+	public int getDockerMetaSpaceUsedTarget() {
+		return dockerMetaSpaceUsedTarget;
+	}
+	public void setDockerMetaSpaceUsedTarget(int dockerMetaSpaceUsedTarget) {
+		this.dockerMetaSpaceUsedTarget = dockerMetaSpaceUsedTarget;
+	}
+	public int getDockerMetaSpaceAvailableTarget() {
+		return dockerMetaSpaceAvailableTarget;
+	}
+	public void setDockerMetaSpaceAvailableTarget(int dockerMetaSpaceAvailableTarget) {
+		this.dockerMetaSpaceAvailableTarget = dockerMetaSpaceAvailableTarget;
+	}
+	public boolean isDockerDeferredRemovalEnableTarget() {
+		return dockerDeferredRemovalEnableTarget;
+	}
+	public void setDockerDeferredRemovalEnableTarget(boolean dockerDeferredRemovalEnableTarget) {
+		this.dockerDeferredRemovalEnableTarget = dockerDeferredRemovalEnableTarget;
+	}
+	public String getDockerMetadatafileTarget() {
+		return dockerMetadatafileTarget;
+	}
+	public void setDockerMetadatafileTarget(String dockerMetadatafileTarget) {
+		this.dockerMetadatafileTarget = dockerMetadatafileTarget;
+	}
+	public int getDockerDataSpaceUsedTarget() {
+		return dockerDataSpaceUsedTarget;
+	}
+	public void setDockerDataSpaceUsedTarget(int dockerDataSpaceUsedTarget) {
+		this.dockerDataSpaceUsedTarget = dockerDataSpaceUsedTarget;
+	}
+	public int getDockerDataSpaceTotalTarget() {
+		return dockerDataSpaceTotalTarget;
+	}
+	public void setDockerDataSpaceTotalTarget(int dockerDataSpaceTotalTarget) {
+		this.dockerDataSpaceTotalTarget = dockerDataSpaceTotalTarget;
+	}
+	public int getDockerDataSpaceAvailableTarget() {
+		return dockerDataSpaceAvailableTarget;
+	}
+	public void setDockerDataSpaceAvailableTarget(int dockerDataSpaceAvailableTarget) {
+		this.dockerDataSpaceAvailableTarget = dockerDataSpaceAvailableTarget;
+	}
+	public int getDockerMetaSpaceTotalTarget() {
+		return dockerMetaSpaceTotalTarget;
+	}
+	public void setDockerMetaSpaceTotalTarget(int dockerMetaSpaceTotalTarget) {
+		this.dockerMetaSpaceTotalTarget = dockerMetaSpaceTotalTarget;
+	}
+	public boolean isDockerUdevSyncSupportedTarget() {
+		return dockerUdevSyncSupportedTarget;
+	}
+	public void setDockerUdevSyncSupportedTarget(boolean dockerUdevSyncSupportedTarget) {
+		this.dockerUdevSyncSupportedTarget = dockerUdevSyncSupportedTarget;
+	}
+	public boolean isDocekrDeferredDeletionEnableTarget() {
+		return docekrDeferredDeletionEnableTarget;
+	}
+	public void setDocekrDeferredDeletionEnableTarget(boolean docekrDeferredDeletionEnableTarget) {
+		this.docekrDeferredDeletionEnableTarget = docekrDeferredDeletionEnableTarget;
 	}
 
 }
