@@ -30,8 +30,9 @@ $(function(){
 					disksize =50;
 				}else if(size="102400"){
 					disksize =100;
+				}else{
+					disksize = $("#updatedefVol").val();
 				}
-				disksize = $("#updatedefVol").val();
 
 				if($("#restVol").html()!=""&&disksize>$("#restVol").html()){
 					alert("剩余磁盘空间不足，请重新分配磁盘大小！");

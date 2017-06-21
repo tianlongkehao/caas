@@ -17,7 +17,6 @@ import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.poi.hssf.record.PageBreakRecord.Break;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,9 +36,11 @@ import com.bonc.epm.paas.dao.CephSnapDao;
 import com.bonc.epm.paas.dao.CommonOperationLogDao;
 import com.bonc.epm.paas.dao.ServiceRbdDao;
 import com.bonc.epm.paas.dao.SnapStrategyDao;
+import com.bonc.epm.paas.dao.UserResourceDao;
 import com.bonc.epm.paas.entity.CommonOperationLog;
 import com.bonc.epm.paas.entity.CommonOprationLogUtils;
 import com.bonc.epm.paas.entity.User;
+import com.bonc.epm.paas.entity.UserResource;
 import com.bonc.epm.paas.entity.ceph.CephRbdInfo;
 import com.bonc.epm.paas.entity.ceph.CephSnap;
 import com.bonc.epm.paas.entity.ceph.ServiceCephRbd;
@@ -54,8 +55,6 @@ import com.ceph.rbd.Rbd;
 import com.ceph.rbd.RbdException;
 import com.ceph.rbd.RbdImage;
 import com.ceph.rbd.jna.RbdSnapInfo;
-
-import io.netty.handler.codec.http.HttpContentEncoder.Result;
 
 /**
  * CephController
@@ -141,6 +140,9 @@ public class CephController {
 
 	@Autowired
 	private SnapStrategyDao snapStrategyDao;
+
+	@Autowired
+	private UserResourceDao userResourceDao;
 
 	/*
 	 * @Autowired private ServiceDao serviceDao;
@@ -1906,6 +1908,9 @@ public class CephController {
 			}*/
 		}
 
+		UserResource userResource = userResourceDao.findByUserId(user.getId());
+
+		model.addAttribute("userResource",userResource);
 		model.addAttribute("cephRbdInfos", cephRbdInfos);
 		model.addAttribute("menu_flag", "storage");
 		model.addAttribute("li_flag", "storageBlock");

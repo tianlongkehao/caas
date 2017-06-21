@@ -119,7 +119,7 @@
         <li class="line-h-3">
             <div class="param-set">
                 <span class="">磁盘大小(G)：</span>
-                <input type="radio" name="updateStorageSize" class="updateStorageSize" value="20480" id="size20"><label for="size20">20<span>G</span></label>
+                <input type="radio" name="updateStorageSize" class="updateStorageSize" value="20480" id="size20" checked="checked"><label for="size20">20<span>G</span></label>
                 <input type="radio" name="updateStorageSize" class="updateStorageSize" value="51200" id="size50"><label for="size50">50<span>G</span></label>
                 <input type="radio" name="updateStorageSize" class="updateStorageSize" value="102400" id="size100"><label for="size100">100<span>G</span></label>
                 <input type="radio" name="updateStorageSize" class="updateStorageSize" value ="selfdefine" id="updatedefVolNum">

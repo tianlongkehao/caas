@@ -571,8 +571,14 @@
 								<c:if test="${service.serviceType==1 }">
 									<c:forEach items="${storageList }" var="storage">
 										<tr>
-											<td>挂载地址：${storage.mountPoint }</td>
 											<td>存储卷：${storage.storageName }</td>
+											<td>挂载地址：${storage.mountPoint }</td>
+										</tr>
+									</c:forEach>
+									<c:forEach items="${cephRbdList }" var="rbd">
+										<tr>
+											<td>块存储：${rbd.rbdname }</td>
+											<td>挂载地址：${rbd.path }</td>
 										</tr>
 									</c:forEach>
 								</c:if>

@@ -584,12 +584,14 @@ public class ServiceController {
 			}
 		}
 		List<Storage> storageList = storageDao.findByServiceId(service.getId());
+		List<ServiceCephRbd> cephRbdList = serviceRbdDao.findByServiceId(service.getId());
 
 		model.addAttribute("entryHost", ENTRY_HOST);
 		model.addAttribute("dockerIOPort", DOCKER_IO_PORT);
 		model.addAttribute("configmapList", configmapList);
 		model.addAttribute("serviceConfigmap", serviceConfigmap);
 		model.addAttribute("storageList", storageList);
+		model.addAttribute("cephRbdList", cephRbdList);
 		model.addAttribute("namespace", currentUser.getNamespace());
 		model.addAttribute("id", id);
 		model.addAttribute("podNameList", podNameList);
