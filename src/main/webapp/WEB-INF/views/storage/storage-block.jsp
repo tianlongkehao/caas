@@ -50,7 +50,7 @@
 												<th text-indent: 30px;"><input
 													type="checkbox" autocomplete="off" class="chkAll"
 													id="checkallbox" /></th>
-												<th>磁盘名称/磁盘ID</th>
+												<th>磁盘名称</th>
 	                                            <th>磁盘大小(G)</th>
 	                                            <th>磁盘状态</th>
 	                                            <th>描述</th>
@@ -174,7 +174,7 @@
     <ul class="popWin">
         <li class="line-h-3">
             <span class="s-edit-name">磁盘名称：</span>
-            <input id="q-storageName" class="form-control q-storage" type="text" value="" disabled>
+            <input id="rbd-snap" class="form-control q-storage" type="text" style="background-color:#ddd" value="" readonly>
         </li>
         <li class="line-h-3">
             <span class="s-edit-name">快照名称：<font color="red">*</font></span>

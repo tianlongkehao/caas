@@ -1,6 +1,8 @@
 $(function(){
 	//loadStorageList();
 	$("#storageQuickAdd").click(function(){
+		var reg = /^[0-9a-zA-Z]+$/;//正则表达式，名称只能为数字和字母，或者两者的组合
+
 		layer.open({
 			type:1,
 			title: '创建云盘',
@@ -9,8 +11,8 @@ $(function(){
 			btn: ['确定', '取消'],
 			yes: function(index, layero){
 				var blockname = $("#q-storageName").val();
-				if(blockname==""){
-					layer.tips('磁盘名称不能为空！', '#q-storageName', {
+				if(blockname==""||!reg.test(blockname)){
+					layer.tips('磁盘名称不能为空,且只能为数字和字母或者两者的组合！', '#q-storageName', {
 						tips : [ 1, '#0FA6D8' ]
 					});
 					$('#q-storageName').focus();
@@ -232,10 +234,12 @@ function changeDescribe(obj){
 //创建快照
 function createSnapshoot(obj){
 	var rbdname = $(obj).parent().attr("rbd");
+	var reg = /^[0-9a-zA-Z]+$/;//正则表达式，快照名称只能为数字和字母，或者两者的组合
 	if(rbdname ==''){
 		layer.msg("未获取到块设备名称！",{icon : 5});
 		return;
 	}
+	$("#rbd-snap").val(rbdname);
 	layer.open({
 		type:1,
 			title: '创建快照',
@@ -245,14 +249,13 @@ function createSnapshoot(obj){
 			yes: function(index, layero){
 				var snapname = $("#snapshootName").val();
 				var detail = $("#snap-mark").val();
-				if(snapname ==''){
-					layer.tips('快照名称不能为空！', '#snapshootName', {
+				if(snapname ==''||!reg.test(snapname)){
+					layer.tips('快照名称不能为空,且只能为数字和字母或者两者的组合！', '#snapshootName', {
 						tips : [ 1, '#0FA6D8' ]
 					});
 					$('#snapshootName').focus();
 					return;
 				}
-
 				$.ajax({
  					url:""+ctx+"/ceph/checksnap?imgname="+rbdname+"&snapname="+snapname,
  					type:"get",
