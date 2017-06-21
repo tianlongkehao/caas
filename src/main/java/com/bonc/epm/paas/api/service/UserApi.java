@@ -86,6 +86,9 @@ public class UserApi {
 	@Autowired
 	private UserResourceDao userResourceDao;
 
+	@Autowired
+	private CephController ceph;
+
 	/**
 	 * Description: <br>
 	 * 删除用户时同步删除用户创建的服务
@@ -425,7 +428,7 @@ public class UserApi {
 		try {
 			Map<String, String> map = new HashMap<String, String>();
 			map.put("memory", resource.getMemory() + "G"); // 内存
-			map.put("cpu", Double.valueOf(resource.getCpu())+"");// CPU数量(个)
+			map.put("cpu", Double.valueOf(resource.getCpu()) + "");// CPU数量(个)
 			map.put("persistentvolumeclaims", resource.getVol_size() + "");// 卷组数量
 			ResourceQuota quota = kubernetesClientService.generateSimpleResourceQuota(user.getNamespace(), map);
 			quota = client.createResourceQuota(quota);
@@ -452,7 +455,6 @@ public class UserApi {
 	 */
 	public boolean createCeph(User user) {
 		try {
-			CephController ceph = new CephController();
 			ceph.connectCephFS();
 			ceph.createNamespaceCephFS(user.getNamespace());
 			return true;
@@ -482,7 +484,7 @@ public class UserApi {
 
 		Map<String, String> hard = quota.getSpec().getHard();
 		hard.put("memory", resource.getMemory() + "G"); // 内存
-		hard.put("cpu", Double.valueOf(resource.getCpu())  + "");// CPU数量
+		hard.put("cpu", Double.valueOf(resource.getCpu()) + "");// CPU数量
 		hard.put("persistentvolumeclaims", resource.getVol_size() + "");// 卷组数量
 		spec.setHard(hard);
 		quota.setSpec(spec);
@@ -572,11 +574,12 @@ public class UserApi {
 					}
 				}
 
-//				if (!createCeph(user)) {
-//					client.deleteNamespace(user.getNamespace());
-//					messages.add(
-//							"创建ceph失败！[userName=" + user.getUserName() + ",nameSpace=" + user.getNamespace() + "]");
-//				}
+				// if (!createCeph(user)) {
+				// client.deleteNamespace(user.getNamespace());
+				// messages.add(
+				// "创建ceph失败！[userName=" + user.getUserName() + ",nameSpace=" +
+				// user.getNamespace() + "]");
+				// }
 			} catch (Exception e) {
 				client.deleteNamespace(user.getNamespace());
 				e.printStackTrace();

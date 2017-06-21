@@ -161,15 +161,13 @@
 				</c:if>
 
                 <c:if test="${cas_enable}">
-                    <c:if test="${cur_user.user_autority == 2}">
-                        <li id="menu_usermanage"><a href="#">
-                        	<i class="fa-nav fa-nav-usermanage"></i>
-                        	<span class="nav-label">密钥</span>
-                        </a>
-                            <ul class="nav nav-second-level">
-                                <li id="li_credential"><a class="J_menuItem" href="<%=path %>/secret/Credential"><i class="fa fa_circle"></i>密钥管理</a></li>
-                            </ul></li>
-                    </c:if>
+                    <li id="menu_usermanage"><a href="#">
+                    	<i class="fa-nav fa-nav-usermanage"></i>
+                    	<span class="nav-label">密钥</span>
+                    </a>
+                        <ul class="nav nav-second-level">
+                            <li id="li_credential"><a class="J_menuItem" href="<%=path %>/secret/Credential"><i class="fa fa_circle"></i>密钥管理</a></li>
+                        </ul></li>
                 </c:if>
 
 

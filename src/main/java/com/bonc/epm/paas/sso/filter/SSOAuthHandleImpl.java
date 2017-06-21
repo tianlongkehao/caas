@@ -62,6 +62,9 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle{
     @Autowired
     private CasClientConfigurationProperties configProps;
 
+    @Autowired
+    private CephController ceph;
+
     /**
      * kubernetesClientService
      */
@@ -206,7 +209,6 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle{
      */
     private void createCeph(String namespace) {
         try {
-            CephController ceph = new CephController();
             ceph.connectCephFS();
             ceph.createNamespaceCephFS(namespace);
         }
