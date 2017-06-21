@@ -155,6 +155,7 @@ $(function(){
 
 //修改磁盘属性
 function changeProperty(obj){
+	var rbdId = $(obj).parent().parent().parent().parent().attr("rbdId");
     var rbd = $(obj).parent().parent().parent().parent().attr("rbd");
     var size =$(obj).parent().parent().parent().parent().attr("size");
     var release = $(obj).parent().parent().parent().parent().attr("release");
@@ -178,7 +179,7 @@ function changeProperty(obj){
                  layer.close(index);
 
                  $.ajax({
-  					url:""+ctx+"/ceph/updaterbdproperty?imgname="+rbd+"&release="+release,
+  					url:""+ctx+"/ceph/updaterbdproperty?rbdId="+rbdId+"&release="+release,
   					type:"get",
   					success:function(data){
   						var data = eval("(" + data + ")");
@@ -197,6 +198,7 @@ function changeProperty(obj){
 
 //修改磁盘描述
 function changeDescribe(obj){
+	var rbdId = $(obj).parent().parent().parent().parent().attr("rbdId");
 	var rbd = $(obj).parent().parent().parent().parent().attr("rbd");
 	var detail = $(obj).parent().parent().parent().parent().attr("detail");
 	$("#rbd2").val(rbd);
@@ -213,7 +215,7 @@ function changeDescribe(obj){
 				layer.close(index);
 
 				$.ajax({
- 					url:""+ctx+"/ceph/updaterbddetail?imgname="+rbd+"&detail="+detail,
+ 					url:""+ctx+"/ceph/updaterbddetail?rbdId="+rbdId+"&detail="+detail,
  					type:"get",
  					success:function(data){
  						var data = eval("(" + data + ")");
@@ -234,6 +236,7 @@ function changeDescribe(obj){
 
 //创建快照
 function createSnapshoot(obj){
+	var rbdId = $(obj).parent().attr("rbdId");
 	var rbdname = $(obj).parent().attr("rbd");
 	var reg = /^[0-9a-zA-Z]+$/;//正则表达式，快照名称只能为数字和字母，或者两者的组合
 	if(rbdname ==''){
@@ -270,7 +273,7 @@ function createSnapshoot(obj){
  								layer.msg("快照名称重复！",{icon : 5});
  							}else{
  								$.ajax({
- 				 					url:""+ctx+"/ceph/createsnap?imgname="+rbdname+"&snapname="+snapname+"&snapdetail="+detail,
+ 				 					url:""+ctx+"/ceph/createsnap?rbdId="+rbdId+"&snapname="+snapname+"&snapdetail="+detail,
  				 					type:"get",
  				 					success:function(data){
  				 						var data = eval("(" + data + ")");
@@ -296,6 +299,7 @@ function createSnapshoot(obj){
 
 //修改磁盘大小
 function changeStorageSize(obj){
+	var rbdId = $(obj).parent().parent().parent().parent().attr("rbdId");
 	var rbd = $(obj).parent().parent().parent().parent().attr("rbd");
     var size =$(obj).parent().parent().parent().parent().attr("size");
     $("#rbd3").val(rbd);
@@ -319,7 +323,7 @@ function changeStorageSize(obj){
 
 				layer.close(index);
 				$.ajax({
- 					url:""+ctx+"/ceph/updaterbdsize?imgname="+rbd+"&size="+size,
+ 					url:""+ctx+"/ceph/updaterbdsize?rbdId="+rbdId+"&size="+size,
  					type:"get",
  					success:function(data){
  						var data = eval("(" + data + ")");

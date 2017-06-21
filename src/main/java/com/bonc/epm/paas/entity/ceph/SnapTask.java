@@ -2,14 +2,11 @@ package com.bonc.epm.paas.entity.ceph;
 
 import java.util.Date;
 import java.util.TimerTask;
-import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.bonc.epm.paas.SpringApplicationContext;
 import com.bonc.epm.paas.controller.CephController;
-import com.bonc.epm.paas.dao.SnapStrategyDao;
 
 public class SnapTask extends TimerTask {
 
@@ -37,8 +34,9 @@ public class SnapTask extends TimerTask {
 				if (weeks.length != 0) {
 					for (String w : weeks) {
 						if (day == Integer.parseInt(w)) {
-							cephController.autoCreateSnap(cephRbdInfo.getPool(), cephRbdInfo.getName(),
-									cephRbdInfo.getName() + UUID.randomUUID().toString(), "快照策略自动拍照" + date.toString());
+							/*cephController.autoCreateSnap(cephRbdInfo.getPool(), cephRbdInfo.getName(),
+									cephRbdInfo.getName() + UUID.randomUUID().toString(), "快照策略自动拍照" + date.toString());*/
+							cephController.autoCreateSnap(cephRbdInfo);
 							break;
 						}
 					}

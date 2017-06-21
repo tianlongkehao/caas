@@ -330,6 +330,14 @@ public class UserController {
 				return JSON.toJSONString(map);
 			}
 
+			if(!createCephPool(user)){
+				client.deleteNamespace(user.getNamespace());
+				client.deleteResourceQuota(user.getNamespace());
+				ceph.deleteNamespaceCephFS(user.getNamespace());
+				map.put("message", "创建ceph pool失败");
+				map.put("creatFlag", "400");
+				return JSON.toJSONString(map);
+			}
 			// 为client创建资源限制
 			// LimitRange limitRange = generateLimitRange(user.getNamespace(),
 			// restriction);
@@ -1249,6 +1257,20 @@ public class UserController {
 	}
 
 	/**
+	 * 创建ceph pool
+	 * @param user
+	 * @return
+	 */
+	private boolean createCephPool(User user){
+		try {
+			ceph.createPool(user.getNamespace());
+			return true;
+		} catch (RadosException e) {
+			LOG.error(e.getMessage());
+			return false;
+		}
+	}
+	/**
 	 *
 	 * Description: 为client创建资源配额
 	 *
@@ -1395,6 +1417,7 @@ public class UserController {
 
                 if (null != client.getNamespace(namespace)) {
                     try {
+                    	ceph.deleteNamespaceCephFS(namespace);//删除ceph文件系统
                     	ceph.clearPool(namespace);//删除租户所使用的ceph块设备资源
                         client.deleteNamespace(namespace);
                     }
