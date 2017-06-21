@@ -174,7 +174,7 @@
     <ul class="popWin">
         <li class="line-h-3">
             <span class="s-edit-name">磁盘名称：</span>
-            <input id="q-storageName" class="form-control q-storage" type="text" value="sdgg" disabled>
+            <input id="q-storageName" class="form-control q-storage" type="text" value="" disabled>
         </li>
         <li class="line-h-3">
             <span class="s-edit-name">快照名称：<font color="red">*</font></span>
