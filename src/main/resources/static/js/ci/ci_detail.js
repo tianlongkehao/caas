@@ -348,6 +348,7 @@ $(document).ready(function(){
 			btn : layerBtn,
 			scrollbar:false,
 			yes:function(index, layero){
+				var type = $("#CredentialsType").val();
 				if(type == 1){
 					if (!judgeCredData()) {
 						return;
@@ -499,7 +500,7 @@ $(document).ready(function(){
 					$("#sshPassword").val(creList[0].privateKey);
 				}
 			});
-			
+
 		}
 	});
 	//更改密钥生成对应公钥
@@ -1199,7 +1200,7 @@ function loadAntData(count,invoke){
 			$("#antJavaOpts-"+count).val(invoke.antJavaOpts);
 		}
 	});
-	
+
 }
 
 //添加maven表单
@@ -1363,7 +1364,7 @@ function loadMavenData(count,invoke){
 					}else{
 						mavenVersionData += '<option value="' + data.mavenList[i].version + '">' + data.mavenList[i].version + '</option>';
 					}
-					
+
 				}
 			}
 			var mavenGlobalSet = '';
@@ -1375,7 +1376,7 @@ function loadMavenData(count,invoke){
 				mavenGlobalSet ='<option value="global settings file in filesystem">global settings file in filesystem</option>'+
 							'<option value="use default maven global setting">use default maven global setting</option>';
 			}
-			
+
 
 			var mavenHtml = '<div class="row addCiStepRow maven" count = '+count+' invoke = "maven">'+
 			'<div class="col-sm-12">'+
@@ -1501,8 +1502,8 @@ function loadMavenData(count,invoke){
 			$("#mavenJVMOptions-"+count).val(invoke.mavenJVMOptions);
 		}
 	});
-	
-	
+
+
 }
 
 //添加shell脚本表单
