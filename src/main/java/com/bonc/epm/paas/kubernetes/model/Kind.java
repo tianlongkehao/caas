@@ -4,15 +4,20 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum Kind {
-	STATUS("Status"), STATUSDETAILS("StatusDetails"), NODE("Node"), NODELIST("NodeList"), POD("Pod"), PODLIST(
-			"PodList"), REPLICATIONCONTROLLER("ReplicationController"), REPLICATIONCONTROLLERLIST(
-					"ReplicationControllerList"), SERVICE("Service"), SERVICELIST("ServiceList"), ENDPOINTS(
-							"Endpoints"), ENDPOINTSLIST("EndpointsList"), NAMESPACE("Namespace"), NAMESPACELIST(
-									"NamespaceList"), LIMITRANGE("LimitRange"), LIMITRANGELIST(
-											"LimitRangeList"), RESOURCEQUOTA("ResourceQuota"), RESOURCEQUOTALIST(
-													"ResourceQuotaList"), SECRET("Secret"), HORIZONTALPODAUTOSCALERLIST(
-															"HorizontalPodAutoscalerList"), HORIZONTALPODAUTOSCALER(
-																	"HorizontalPodAutoscaler"),CONFIGMAP("ConfigMap"),CONFIGMAPLIST("ConfigMapList"), EVENTLIST("EventList"), EVENT("Event");
+	STATUS("Status"), STATUSDETAILS("StatusDetails"),
+	NODE("Node"), NODELIST("NodeList"),
+	POD("Pod"), PODLIST("PodList"),
+	REPLICATIONCONTROLLER("ReplicationController"), REPLICATIONCONTROLLERLIST("ReplicationControllerList"),
+	SERVICE("Service"), SERVICELIST("ServiceList"),
+	ENDPOINTS("Endpoints"), ENDPOINTSLIST("EndpointsList"),
+	NAMESPACE("Namespace"), NAMESPACELIST("NamespaceList"),
+	LIMITRANGE("LimitRange"), LIMITRANGELIST("LimitRangeList"),
+	RESOURCEQUOTA("ResourceQuota"), RESOURCEQUOTALIST("ResourceQuotaList"),
+	SECRET("Secret"),
+	HORIZONTALPODAUTOSCALER("HorizontalPodAutoscaler"),HORIZONTALPODAUTOSCALERLIST("HorizontalPodAutoscalerList"),
+	CONFIGMAP("ConfigMap"),CONFIGMAPLIST("ConfigMapList"),
+	EVENT("Event"),EVENTLIST("EventList"),
+	STATEFULSET("StatefulSet"),STATEFULSETLIST("StatefulSetList");
 
 	private final String text;
 
