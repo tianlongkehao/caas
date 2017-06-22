@@ -1,11 +1,11 @@
 package com.bonc.epm.paas.kubernetes.model;
 
-public class StatefulSetList extends AbstractKubernetesModelList<HorizontalPodAutoscaler> {
+public class StatefulSetList extends AbstractKubernetesModelList<StatefulSet> {
 
 	private ListMeta metadata;
 
 	public StatefulSetList() {
-		super(Kind.HORIZONTALPODAUTOSCALERLIST);
+		super(Kind.STATEFULSETLIST);
 	}
 
 	public ListMeta getMetadata() {

@@ -1,41 +1,49 @@
 package com.bonc.epm.paas.kubernetes.model;
 
+import java.util.List;
+
+/**
+ * ClassName: StatefulSetSpec <br/>
+ * date: 2017年6月22日 上午11:26:05 <br/>
+ *
+ * @author longkaixiang
+ * @version
+ */
 public class StatefulSetSpec {
-	private Integer targetCPUUtilizationPercentage;
-	private Integer maxReplicas;
-	private Integer minReplicas;
-	private CrossVersionObjectReference scaleTargetRef;
-
-	public Integer getTargetCPUUtilizationPercentage() {
-		return targetCPUUtilizationPercentage;
+	private Integer replicas;
+	private LabelSelector selector;
+	private String serviceName;
+	private PodTemplateSpec template;
+	private List<PersistentVolumeClaim> volumeClaimTemplates ;
+	public Integer getReplicas() {
+		return replicas;
 	}
-
-	public void setTargetCPUUtilizationPercentage(Integer targetCPUUtilizationPercentage) {
-		this.targetCPUUtilizationPercentage = targetCPUUtilizationPercentage;
+	public void setReplicas(Integer replicas) {
+		this.replicas = replicas;
 	}
-
-	public Integer getMaxReplicas() {
-		return maxReplicas;
+	public LabelSelector getSelector() {
+		return selector;
 	}
-
-	public void setMaxReplicas(Integer maxReplicas) {
-		this.maxReplicas = maxReplicas;
+	public void setSelector(LabelSelector selector) {
+		this.selector = selector;
 	}
-
-	public Integer getMinReplicas() {
-		return minReplicas;
+	public String getServiceName() {
+		return serviceName;
 	}
-
-	public void setMinReplicas(Integer minReplicas) {
-		this.minReplicas = minReplicas;
+	public void setServiceName(String serviceName) {
+		this.serviceName = serviceName;
 	}
-
-	public CrossVersionObjectReference getScaleTargetRef() {
-		return scaleTargetRef;
+	public PodTemplateSpec getTemplate() {
+		return template;
 	}
-
-	public void setScaleTargetRef(CrossVersionObjectReference scaleTargetRef) {
-		this.scaleTargetRef = scaleTargetRef;
+	public void setTemplate(PodTemplateSpec template) {
+		this.template = template;
+	}
+	public List<PersistentVolumeClaim> getVolumeClaimTemplates() {
+		return volumeClaimTemplates;
+	}
+	public void setVolumeClaimTemplates(List<PersistentVolumeClaim> volumeClaimTemplates) {
+		this.volumeClaimTemplates = volumeClaimTemplates;
 	}
 
 }
