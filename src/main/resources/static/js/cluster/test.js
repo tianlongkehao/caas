@@ -203,20 +203,25 @@ function detail(obj) {
 					tabHtml += '<li id="tab'+count+'"><a href="#pingTab" data-toggle="tab">Ping</a></li>';
 					var pingpass = nodetestresult.pingpass ? '通过' : '未通过';
 					var pingavg = nodetestresult.pingtime;
+					var pingavgTarget = nodetestresult.pingtimetarget;
 					var pingdetail = nodetestresult.pingoutmsg;
 					tabInfoHtml += '<div class="tab-pane fade tabInfo'+count+'" id="pingTab">'
 						+'<table class="table">'
+						+'<thead>'
+						+ '<tr>'
+						+'<th style="width: 30%;text-align:center;">检测项</th>'
+						+'<th style="width: 30%;text-align:center;">真实值</th>'
+						+'<th style="width: 30%;text-align:center;">目标值</th>'
+						+'</tr>'
+						+'</thead>'
 						+'<tbody class="pingTable">'
 						+'<tr>'
-						+'<th style="width: 20%">检测状态：</th>'
-						+'<td class="tableInput"><input type="text" id="pingpass" readOnly value="'+pingpass+'"></td>'
+						+'<td>平均响应时间(ms)</td>'
+						+'<td>'+pingavg+'</td>'
+						+'<td>'+pingavgTarget+'</td>'
 						+'</tr>'
 						+'<tr>'
-						+'<th style="width: 20%">平均响应时间(ms)：</th>'
-						+'<td class="tableInput"><input type="text" id="pingavg" readOnly value="'+pingavg+'"></td>'
-						+'</tr>'
-						+'<tr>'
-						+'<td colspan="2">'
+						+'<td colspan="3">'
 						+'<textarea id="pingdetail" style="width: 100%; height: 200px;"  readOnly value="'+pingdetail+'">'+pingdetail+'</textarea>'
 						+'</td>'
 						+'</tr>'
@@ -229,20 +234,25 @@ function detail(obj) {
 					tabHtml += '<li id="tab'+count+'"><a href="#traceTab" data-toggle="tab">Trace</a></li>';
 					var tracepass = nodetestresult.tracepass ? '通过' : '未通过';
 					var tracetime = nodetestresult.tracetime;
+					var tracetimeTarget = nodetestresult.tracetimetarget;
 					var tracedetail = nodetestresult.tracepathoutmsg;
 					tabInfoHtml += '<div class="tab-pane fade tabInfo'+count+'" id="traceTab">'
 						+'<table class="table">'
+						+'<thead>'
+						+ '<tr>'
+						+'<th style="width: 30%;text-align:center;">检测项</th>'
+						+'<th style="width: 30%;text-align:center;">真实值</th>'
+						+'<th style="width: 30%;text-align:center;">目标值</th>'
+						+'</tr>'
+						+'</thead>'
 						+'<tbody class="traceTable">'
 						+'<tr>'
-						+'<th style="width: 20%">检测状态：</th>'
-						+'<td class="tableInput"><input class="" type="text" id="tracepass" readOnly value="'+tracepass+'"></td>'
+						+'<td>平均响应时间(s)</td>'
+						+'<td>'+tracetime+'</td>'
+						+'<td>'+tracetimeTarget+'</td>'
 						+'</tr>'
 						+'<tr>'
-						+'<th style="width: 20%">平均响应时间(s)：</th>'
-						+'<td class="tableInput"><input class="" type="text" id="tracetime" readOnly value="'+tracetime+'"></td>'
-						+'</tr>'
-						+'<tr>'
-						+'<td colspan="2"><textarea id="tracedetail" style="width: 100%; height: 200px;" readOnly value="'+tracedetail+'">'+tracedetail+'</textarea></td>'
+						+'<td colspan="3"><textarea id="tracedetail" style="width: 100%; height: 200px;" readOnly value="'+tracedetail+'">'+tracedetail+'</textarea></td>'
 						+'</tr>'
 						+'</tbody>'
 						+'</table>'
@@ -253,25 +263,32 @@ function detail(obj) {
 					tabHtml += '<li id="tab'+count+'"><a href="#qperfTab" data-toggle="tab">Qperf</a></li>';
 					var qperfpass = nodetestresult.qperfpass ? '通过' : '未通过';
 					var speed = nodetestresult.speed;
+					var speedTarget = nodetestresult.speedtarget;
 					var latency = nodetestresult.latency;
+					var latencyTarget = nodetestresult.latencytarget;
 					var qperfdetail = nodetestresult.qperfoutmsg;
 					tabInfoHtml += '<div class="tab-pane fade tabInfo'+count+'" id="qperfTab">'
 						+'<table class="table">'
+						+'<thead>'
+						+ '<tr>'
+						+'<th style="width: 30%;text-align:center;">检测项</th>'
+						+'<th style="width: 30%;text-align:center;">真实值</th>'
+						+'<th style="width: 30%;text-align:center;">目标值</th>'
+						+'</tr>'
+						+'</thead>'
 						+'<tbody class="qperfTable">'
 						+'<tr>'
-						+'<th style="width: 20%">检测状态：</th>'
-						+'<td class="tableInput"><input class="" type="text" id="qperfpass" readOnly value="'+qperfpass+'"></td>'
+						+'<td>带宽(MB)</td>'
+						+'<td>'+speed+'</td>'
+						+'<td>'+speedTarget+'</td>'
 						+'</tr>'
 						+'<tr>'
-						+'<th style="width: 20%">带宽(MB)：</th>'
-						+'<td class="tableInput"><input class="" type="text" id="speed" readOnly value="'+speed+'"></td>'
+						+'<td>延迟(ms)</td>'
+						+'<td>'+latency+'</td>'
+						+'<td>'+latencyTarget+'</td>'
 						+'</tr>'
 						+'<tr>'
-						+'<th style="width: 20%">延迟(ms)：</th>'
-						+'<td class="tableInput"><input class="" type="text" id="latency" readOnly value="'+latency+'"></td>'
-						+'</tr>'
-						+'<tr>'
-						+'<td colspan="2"><textarea id="qperfdetail" style="width: 100%; height: 160px;" readOnly value="'+qperfdetail+'">'+qperfdetail+'</textarea></td>'
+						+'<td colspan="3"><textarea id="qperfdetail" style="width: 100%; height: 160px;" readOnly value="'+qperfdetail+'">'+qperfdetail+'</textarea></td>'
 						+'</tr>'
 						+'</tbody>'
 						+'</table>'
@@ -282,20 +299,25 @@ function detail(obj) {
 					tabHtml += '<li id="tab'+count+'"><a href="#curlTab" data-toggle="tab">Curl</a></li>';
 					var curlpass = nodetestresult.curlpass ? '通过' : '未通过';
 					var curlavg = nodetestresult.curltime;
+					var curlavgTarget = nodetestresult.curltimetarget;
 					var curldetail = nodetestresult.curloutmsg;
 					tabInfoHtml += '<div class="tab-pane fade tabInfo'+count+'" id="curlTab">'
 						+'<table class="table">'
+						+'<thead>'
+						+ '<tr>'
+						+'<th style="width: 30%;text-align:center;">检测项</th>'
+						+'<th style="width: 30%;text-align:center;">真实值</th>'
+						+'<th style="width: 30%;text-align:center;">目标值</th>'
+						+'</tr>'
+						+'</thead>'
 						+'<tbody class="curlTable">'
 						+'<tr>'
-						+'<th style="width: 20%">检测状态：</th>'
-						+'<td class="tableInput"><input class="" type="text" id="curlpass" readOnly value="'+curlpass+'"></td>'
+						+'<td>响应时间(ms)</td>'
+						+'<td>'+curlavg+'</td>'
+						+'<td>'+curlavgTarget+'</td>'
 						+'</tr>'
 						+'<tr>'
-						+'<th style="width: 20%">响应时间(ms)：</th>'
-						+'<td class="tableInput"><input class="" type="text" id="curlavg" readOnly value="'+curlavg+'"></td>'
-						+'</tr>'
-						+'<tr>'
-						+'<td colspan="2"><textarea id="curldetail" style="width: 100%; height: 200px;" readOnly value="'+curldetail+'">'+curldetail+'</textarea></td>'
+						+'<td colspan="3"><textarea id="curldetail" style="width: 100%; height: 200px;" readOnly value="'+curldetail+'">'+curldetail+'</textarea></td>'
 						+'</tr>'
 						+'</tbody>'
 						+'</table>'
@@ -311,87 +333,93 @@ function detail(obj) {
 					var BaseDeviceSize = nodetestresult.dockerBaseDeviceSize;
 					var BackingFilesystem = nodetestresult.dockerBackingFilesystem;
 					var Datafile=nodetestresult.dockerDatafile;
-					var DataSpaceUsed = nodetestresult.dockerDataSpaceUsed;
 					var DataSpaceTotal = nodetestresult.dockerDataSpaceTotal;
-					var DataSpaceAvailable=nodetestresult.dockerDataSpaceAvailable;
 					var Metadatafile = nodetestresult.dockerMetadatafile;
-					var MetaSpaceUsed=nodetestresult.dockerMetaSpaceUsed;
 					var MetaSpaceTotal = nodetestresult.dockerMetaSpaceTotal;
-					var MetaSpaceAvailable = nodetestresult.dockerMetaSpaceAvailable;
 					var DeferredRemovalEnable=nodetestresult.dockerDeferredRemovalEnable;
 					var UdevSyncSupported = nodetestresult.dockerUdevSyncSupported;
 					var DeferredDeletionEnable = nodetestresult.docekrDeferredDeletionEnable;
 					var DeferredDeletedDeviceCount=nodetestresult.dockerDeferredDeletedDeviceCount;
 
+					var PoolBlocksizeTarget = nodetestresult.dockerPoolBlocksizeTarget;
+					var BaseDeviceSizeTarget = nodetestresult.dockerBaseDeviceSizeTarget;
+					var BackingFilesystemTarget = nodetestresult.dockerBackingFilesystemTarget;
+					var DatafileTarget=nodetestresult.dockerDatafileTarget;
+					var DataSpaceTotalTarget = nodetestresult.dockerDataSpaceTotalTarget;
+					var MetadatafileTarget = nodetestresult.dockerMetadatafileTarget;
+					var MetaSpaceTotalTarget = nodetestresult.dockerMetaSpaceTotalTarget;
+					var DeferredRemovalEnableTarget=nodetestresult.dockerDeferredRemovalEnableTarget;
+					var UdevSyncSupportedTarget = nodetestresult.dockerUdevSyncSupportedTarget;
+					var DeferredDeletionEnableTarget = nodetestresult.docekrDeferredDeletionEnableTarget;
+					var DeferredDeletedDeviceCountTarget=nodetestresult.dockerDeferredDeletedDeviceCountTarget;
+
 					tabInfoHtml += '<div class="tab-pane fade tabInfo'+count+'" id="dockerTab">'
 						+'<table class="table">'
+						+'<thead>'
+						+ '<tr>'
+						+'<th style="width: 30%;text-align:center;">检测项</th>'
+						+'<th style="width: 30%;text-align:center;">真实值</th>'
+						+'<th style="width: 30%;text-align:center;">目标值</th>'
+						+'</tr>'
+						+'</thead>'
 						+'<tbody class="dockerTable">'
 						+'<tr>'
-						+'<th style="width: 20%">检测状态：</th>'
-						+'<td class="tableInput"><input class="" type="text" id="dockerpass" readOnly value="'+dockerpass+'"></td>'
+						+'<td style="width: 30%">Pool Blocksize(KB)</td>'
+						+'<td style="width: 30%">'+PoolBlocksize+'</td>'
+						+'<td style="width: 30%">'+PoolBlocksizeTarget+'</td>'
 						+'</tr>'
 						+'<tr>'
-						+'<th style="width: 20%">Pool Blocksize(KB)：</th>'
-						+'<td class="tableInput"><input class="" type="text" id="PoolBlocksize" readOnly value="'+PoolBlocksize+'"></td>'
+						+'<td style="width: 30%">Base Device Size(GB)</td>'
+						+'<td style="width: 30%">'+BaseDeviceSize+'</td>'
+						+'<td style="width: 30%">'+BaseDeviceSizeTarget+'</td>'
 						+'</tr>'
 						+'<tr>'
-						+'<th style="width: 20%">Base Device Size(GB)：</th>'
-						+'<td class="tableInput"><input class="" type="text" id="BaseDeviceSize" readOnly value="'+BaseDeviceSize+'"></td>'
+						+'<td style="width: 30%">Backing Filesystem</td>'
+						+'<td style="width: 30%">'+BackingFilesystem+'</td>'
+						+'<td style="width: 30%">'+BackingFilesystemTarget+'</td>'
 						+'</tr>'
 						+'<tr>'
-						+'<th style="width: 20%">Backing Filesystem：</th>'
-						+'<td class="tableInput"><input class="" type="text" id="BackingFilesystem" readOnly value="'+BackingFilesystem+'"></td>'
+						+'<td style="width: 30%">Data file</td>'
+						+'<td style="width: 30%">'+Datafile+'</td>'
+						+'<td style="width: 30%">'+DatafileTarget+'</td>'
 						+'</tr>'
 						+'<tr>'
-						+'<th style="width: 20%">Data file：</th>'
-						+'<td class="tableInput"><input class="" type="text" id="Datafile" readOnly value="'+Datafile+'"></td>'
+						+'<td style="width: 30%">Data Space Total(GB)</td>'
+						+'<td style="width: 30%">'+DataSpaceTotal+'</td>'
+						+'<td style="width: 30%">'+DataSpaceTotalTarget+'</td>'
 						+'</tr>'
 						+'<tr>'
-						+'<th style="width: 20%">Data Space Used(GB)：</th>'
-						+'<td class="tableInput"><input class="" type="text" id="DataSpaceUsed" readOnly value="'+DataSpaceUsed+'"></td>'
+						+'<td style="width: 30%">Metadata file</td>'
+						+'<td style="width: 30%">'+Metadatafile+'</td>'
+						+'<td style="width: 30%">'+MetadatafileTarget+'</td>'
 						+'</tr>'
 						+'<tr>'
-						+'<th style="width: 20%">Data Space Total(GB)：</th>'
-						+'<td class="tableInput"><input class="" type="text" id="DataSpaceTotal" readOnly value="'+DataSpaceTotal+'"></td>'
+						+'<td style="width: 30%">Meta Space Total(GB)</td>'
+						+'<td style="width: 30%">'+MetaSpaceTotal+'</td>'
+						+'<td style="width: 30%">'+MetaSpaceTotalTarget+'</td>'
 						+'</tr>'
 						+'<tr>'
-						+'<th style="width: 20%">Data Space Available(GB)：</th>'
-						+'<td class="tableInput"><input class="" type="text" id="DataSpaceAvailable" readOnly value="'+DataSpaceAvailable+'"></td>'
+						+'<td style="width: 30%">Deferred Removal Enable</td>'
+						+'<td >'+DeferredRemovalEnable+'</td>'
+						+'<td >'+DeferredRemovalEnableTarget+'</td>'
 						+'</tr>'
 						+'<tr>'
-						+'<th style="width: 20%">Metadata file：</th>'
-						+'<td class="tableInput"><input class="" type="text" id="Metadatafile" readOnly value="'+Metadatafile+'"></td>'
+						+'<td >Udev Sync Supported</td>'
+						+'<td>'+UdevSyncSupported+'</td>'
+						+'<td>'+UdevSyncSupportedTarget+'</td>'
 						+'</tr>'
 						+'<tr>'
-						+'<th style="width: 20%">Meta Space Used(MB)：</th>'
-						+'<td class="tableInput"><input class="" type="text" id="MetaSpaceUsed" readOnly value="'+MetaSpaceUsed+'"></td>'
+						+'<td >Deferred Deletion Enable</td>'
+						+'<td >'+DeferredDeletionEnable+'</td>'
+						+'<td >'+DeferredDeletionEnableTarget+'</td>'
 						+'</tr>'
 						+'<tr>'
-						+'<th style="width: 20%">Meta Space Total(GB)：</th>'
-						+'<td class="tableInput"><input class="" type="text" id="MetaSpaceTotal" readOnly value="'+MetaSpaceTotal+'"></td>'
+						+'<td>Deferred Deleted Device Count</td>'
+						+'<td>'+DeferredDeletedDeviceCount+'</td>'
+						+'<td>'+DeferredDeletedDeviceCountTarget+'</td>'
 						+'</tr>'
 						+'<tr>'
-						+'<th style="width: 44%">Meta Space Available(KB)：</th>'
-						+'<td class="tableInput"><input class="" type="text" id="MetaSpaceAvailable" readOnly value="'+MetaSpaceAvailable+'"></td>'
-						+'</tr>'
-						+'<tr>'
-						+'<th style="width: 44%">Deferred Removal Enable：</th>'
-						+'<td class="tableInput"><input class="" type="text" id="DeferredRemovalEnable" readOnly value="'+DeferredRemovalEnable+'"></td>'
-						+'</tr>'
-						+'<tr>'
-						+'<th style="width: 44%">Udev Sync Supported：</th>'
-						+'<td class="tableInput"><input class="" type="text" id="UdevSyncSupported" readOnly value="'+UdevSyncSupported+'"></td>'
-						+'</tr>'
-						+'<tr>'
-						+'<th style="width: 44%">Deferred Deletion Enable：</th>'
-						+'<td class="tableInput"><input class="" type="text" id="DeferredDeletionEnable" readOnly value="'+DeferredDeletionEnable+'"></td>'
-						+'</tr>'
-						+'<tr>'
-						+'<th style="width: 44%">Deferred Deleted Device Count：</th>'
-						+'<td class="tableInput"><input class="" type="text" id="DeferredDeletedDeviceCount" readOnly value="'+DeferredDeletedDeviceCount+'"></td>'
-						+'</tr>'
-						+'<tr>'
-						+'<td colspan="2"><textarea id="dockerdetail" style="width: 100%; height: 200px;" readOnly value="'+dockerdetail+'">'+dockerdetail+'</textarea></td>'
+						+'<td colspan="3"><textarea id="dockerdetail" style="width: 100%; height: 200px;" readOnly value="'+dockerdetail+'">'+dockerdetail+'</textarea></td>'
 						+'</tr>'
 						+'</tbody>'
 						+'</table>'
@@ -455,7 +483,7 @@ function  clearDetailData(){
 
 	$('#qperfstatus').val('');
 	$('#qperfpass').val('');
-	$('#speed').val('');
+	$('#speed2').val('');
 	$('#latency').val('');
 	$('#qperfdetail').html('');
 
@@ -465,7 +493,7 @@ function  clearDetailData(){
 	$('#curldetail').html('');
 
 	$('#dockerstatus').val('');
-	$('#memory').val('');
+	//$('#memory').val('');
 	$('#dockerpass').val('');
 	$('#dockerdetail').html('');
 
@@ -927,7 +955,7 @@ function testNodes(obj){
 						$("#tracepathtime").val(nodetestresult.tracetimetarget);
 					}
 					if(qperfitem){
-						$("#qperf").val(nodetestresult.speedtarget);
+						$("#speed").val(nodetestresult.speedtarget);
 						$("#qperftime").val(nodetestresult.latencytarget);
 					}
 					if(curlitem){
@@ -938,13 +966,13 @@ function testNodes(obj){
 						$("#BaseDeviceSizeTarget").val(nodetestresult.dockerBaseDeviceSizeTarget);
 						$("#BackingFilesystemTarget").val(nodetestresult.dockerBackingFilesystemTarget);
 						$("#DatafileTarget").val(nodetestresult.dockerDatafileTarget);
-						$("#MetaSpaceUsedTarget").val(nodetestresult.dockerMetaSpaceUsedTarget);
-						$("#MetaSpaceAvailableTarget").val(nodetestresult.dockerMetaSpaceAvailableTarget);
+						//$("#MetaSpaceUsedTarget").val(nodetestresult.dockerMetaSpaceUsedTarget);
+						//$("#MetaSpaceAvailableTarget").val(nodetestresult.dockerMetaSpaceAvailableTarget);
 						$("#DeferredRemovalEnableTarget").val(nodetestresult.dockerDeferredRemovalEnableTarget==false?'false':'true');
 						$("#MetadatafileTarget").val(nodetestresult.dockerMetadatafileTarget);
-						$("#DataSpaceUsedTarget").val(nodetestresult.dockerDataSpaceUsedTarget);
+						//$("#DataSpaceUsedTarget").val(nodetestresult.dockerDataSpaceUsedTarget);
 						$("#DataSpaceTotalTarget").val(nodetestresult.dockerDataSpaceTotalTarget);
-						$("#DataSpaceAvailableTarget").val(nodetestresult.dockerDataSpaceAvailableTarget);
+						//$("#DataSpaceAvailableTarget").val(nodetestresult.dockerDataSpaceAvailableTarget);
 						$("#MetaSpaceTotalTarget").val(nodetestresult.dockerMetaSpaceTotalTarget);
 						$("#UdevSyncSupportedTarget").val(nodetestresult.dockerUdevSyncSupportedTarget==false?'false':'true');
 						$("#DeferredDeletionEnableTarget").val(nodetestresult.docekrDeferredDeletionEnableTarget==false?'false':'true');
@@ -952,49 +980,49 @@ function testNodes(obj){
 					}
 				}
 
-			}
-		})
-	}
-
-	if(flag == true){
-		layer.open({
-			type : 1,
-			title : '检测项信息',
-			content : $("#chkitem"),
-			area : [ '600px','500px' ],
-			btn :  [ '确定', '取消' ],
-			yes : function(index, layero) {
-				if (!checkitems()) {
-					return;// 校验没通过
-				}
-				layer.close(index);
-				//遮挡层
-				var loading = layer.load(0,{shade : [ 0.3, '#000' ]});
-				//假同步执行清理节点
-				var deferClear = $.Deferred();
-				deferClear.resolve();
-				$.each(selectednodes,function(i,e){
-
-
-					deferClear = deferClear.then(function () {
-					    return $.ajax({
-							url:ctx + "/cluster/deleteTestInfo?nodename="+e,
-							type:"get",
-							success:function(){
-								console.log("清理节点"+i+"==="+e);//TODO
-
+				if(flag == true){
+					layer.open({
+						type : 1,
+						title : '检测项信息',
+						content : $("#chkitem"),
+						area : [ '600px','500px' ],
+						btn :  [ '确定', '取消' ],
+						yes : function(index, layero) {
+							if (!checkitems()) {
+								return;// 校验没通过
 							}
-						})
-				  });
-				});
-				deferClear.done(function(){
-					var deferTest = $.Deferred();
-					deferTest.resolve();
-					times(selectednodes,0);
-				});
+							layer.close(index);
+							//遮挡层
+							var loading = layer.load(0,{shade : [ 0.3, '#000' ]});
+							//假同步执行清理节点
+							var deferClear = $.Deferred();
+							deferClear.resolve();
+							$.each(selectednodes,function(i,e){
+
+
+								deferClear = deferClear.then(function () {
+								    return $.ajax({
+										url:ctx + "/cluster/deleteTestInfo?nodename="+e,
+										type:"get",
+										success:function(){
+											console.log("清理节点"+i+"==="+e);//TODO
+
+										}
+									})
+							  });
+							});
+							deferClear.done(function(){
+								var deferTest = $.Deferred();
+								deferTest.resolve();
+								times(selectednodes,0);
+							});
+						}
+					})
+				}
 			}
 		})
 	}
+
 }
 function times(selectednodes,j){
 	if(j >= selectednodes.length){
@@ -1013,13 +1041,13 @@ function times(selectednodes,j){
 	var dockerBaseDeviceSize  = $("#BaseDeviceSizeTarget").val()=="" ? 0 : $("#BaseDeviceSizeTarget").val();
 	var dockerBackingFilesystem = $("#BackingFilesystemTarget").val();
 	var dockerDatafile = $("#DatafileTarget").val();
-	var dockerMetaSpaceUsed  = $("#MetaSpaceUsedTarget").val()=="" ? 0 : $("#MetaSpaceUsedTarget").val();
-	var dockerMetaSpaceAvailable = $("#MetaSpaceAvailableTarget").val()=="" ? 0 : $("#MetaSpaceAvailableTarget").val();
+	//var dockerMetaSpaceUsed  = $("#MetaSpaceUsedTarget").val()=="" ? 0 : $("#MetaSpaceUsedTarget").val();
+	//var dockerMetaSpaceAvailable = $("#MetaSpaceAvailableTarget").val()=="" ? 0 : $("#MetaSpaceAvailableTarget").val();
 	var dockerDeferredRemovalEnable = $("#DeferredRemovalEnableTarget").val();
 	var dockerMetadatafile = $("#MetadatafileTarget").val();
-	var dockerDataSpaceUsed = $("#DataSpaceUsedTarget").val()=="" ? 0 : $("#DataSpaceUsedTarget").val();
+	//var dockerDataSpaceUsed = $("#DataSpaceUsedTarget").val()=="" ? 0 : $("#DataSpaceUsedTarget").val();
 	var dockerDataSpaceTotal = $("#DataSpaceTotalTarget").val()=="" ? 0 : $("#DataSpaceTotalTarget").val();
-	var dockerDataSpaceAvailable = $("#DataSpaceAvailableTarget").val()=="" ? 0 : $("#DataSpaceAvailableTarget").val();
+	//var dockerDataSpaceAvailable = $("#DataSpaceAvailableTarget").val()=="" ? 0 : $("#DataSpaceAvailableTarget").val();
 	var dockerMetaSpaceTotal = $("#MetaSpaceTotalTarget").val()=="" ? 0 : $("#MetaSpaceTotalTarget").val();
 	var dockerUdevSyncSupported = $("#UdevSyncSupportedTarget").val();
 	var docekrDeferredDeletionEnable = $("#DeferredDeletionEnableTarget").val();
@@ -1039,13 +1067,13 @@ function times(selectednodes,j){
 			"dockerBaseDeviceSizeTarget":dockerBaseDeviceSize, //0
 			"dockerBackingFilesystemTarget":dockerBackingFilesystem,
 			"dockerDatafileTarget":dockerDatafile,
-			"dockerMetaSpaceUsedTarget":dockerMetaSpaceUsed, //0
-			"dockerMetaSpaceAvailableTarget":dockerMetaSpaceAvailable, //0
+			//"dockerMetaSpaceUsedTarget":dockerMetaSpaceUsed, //0
+			//"dockerMetaSpaceAvailableTarget":dockerMetaSpaceAvailable, //0
 			"dockerDeferredRemovalEnableTarget":dockerDeferredRemovalEnable,
 			"dockerMetadatafileTarget":dockerMetadatafile,
-			"dockerDataSpaceUsedTarget":dockerDataSpaceUsed, //0
+			//"dockerDataSpaceUsedTarget":dockerDataSpaceUsed, //0
 			"dockerDataSpaceTotalTarget":dockerDataSpaceTotal, //0
-			"dockerDataSpaceAvailableTarget":dockerDataSpaceAvailable, //0
+			//"dockerDataSpaceAvailableTarget":dockerDataSpaceAvailable, //0
 			"dockerMetaSpaceTotalTarget":dockerMetaSpaceTotal, //0
 			"dockerUdevSyncSupportedTarget":dockerUdevSyncSupported,
 			"docekrDeferredDeletionEnableTarget":docekrDeferredDeletionEnable,
