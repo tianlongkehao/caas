@@ -33,6 +33,8 @@ import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
 import com.bonc.epm.paas.kubernetes.exceptions.Status;
 import com.bonc.epm.paas.kubernetes.model.HorizontalPodAutoscaler;
 import com.bonc.epm.paas.kubernetes.model.HorizontalPodAutoscalerList;
+import com.bonc.epm.paas.kubernetes.model.StatefulSet;
+import com.bonc.epm.paas.kubernetes.model.StatefulSetList;
 
 public interface KubernetesAPIS {
 
@@ -120,4 +122,91 @@ public interface KubernetesAPIS {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public HorizontalPodAutoscalerList listAllHorizontalPodAutoscalers() throws KubernetesClientException;
 
+	/**
+	 * createStatefulSet:create a StatefulSet. <br/>
+	 *
+	 * @param namespace
+	 * @param statefulSet
+	 * @return
+	 * @throws KubernetesClientException StatefulSet
+	 */
+	@POST
+	@Path("/apps/v1beta1/namespaces/{namespace}/statefulsets")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public StatefulSet createStatefulSet(@PathParam("namespace")String namespace, StatefulSet statefulSet) throws KubernetesClientException;
+
+	/**
+	 * replaceStatefulSet:replace the specified StatefulSet. <br/>
+	 *
+	 * @param namespace
+	 * @param name
+	 * @param statefulSet
+	 * @return
+	 * @throws KubernetesClientException StatefulSet
+	 */
+	@PUT
+	@Path("/apps/v1beta1/namespaces/{namespace}/statefulsets/{name}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public StatefulSet replaceStatefulSet(@PathParam("namespace")String namespace, @PathParam("name")String name, StatefulSet statefulSet) throws KubernetesClientException;
+
+	/**
+	 * deleteStatefulSet:delete a StatefulSet. <br/>
+	 *
+	 * @param namespace
+	 * @param name
+	 * @return
+	 * @throws KubernetesClientException StatefulSet
+	 */
+	@DELETE
+	@Path("/apps/v1beta1/namespaces/{namespace}/statefulsets/{name}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Status deleteStatefulSet(@PathParam("namespace")String namespace, @PathParam("name")String name) throws KubernetesClientException;
+
+	/**
+	 * deleteStatefulSets:delete collection of StatefulSet. <br/>
+	 *
+	 * @param namespace
+	 * @return
+	 * @throws KubernetesClientException StatefulSet
+	 */
+	@DELETE
+	@Path("/apps/v1beta1/namespaces/{namespace}/statefulsets")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Status deleteStatefulSets(@PathParam("namespace")String namespace) throws KubernetesClientException;
+
+	/**
+	 * getStatefulSets:read the specified StatefulSet. <br/>
+	 *
+	 * @param namespace
+	 * @param name
+	 * @return
+	 * @throws KubernetesClientException StatefulSet
+	 */
+	@GET
+	@Path("/apps/v1beta1/namespaces/{namespace}/statefulsets/{name}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public StatefulSet getStatefulSet(@PathParam("namespace")String namespace, @PathParam("name")String name) throws KubernetesClientException;
+
+	/**
+	 * getStatefulSets:list objects of kind StatefulSet. <br/>
+	 *
+	 * @param namespace
+	 * @return
+	 * @throws KubernetesClientException StatefulSetList
+	 */
+	@GET
+	@Path("/apps/v1beta1/namespaces/{namespace}/statefulsets")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public StatefulSetList getStatefulSets(@PathParam("namespace")String namespace) throws KubernetesClientException;
+
+	/**
+	 * getStatefulSets:list objects of kind StatefulSet. <br/>
+	 *
+	 * @return
+	 * @throws KubernetesClientException StatefulSetList
+	 */
+	@GET
+	@Path("/apps/v1beta1/statefulsets")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public StatefulSetList getStatefulSets() throws KubernetesClientException;
 }
