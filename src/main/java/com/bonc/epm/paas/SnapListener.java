@@ -28,14 +28,14 @@ public class SnapListener implements ApplicationListener<ContextRefreshedEvent> 
 
 	@Override
 	public void onApplicationEvent(ContextRefreshedEvent arg0) {
-		System.out.println("*********************正在加载快照策略********************");
+		System.out.println("****************************正在加载快照策略****************************");
 		map = new HashMap<CephRbdInfo, Timer>();
 		snapStrategyDao = SpringApplicationContext.getBean(SnapStrategyDao.class);
 		cephRbdInfoDao = SpringApplicationContext.getBean(CephRbdInfoDao.class);
 		Iterable<CephRbdInfo> iterable = cephRbdInfoDao.findAll();
 		Iterator<CephRbdInfo> iterator = iterable.iterator();
-		Calendar calendar = Calendar.getInstance();
-		Date now = calendar.getTime();
+		Calendar nowcalendar = Calendar.getInstance();
+		Date now = nowcalendar.getTime();
 		while (iterator.hasNext()) {
 			CephRbdInfo cephRbdInfo = iterator.next();
 			if (cephRbdInfo.getStrategyId() != 0 && cephRbdInfo.isStrategyexcuting()) {
@@ -51,10 +51,13 @@ public class SnapListener implements ApplicationListener<ContextRefreshedEvent> 
 
 					String[] times = snapStrategy.getTime().split(",");
 					if (times.length != 0) {
+						System.out.println("+++++++++++++++++正在加载"+cephRbdInfo.getName()+"块+++++++++++++++");
+
 						Timer timer = new Timer();
 						for (String time : times) {
 							SnapTask snapTask = new SnapTask(cephRbdInfo, snapStrategy);
 
+							Calendar calendar = Calendar.getInstance();
 							calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(time));
 							calendar.set(Calendar.MINUTE, 0);
 							calendar.set(Calendar.SECOND, 0);
@@ -65,17 +68,21 @@ public class SnapListener implements ApplicationListener<ContextRefreshedEvent> 
 
 							if (now.before(date)) {
 								timer.scheduleAtFixedRate(snapTask, date, 24l * 3600l * 1000l);// 第一次时间是今天某一刻，周期为一天
+								System.out.println("---------------拍照开始时间:"+date+"-----------");
 							} else {
 								timer.scheduleAtFixedRate(snapTask, tomorrow, 24l * 3600l * 1000l);
+								System.out.println("---------------拍照开始时间:"+tomorrow+"-----------");
 							}
 
 						}
 						map.put(cephRbdInfo, timer);
+
+						System.out.println("+++++++++++++++++++"+cephRbdInfo.getName()+"块加载完成!+++++++++++++++++");
 					}
 				}
 			}
 		}
-		System.out.println("*********************加载快照策略完成！********************");
+		System.out.println("*************************加载快照策略完成！***********************");
 	}
 
 	// 删除快照任务
@@ -105,8 +112,8 @@ public class SnapListener implements ApplicationListener<ContextRefreshedEvent> 
 		}
 		if (cephRbdInfo.getStrategyId() != 0) {
 			if (snapStrategy != null) {
-				Calendar calendar = Calendar.getInstance();
-				Date now = calendar.getTime();
+				Calendar nowcalendar = Calendar.getInstance();
+				Date now = nowcalendar.getTime();
 				Date endDate = snapStrategy.getEndData();
 				if (now.after(endDate)) { // 已经到期
 					return false;
@@ -120,6 +127,7 @@ public class SnapListener implements ApplicationListener<ContextRefreshedEvent> 
 					for (String time : times) {
 						SnapTask snapTask = new SnapTask(cephRbdInfo, snapStrategy);
 
+						Calendar calendar =Calendar.getInstance();
 						calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(time));
 						calendar.set(Calendar.MINUTE, 0);
 						calendar.set(Calendar.SECOND, 0);
@@ -130,10 +138,10 @@ public class SnapListener implements ApplicationListener<ContextRefreshedEvent> 
 
 						if (now.before(date)) {
 							timer.scheduleAtFixedRate(snapTask, date, 24l * 3600l * 1000l);// 第一次时间是今天某一刻，周期为一天
-							System.out.println("---------------拍照时间:"+date+"-----------");
+							System.out.println("---------------拍照开始时间:"+date+"-----------");
 						} else {
 							timer.scheduleAtFixedRate(snapTask, tomorrow, 24l * 3600l * 1000l);
-							System.out.println("---------------拍照时间:"+tomorrow+"-----------");
+							System.out.println("---------------拍照开始时间:"+tomorrow+"-----------");
 						}
 
 					}
