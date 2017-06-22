@@ -26,7 +26,7 @@ function loadSnapList(){
 								+'<a onclick="storageRollBack(this)" imgId ='+snap.imgId+' rbd="'+snap.imgname+'" snap="'+snap.name+'" title="回滚磁盘">'
 							    +	'<i class="fa fa-history fa-opr"></i>'
 							    +'</a>'
-							    +'<a onclick="deletesnap(this)" rbd="${snap.imgname}" snap="${snap.name}">'
+							    +'<a onclick="deletesnap(this)" rbd="'+snap.imgname+'" snap="'+snap.name+'">'
 							   	+	 '<i class="fa fa-trash fa-opr" title="删除快照"></i>'
 							    +'</a>'
 							    +'</td>'
