@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.ws.rs.GET;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -1744,13 +1746,31 @@ public class CephController {
 	}
 
 	/**
-	 * 块存储主页面 管理员获取所有，租户和用户分别获取自己创建的，用户不共享租户的块设备
+	 * 块存储主页面
 	 *
 	 * @param model
 	 * @return
 	 */
 	@RequestMapping(value = { "storage/storageBlock" }, method = RequestMethod.GET)
 	public String storageQuick(Model model) {
+		User user = CurrentUserUtils.getInstance().getUser();
+		UserResource userResource = userResourceDao.findByUserId(user.getId());
+
+		model.addAttribute("userResource", userResource);
+		model.addAttribute("menu_flag", "storage");
+		model.addAttribute("li_flag", "storageBlock");
+		return "storage/storage-block.jsp";
+	}
+
+	/**
+	 * 获取块设备数据
+	 * 管理员获取所有，租户和用户分别获取自己创建的，用户不共享租户的块设备
+	 * @return
+	 */
+	@RequestMapping(value = { "storage/rbdList" }, method = RequestMethod.GET)
+	@ResponseBody
+	public String getRbdList(){
+		Map<String, Object> map = new HashMap<>();
 		User user = CurrentUserUtils.getInstance().getUser();
 		List<CephRbdInfo> cephRbdInfos = null;
 		if (user.getUser_autority().equals(UserConstant.AUTORITY_MANAGER)) {
@@ -1773,23 +1793,34 @@ public class CephController {
 			 */
 		}
 
-		UserResource userResource = userResourceDao.findByUserId(user.getId());
-
-		model.addAttribute("userResource", userResource);
-		model.addAttribute("cephRbdInfos", cephRbdInfos);
-		model.addAttribute("menu_flag", "storage");
-		model.addAttribute("li_flag", "storageBlock");
-		return "storage/storage-block.jsp";
+		map.put("cephRbdInfos", cephRbdInfos);
+		map.put("status", 200);
+		return JSON.toJSONString(map);
 	}
 
 	/**
-	 * 快照主页面 管理员获取所有，租户获取租户自建，用户获取用户自建
+	 * 快照主页面
 	 *
 	 * @param model
 	 * @return
 	 */
 	@RequestMapping(value = { "storage/storageSnap" }, method = RequestMethod.GET)
 	public String storageSnap(Model model) {
+
+		model.addAttribute("menu_flag", "storage");
+		model.addAttribute("li_flag", "storageSnap");
+		return "storage/storage-snap.jsp";
+	}
+
+	/**
+	 * 获取快照数据
+	 * 管理员获取所有，租户获取租户自建，用户获取用户自建
+	 * @return
+	 */
+	@RequestMapping(value = { "storage/snapList" }, method = RequestMethod.GET)
+	@ResponseBody
+	public String getSnapList(){
+		Map<String, Object> map = new HashMap<>();
 		User user = CurrentUserUtils.getInstance().getUser();
 		List<CephSnap> cephSnaps = new ArrayList<CephSnap>();
 		if (user.getUser_autority().equals(UserConstant.AUTORITY_MANAGER)) {
@@ -1809,10 +1840,9 @@ public class CephController {
 			}
 		}
 
-		model.addAttribute("cephSnaps", cephSnaps);
-		model.addAttribute("menu_flag", "storage");
-		model.addAttribute("li_flag", "storageSnap");
-		return "storage/storage-snap.jsp";
+		map.put("cephSnaps", cephSnaps);
+		map.put("status", 200);
+		return JSON.toJSONString(map);
 	}
 
 	/**

@@ -46,15 +46,18 @@
 										class="table table-stripped table-hover dataTables-example">
 										<thead>
 											<tr>
-												<th style="width: 20%; text-indent: 20px;">快照名称</th>
-												<th style="width: 20%">磁盘名称</th>
+												<th style="width:5%;text-indent:30px">
+												<input type="checkbox" class="chkAll" id="checkallbox" />
+												</th>
+												<th style="width: 20%;">快照名称</th>
+												<th style="width: 20%;">磁盘名称</th>
 												<th style="width: 20%;">创建时间</th>
 												<th style="width: 20%;">快照描述</th>
 												<th style="text-indent: 5px;" class="del-operation">操作</th>
 											</tr>
 										</thead>
 										<tbody id="snapList">
-											<c:forEach items="${cephSnaps}" var="snap">
+											<%-- <c:forEach items="${cephSnaps}" var="snap">
 												<tr>
 													<td style="width: 20%; text-indent: 20px;">${snap.name}</td>
 													<td style="width: 20%">${snap.imgname}</td>
@@ -69,11 +72,11 @@
 													    </a>
 													</td>
 												</tr>
-											</c:forEach>
+											</c:forEach> --%>
 										</tbody>
 										<tfoot class="hide">
 											<tr>
-												<td colspan="11">
+												<td colspan="6">
 													<ul class="pagination pull-right"></ul>
 												</td>
 											</tr>
@@ -90,13 +93,13 @@
 	</div>
 
 	<script type="text/javascript">
-		$('.dataTables-example').dataTable({
+		/* $('.dataTables-example').dataTable({
 			"aoColumnDefs" : [ {
 				"bSortable" : false,
 				"aTargets" : [ 10 ]
 			} ],
 		});
-		$("#checkallbox").parent().removeClass("sorting_asc");
+		$("#checkallbox").parent().removeClass("sorting_asc"); */
 	</script>
 
 </body>

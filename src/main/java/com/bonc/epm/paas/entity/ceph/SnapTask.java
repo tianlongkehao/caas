@@ -36,7 +36,9 @@ public class SnapTask extends TimerTask {
 						if (day == Integer.parseInt(w)) {
 							/*cephController.autoCreateSnap(cephRbdInfo.getPool(), cephRbdInfo.getName(),
 									cephRbdInfo.getName() + UUID.randomUUID().toString(), "快照策略自动拍照" + date.toString());*/
+							System.out.println("***************************定时快照任务执行*******************************");
 							cephController.autoCreateSnap(cephRbdInfo);
+							System.out.println("***************************快照任务执行完成*******************************");
 							break;
 						}
 					}

@@ -1,6 +1,50 @@
 $(function(){
-
+   loadSnapList();
 })
+
+//加载快照列表
+function loadSnapList(){
+	$.ajax({
+		url:""+ctx+"/storage/snapList",
+		type:"get",
+		success:function(data){
+        var data = eval("("+data+")");
+		if(data.status == 200) {
+        	var itemsHtml = '';
+        	var len = data.cephSnaps.length;
+        	for(var i=0; i<len; i++){
+        			var snap = data.cephSnaps[i];
+        			itemsHtml += '<tr>'
+        						+'<td style="width: 5%; text-indent:30px">'
+        						+'<input class="chkItem" type="checkbox" id="'+snap.id+'">'
+        						+'</td>'
+        						+'<td>'+snap.name+'</td>'
+        						+'<td>'+snap.imgname+'</td>'
+        						+'<td>'+snap.createDate+'</td>'
+        						+'<td>'+snap.snapdetail+'</td>'
+        						+'<td style="text-indent: 5px;" class="del-operation">'
+								+'<a onclick="storageRollBack(this)" imgId ='+snap.imgId+' rbd="'+snap.imgname+'" snap="'+snap.name+'" title="回滚磁盘">'
+							    +	'<i class="fa fa-history"></i>'
+							    +'</a>'
+							    +'<a onclick="deletesnap(this)" rbd="${snap.imgname}" snap="${snap.name}">'
+							   	+	 '<i class="fa fa-trash fa-opr" title="删除快照"></i>'
+							    +'</a>'
+							    +'</td>'
+        				        +'</tr>';
+        	}
+        	$("#snapList").empty().append(itemsHtml);
+		}
+		$('.dataTables-example').dataTable({
+			"aoColumnDefs" : [ {
+				"bSortable" : false,
+				"aTargets" : [ 0,4,5 ]
+			} ],
+			"aaSorting": [[ 3, "desc" ]]
+		});
+		$("#checkallbox").parent().removeClass("sorting_asc");
+		}
+	});
+}
 
 function storageRollBack(obj){
 	var snap = $(obj).attr("snap");

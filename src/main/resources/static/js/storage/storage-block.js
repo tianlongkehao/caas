@@ -1,5 +1,5 @@
 $(function(){
-	//loadStorageList();
+	loadStorageList();
 	$("#storageQuickAdd").click(function(){
 		var reg = /^[0-9a-zA-Z]+$/;//正则表达式，名称只能为数字和字母，或者两者的组合
 
@@ -102,54 +102,57 @@ $(function(){
     });
 })
 
-/*function loadStorageList(){
+//加载数据表格
+function loadStorageList(){
 	$.ajax({
-		url:""+ctx+"/service/storageList",
-		type:"post",
-		data:{pageable:"pageable"},
+		url:""+ctx+"/storage/rbdList",
+		type:"get",
 		success:function(data){
         var data = eval("("+data+")");
 		if(data.status == 200) {
         	var itemsHtml = '';
-        	var len = data.storages.length;
+        	var len = data.cephRbdInfos.length;
         	for(var i=0; i<len; i++){
-        			var storage = data.storages[i];
-        			var useType = storage.useType ==1 ? "未使用" : "使用" ;
-
-        			if(storage.mountPoint == null || storage.mountPoint == ""){
-        				storage.mountPoint = "未挂载";
-        			}
-        			itemsHtml += ' <tr class="ci-listTr" style="cursor:auto">'+
-        							'<td style="width: 5%; text-indent: 30px;"><input type="checkbox" class="chkItem" name="chkItem" value='+storage.id+' /></td>'+
-        							' <td style="width: 15%; text-indent:30px;" id = "storageName">'+
-        							'<a href="'+ctx+'/service/storage/detail/'+storage.id+'" title="查看详细信息">'+storage.storageName +'</a>'+
-        							'</td>'+
-        							' <td style="width: 15%; text-indent:15px;"  class="cStatusColumn">' +
-        								useType +
-        							' </td>'+
-        							//' <td style="width: 10%;">' + storage.format + '</td>'+
-        							' <td style="width: 15%; text-indent:8px;word-wrap:break-word;word-break:break-all;">' + storage.mountPoint + '</td>'+
-        							' <td style="width: 15%; text-indent:10px;">' + storage.storageSize + ' M</td>'+
-        							' <td style="width: 15%;">' + storage.createDate + '</td>'+
-        							' <td style="width: 10%; text-indent:5px;">' +
-        							' <a class="format formatStorage" title="格式化" storageName="'+storage.storageName +'" isVolReadOnly="'+storage.volReadOnly+'"><i class="fa fa-eraser"></i></a>'+
-    									' <a class="dilation dilatationStorage" style="margin-left: 5px" title="扩容" storageId="'+storage.id +'" storageSize="'+ storage.storageSize +'" storageName="' + storage.storageName +'"><i class="fa fa-arrows"></i></a>'+
-    									' <a class="delete deleteStorage" style="margin-left: 5px" title="删除" storageId="'+storage.id +'"><i class="fa fa-trash"></i></a>'+
-        							'</td>'+
-        						+'</tr>';
+        			var rbd = data.cephRbdInfos[i];
+        			itemsHtml += '<tr>'
+        						+'<td style="width: 5%; text-indent:30px">'
+        						+'<input class="chkItem" type="checkbox" id="'+rbd.id+'">'
+        						+'</td>'
+        						+'<td>'+rbd.name+'</td>'
+        						+'<td>'+rbd.size+'</td>'
+        						+'<td>'+(rbd.used==true?'已挂载':'未挂载')+'</td>'
+        						+'<td>'+rbd.detail+'</td>'
+        						+ '<td class="item-operation" rbdId='+rbd.id+' rbd="'+rbd.name+'" size="'+rbd.size +'" detail="'+rbd.detail +'" release="'+rbd.releaseWhenServiceDown+'">'
+                            	+'<a onclick="createSnapshoot(this)"><i class="fa fa-camera fa-opr" title="创建快照" style="margin-left:0px"></i></a>'
+                            	+'<a onclick="createStrategy(this)"><i class="fa fa-tasks fa-opr" title="设置自动快照策略"></i></a>'
+                            	+'<a onclick="formatStrategy(this)"><i class="fa fa-eraser fa-opr" title="重新初始化磁盘"></i></a>'
+                            	+'<ul class="moreFun" style="margin-bottom:0px;line-height:40px;">'
+								+	'<li class="dropdown ">'
+								+		'<a class="dropdown-toggle a-live" data-toggle="dropdown">'
+								+		'<i class="fa fa-gears fa-opr"></i></a>'
+								+		'<ul class="dropdown-menu" style="margin-left:-20px;margin-top:40px">'
+								+			'<li onclick="releaseStorage(this)"><a>释放</a></li>'
+								+			'<li onclick="changeDescribe(this)"><a>修改磁盘描述</a></li>'
+								+			'<li onclick="changeProperty(this)"><a>修改属性</a></li>'
+								+			'<li onclick="changeStorageSize(this)"><a>磁盘扩容</a></li>'
+								+		'</ul>'
+								+	'</li>'
+								+'</ul>'
+                                +'</td>'
+        				        +'</tr>';
         	}
-        	//$('#storageList').html(itemsHtml);
+        	$("#rbdList").empty().append(itemsHtml);
 		}
 		$('.dataTables-example').dataTable({
 			"aoColumnDefs" : [ {
 				"bSortable" : false,
-				"aTargets" : [ 0, 7 ]
-			} ],
+				"aTargets" : [ 0, 1,2,3,4,5 ]
+			} ]
 		});
 		$("#checkallbox").parent().removeClass("sorting_asc");
 		}
 	});
-}*/
+}
 
 
 
@@ -321,6 +324,13 @@ function changeStorageSize(obj){
 					return;
 				}
 
+				if((size-$("#size3").val())>$("#restVol").html()){
+					layer.tips('用户剩余资源不足，目前只剩下'+$("#restVol").html()+'G!', '#extendsize', {
+						tips : [ 1, '#0FA6D8' ]
+					});
+					$('#extendsize').focus();
+					return;
+				}
 				layer.close(index);
 				$.ajax({
  					url:""+ctx+"/ceph/updaterbdsize?rbdId="+rbdId+"&size="+size,

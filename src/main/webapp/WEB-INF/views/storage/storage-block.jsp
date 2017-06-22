@@ -47,7 +47,7 @@
 									<table class="table table-stripped table-hover dataTables-example">
 										<thead>
 											<tr>
-												<th text-indent: 30px;"><input
+												<th style="width: 5%; text-indent:30px;"><input
 													type="checkbox" autocomplete="off" class="chkAll"
 													id="checkallbox" /></th>
 												<th>磁盘名称</th>
@@ -57,44 +57,12 @@
 	                                            <th class="item-operation">操作</th>
 											</tr>
 										</thead>
-										<tbody id="storageList">
-										   <c:forEach items="${cephRbdInfos}" var="rbd">
-											<tr>
-												<td text-indent: 30px;"><input
-													type="checkbox" autocomplete="off" class="chkAll"
-													id="checkallbox" /></td>
-												<td><span class="storageName">${rbd.name }</span></td>
-	                                            <td>${rbd.size }</td>
-	                                            <c:if test="${rbd.used ==true}">
-	                                                <td>已挂载</td>
-	                                            </c:if>
-	                                            <c:if test="${rbd.used ==false}">
-	                                                <td>未挂载</td>
-	                                            </c:if>
-	                                            <td>${rbd.detail }</td>
-	                                            <td class="item-operation" rbdId=${rbd.id } rbd="${rbd.name }" size="${rbd.size }" detail="${rbd.detail }" release="${rbd.releaseWhenServiceDown }">
-	                                            	<a onclick="createSnapshoot(this)"><i class="fa fa-camera fa-opr" title="创建快照" style="margin-left:0px"></i></a>
-	                                            	<a onclick="createStrategy(this)"><i class="fa fa-tasks fa-opr" title="设置自动快照策略"></i></a>
-	                                            	<a onclick="formatStrategy(this)"><i class="fa fa-eraser fa-opr" title="重新初始化磁盘"></i></a>
-	                                            	<ul class="moreFun" style="margin-bottom:0px;line-height:40px;">
-														<li class="dropdown ">
-															<a class="dropdown-toggle a-live" data-toggle="dropdown">
-															<i class="fa fa-gears fa-opr"></i></a>
-															<ul class="dropdown-menu" style="margin-left:-20px;margin-top:40px">
-																<li onclick="releaseStorage(this)"><a>释放</a></li>
-																<li onclick="changeDescribe(this)"><a>修改磁盘描述</a></li>
-																<li onclick="changeProperty(this)"><a>修改属性</a></li>
-																<li onclick="changeStorageSize(this)"><a>磁盘扩容</a></li>
-															</ul>
-														</li>
-													</ul>
-	                                            </td>
-											</tr>
-											</c:forEach>
+										<tbody id="rbdList">
+
 										</tbody>
 										<tfoot class="hide">
 											<tr>
-												<td colspan="8">
+												<td colspan="6">
 													<ul class="pagination pull-right"></ul>
 												</td>
 											</tr>
@@ -196,42 +164,42 @@
         <li class="line-h-3">
             <span class="s-edit-name">创建时间：</span>
             <ul class="createTimeInfo">
-            	<li><label><input type="checkbox" name="time" value="0">00:00</label></li>
-            	<li><label><input type="checkbox" name="time" value="1">01:00</label></li>
-            	<li><label><input type="checkbox" name="time" value="2">02:00</label></li>
-            	<li><label><input type="checkbox" name="time" value="3">03:00</label></li>
-            	<li><label><input type="checkbox" name="time" value="4">04:00</label></li>
-            	<li><label><input type="checkbox" name="time" value="5">05:00</label></li>
-            	<li><label><input type="checkbox" name="time" value="6">06:00</label></li>
-            	<li><label><input type="checkbox" name="time" value="7">07:00</label></li>
-            	<li><label><input type="checkbox" name="time" value="8">08:00</label></li>
-            	<li><label><input type="checkbox" name="time" value="9">09:00</label></li>
-            	<li><label><input type="checkbox" name="time" value="10">10:00</label></li>
-            	<li><label><input type="checkbox" name="time" value="11">11:00</label></li>
-            	<li><label><input type="checkbox" name="time" value="12">12:00</label></li>
-            	<li><label><input type="checkbox" name="time" value="13">13:00</label></li>
-            	<li><label><input type="checkbox" name="time" value="14">14:00</label></li>
-            	<li><label><input type="checkbox" name="time" value="15">15:00</label></li>
-            	<li><label><input type="checkbox" name="time" value="16">16:00</label></li>
-            	<li><label><input type="checkbox" name="time" value="17">17:00</label></li>
-            	<li><label><input type="checkbox" name="time" value="18">18:00</label></li>
-            	<li><label><input type="checkbox" name="time" value="19">19:00</label></li>
-            	<li><label><input type="checkbox" name="time" value="20">20:00</label></li>
-            	<li><label><input type="checkbox" name="time" value="21">21:00</label></li>
-            	<li><label><input type="checkbox" name="time" value="22">22:00</label></li>
-            	<li><label><input type="checkbox" name="time" value="23">23:00</label></li>
+            	<li><label><input type="checkbox" name="time" value="0" disabled="disabled">00:00</label></li>
+            	<li><label><input type="checkbox" name="time" value="1" disabled="disabled">01:00</label></li>
+            	<li><label><input type="checkbox" name="time" value="2" disabled="disabled">02:00</label></li>
+            	<li><label><input type="checkbox" name="time" value="3" disabled="disabled">03:00</label></li>
+            	<li><label><input type="checkbox" name="time" value="4" disabled="disabled">04:00</label></li>
+            	<li><label><input type="checkbox" name="time" value="5" disabled="disabled">05:00</label></li>
+            	<li><label><input type="checkbox" name="time" value="6" disabled="disabled">06:00</label></li>
+            	<li><label><input type="checkbox" name="time" value="7" disabled="disabled">07:00</label></li>
+            	<li><label><input type="checkbox" name="time" value="8" disabled="disabled">08:00</label></li>
+            	<li><label><input type="checkbox" name="time" value="9" disabled="disabled">09:00</label></li>
+            	<li><label><input type="checkbox" name="time" value="10" disabled="disabled">10:00</label></li>
+            	<li><label><input type="checkbox" name="time" value="11" disabled="disabled">11:00</label></li>
+            	<li><label><input type="checkbox" name="time" value="12" disabled="disabled">12:00</label></li>
+            	<li><label><input type="checkbox" name="time" value="13" disabled="disabled">13:00</label></li>
+            	<li><label><input type="checkbox" name="time" value="14" disabled="disabled">14:00</label></li>
+            	<li><label><input type="checkbox" name="time" value="15" disabled="disabled">15:00</label></li>
+            	<li><label><input type="checkbox" name="time" value="16" disabled="disabled">16:00</label></li>
+            	<li><label><input type="checkbox" name="time" value="17" disabled="disabled">17:00</label></li>
+            	<li><label><input type="checkbox" name="time" value="18" disabled="disabled">18:00</label></li>
+            	<li><label><input type="checkbox" name="time" value="19" disabled="disabled">19:00</label></li>
+            	<li><label><input type="checkbox" name="time" value="20" disabled="disabled">20:00</label></li>
+            	<li><label><input type="checkbox" name="time" value="21" disabled="disabled">21:00</label></li>
+            	<li><label><input type="checkbox" name="time" value="22" disabled="disabled">22:00</label></li>
+            	<li><label><input type="checkbox" name="time" value="23" disabled="disabled">23:00</label></li>
             </ul>
         </li>
         <li class="line-h-3">
             <span class="s-edit-name">重复日期：</span>
             <ul class="repeatDateInfo">
-            	<li><label><input type="checkbox" name="week" value="1">周一</label></li>
-            	<li><label><input type="checkbox" name="week" value="2">周二</label></li>
-            	<li><label><input type="checkbox" name="week" value="3">周三</label></li>
-            	<li><label><input type="checkbox" name="week" value="4">周四</label></li>
-            	<li><label><input type="checkbox" name="week" value="5">周五</label></li>
-            	<li><label><input type="checkbox" name="week" value="6">周六</label></li>
-            	<li><label><input type="checkbox" name="week" value="0">周日</label></li>
+            	<li><label><input type="checkbox" name="week" value="1" disabled="disabled">周一</label></li>
+            	<li><label><input type="checkbox" name="week" value="2" disabled="disabled">周二</label></li>
+            	<li><label><input type="checkbox" name="week" value="3" disabled="disabled">周三</label></li>
+            	<li><label><input type="checkbox" name="week" value="4" disabled="disabled">周四</label></li>
+            	<li><label><input type="checkbox" name="week" value="5" disabled="disabled">周五</label></li>
+            	<li><label><input type="checkbox" name="week" value="6" disabled="disabled">周六</label></li>
+            	<li><label><input type="checkbox" name="week" value="0" disabled="disabled">周日</label></li>
             </ul>
         </li>
         <li class="line-h-3">
