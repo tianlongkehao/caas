@@ -114,6 +114,8 @@ public class SnapListener implements ApplicationListener<ContextRefreshedEvent> 
 
 				String[] times = snapStrategy.getTime().split(",");
 				if (times.length != 0) {
+					System.out.println("***************************"+cephRbdInfo.getName()+"部署快照策略**************************");
+
 					Timer timer = new Timer();
 					for (String time : times) {
 						SnapTask snapTask = new SnapTask(cephRbdInfo, snapStrategy);
@@ -128,11 +130,16 @@ public class SnapListener implements ApplicationListener<ContextRefreshedEvent> 
 
 						if (now.before(date)) {
 							timer.scheduleAtFixedRate(snapTask, date, 24l * 3600l * 1000l);// 第一次时间是今天某一刻，周期为一天
+							System.out.println("---------------拍照时间:"+date+"-----------");
 						} else {
 							timer.scheduleAtFixedRate(snapTask, tomorrow, 24l * 3600l * 1000l);
+							System.out.println("---------------拍照时间:"+tomorrow+"-----------");
 						}
+
 					}
 					map.put(cephRbdInfo, timer);
+
+					System.out.println("**********************************策略部署完成**************************************");
 				} else {
 					return false;
 				}
@@ -158,4 +165,5 @@ public class SnapListener implements ApplicationListener<ContextRefreshedEvent> 
 		}
 		return map.containsValue(snapStrategy);
 	}
+
 }
