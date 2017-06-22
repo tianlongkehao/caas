@@ -1853,6 +1853,19 @@ public class CephController {
 	 */
 	@RequestMapping(value = { "storage/snapStrategy" }, method = RequestMethod.GET)
 	public String storageSnapStrategy(Model model) {
+		model.addAttribute("menu_flag", "storage");
+		model.addAttribute("li_flag", "snapStrategy");
+		return "storage/storage-snapStrategy.jsp";
+	}
+
+	/**
+	 * 快照策略数据
+	 * @return
+	 */
+	@RequestMapping(value = { "storage/strategyList" }, method = RequestMethod.GET)
+	@ResponseBody
+	public String getStrategyList(){
+		Map<String, Object> map = new HashMap<>();
 		User user = CurrentUserUtils.getInstance().getUser();
 		List<SnapStrategy> snapStrategies = null;
 		if (user.getUser_autority().equals(UserConstant.AUTORITY_MANAGER)) {
@@ -1887,10 +1900,9 @@ public class CephController {
 			}
 		}
 
-		model.addAttribute("snapStrategies", snapStrategies);
-		model.addAttribute("menu_flag", "storage");
-		model.addAttribute("li_flag", "snapStrategy");
-		return "storage/storage-snapStrategy.jsp";
+		map.put("snapStrategies", snapStrategies);
+		map.put("status", 200);
+		return JSON.toJSONString(map);
 	}
 
 	/**

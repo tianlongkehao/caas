@@ -92,15 +92,5 @@
 		</article>
 	</div>
 
-	<script type="text/javascript">
-		/* $('.dataTables-example').dataTable({
-			"aoColumnDefs" : [ {
-				"bSortable" : false,
-				"aTargets" : [ 10 ]
-			} ],
-		});
-		$("#checkallbox").parent().removeClass("sorting_asc"); */
-	</script>
-
 </body>
 </html>

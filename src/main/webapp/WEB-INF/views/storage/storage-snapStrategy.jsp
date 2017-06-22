@@ -45,16 +45,19 @@
 									<table class="table table-stripped table-hover dataTables-example">
 										<thead>
 											<tr>
+											    <th style="width:5%;text-indent:30px">
+												<input type="checkbox" class="chkAll" id="checkallbox" />
+												</th>
 												<th style="width: 18%;">自动快照策略名称</th>
 	                                            <th style="width: 18%;">关联磁盘数</th>
 	                                            <th style="width: 18%;">执行磁盘数</th>
 	                                            <th style="width: 18%;">创建时间</th>
 	                                            <th style="width: 18%;">截止时间</th>
-	                                            <th style="width: 10%;" class="del-operation">操作</th>
+	                                            <th style="width: 10%;" class="item-operation">操作</th>
 											</tr>
 										</thead>
-										<tbody id="storageList">
-										  <c:forEach items="${snapStrategies}" var="strategy">
+										<tbody id="strategyList">
+										  <%-- <c:forEach items="${snapStrategies}" var="strategy">
 											<tr strategyId=${strategy.id } strategyName="${strategy.name }" bindCount="${strategy.bindCount }"
 											     keep=${strategy.keep } time="${strategy.time }" week="${strategy.week }">
 												<td style="width: 18%;">${strategy.name }</td>
@@ -68,7 +71,7 @@
 	                                            	<a onclick="delOneStorage(this)" title="删除磁盘"><i class="fa fa-trash"></i></a>
 	                                            </td>
 											</tr>
-										  </c:forEach>
+										  </c:forEach> --%>
 										</tbody>
 										<tfoot class="hide">
 											<tr>
@@ -201,30 +204,6 @@
 	</div>
 
 </div>
-<script type="text/javascript">
-$('.dataTables-example').dataTable({
-	"aoColumnDefs" : [ {
-		"bSortable" : false,
-		"aTargets" : [ 0,6 ]
-	} ],
-});
-$("#checkallbox").parent().removeClass("sorting_asc");
-
-$('.dataTables-notset').dataTable({
-	"aoColumnDefs" : [ {
-		"bSortable" : false,
-		"aTargets" : [ 0,5 ]
-	} ],
-});
-
-$('.dataTables-haveset').dataTable({
-	"aoColumnDefs" : [ {
-		"bSortable" : false,
-		"aTargets" : [ 0,5 ]
-	} ],
-});
-$(".checkallboxset").parent().removeClass("sorting_asc");
-</script>
 
 </body>
 </html>

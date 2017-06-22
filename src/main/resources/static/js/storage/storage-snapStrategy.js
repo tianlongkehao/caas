@@ -1,6 +1,48 @@
 $(function() {
-
+    loadStrategyList();
 })
+
+//加载策略列表
+function loadStrategyList(){
+	$.ajax({
+		url:""+ctx+"/storage/strategyList",
+		type:"get",
+		success:function(data){
+        var data = eval("("+data+")");
+		if(data.status == 200) {
+        	var itemsHtml = '';
+        	var len = data.snapStrategies.length;
+        	for(var i=0; i<len; i++){
+        			var strategy = data.snapStrategies[i];
+        			itemsHtml += '<tr strategyId='+strategy.id+' strategyName="'+strategy.name+'" bindCount="'+strategy.bindCount +'"keep='+strategy.keep+' time="'+strategy.time +'" week="'+strategy.week +'">'
+        						+'<td style="width: 5%; text-indent:30px">'
+        						+'<input class="chkItem" type="checkbox" id="'+strategy.id+'">'
+        						+'</td>'
+        						+'<td>'+strategy.name+'</td>'
+        						+'<td>'+strategy.bindCount+'</td>'
+        						+'<td>'+strategy.excutingCount+'</td>'
+        						+'<td>'+strategy.createDate+'</td>'
+        						+'<td>'+strategy.endData+'</td>'
+        						+'<td style="width: 10%;" class="item-operation">'
+                            	+'<a onclick="snapStrategyEdit(this)" title="修改策略"><i class="fa fa-edit fa-opr"></i></a>'
+                            	+'<a onclick="setStorage(this)" title="设置磁盘"><i class="fa fa-cog fa-opr"></i></a>'
+                            	+'<a onclick="delOneStorage(this)" title="删除磁盘"><i class="fa fa-trash fa-opr"></i></a>'
+                                +'</td>'
+        				        +'</tr>';
+        	}
+        	$("#strategyList").empty().append(itemsHtml);
+		}
+		$('.dataTables-example').dataTable({
+			"aoColumnDefs" : [ {
+				"bSortable" : false,
+				"aTargets" : [ 0,6 ]
+			} ],
+			"aaSorting": [[ 4, "desc" ]]
+		});
+		$("#checkallbox").parent().removeClass("sorting_asc");
+		}
+	});
+}
 
 function checkStrategy() {
 	var strategyname = $("#strategyname").val();
