@@ -6,9 +6,13 @@ public class Volume {
 
 	private CephFSVolumeSource cephfs;
 
-	private ConfigMapTemplate configMap;
-
 	private CephRbd rbd;
+
+	private ConfigMapVolumeSource configMap;
+
+	private PersistentVolumeClaimVolumeSource persistentVolumeClaim;
+
+	private DownwardAPIVolumeSource downwardAPI;
 
 	public CephRbd getRbd() {
 		return rbd;
@@ -34,12 +38,28 @@ public class Volume {
 		this.cephfs = cephfs;
 	}
 
-	public ConfigMapTemplate getConfigMap() {
+	public ConfigMapVolumeSource getConfigMap() {
 		return configMap;
 	}
 
-	public void setConfigMap(ConfigMapTemplate configMap) {
+	public void setConfigMap(ConfigMapVolumeSource configMap) {
 		this.configMap = configMap;
+	}
+
+	public PersistentVolumeClaimVolumeSource getPersistentVolumeClaim() {
+		return persistentVolumeClaim;
+	}
+
+	public void setPersistentVolumeClaim(PersistentVolumeClaimVolumeSource persistentVolumeClaim) {
+		this.persistentVolumeClaim = persistentVolumeClaim;
+	}
+
+	public DownwardAPIVolumeSource getDownwardAPI() {
+		return downwardAPI;
+	}
+
+	public void setDownwardAPI(DownwardAPIVolumeSource downwardAPI) {
+		this.downwardAPI = downwardAPI;
 	}
 
 }

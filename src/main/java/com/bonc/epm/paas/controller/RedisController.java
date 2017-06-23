@@ -17,36 +17,46 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
+import com.bonc.epm.paas.kubernetes.apis.KubernetesAPISClientInterface;
 import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
 import com.bonc.epm.paas.kubernetes.model.ConfigMap;
+import com.bonc.epm.paas.kubernetes.model.ConfigMapVolumeSource;
+import com.bonc.epm.paas.kubernetes.model.Container;
+import com.bonc.epm.paas.kubernetes.model.ContainerPort;
+import com.bonc.epm.paas.kubernetes.model.DownwardAPIVolumeFile;
+import com.bonc.epm.paas.kubernetes.model.DownwardAPIVolumeSource;
+import com.bonc.epm.paas.kubernetes.model.EnvVar;
+import com.bonc.epm.paas.kubernetes.model.EnvVarSource;
+import com.bonc.epm.paas.kubernetes.model.ExecAction;
+import com.bonc.epm.paas.kubernetes.model.KeyToPath;
+import com.bonc.epm.paas.kubernetes.model.ObjectFieldSelector;
+import com.bonc.epm.paas.kubernetes.model.PersistentVolumeClaim;
+import com.bonc.epm.paas.kubernetes.model.PersistentVolumeClaimVolumeSource;
+import com.bonc.epm.paas.kubernetes.model.PodTemplateSpec;
+import com.bonc.epm.paas.kubernetes.model.Probe;
+import com.bonc.epm.paas.kubernetes.model.ResourceRequirements;
 import com.bonc.epm.paas.kubernetes.model.Service;
 import com.bonc.epm.paas.kubernetes.model.ServicePort;
+import com.bonc.epm.paas.kubernetes.model.StatefulSet;
+import com.bonc.epm.paas.kubernetes.model.Volume;
+import com.bonc.epm.paas.kubernetes.model.VolumeMount;
 import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 import com.bonc.epm.paas.util.FileUtils;
 
 /**
  * ClassName:RedisController <br/>
- * Function: TODO ADD FUNCTION. <br/>
- * Reason: TODO ADD REASON. <br/>
  * Date: 2017年6月21日 下午4:03:17 <br/>
  *
  * @author longkaixiang
  * @version
  * @see
- */
-/**
- * ClassName: RedisController <br/>
- * Function: TODO ADD FUNCTION. <br/>
- * Reason: TODO ADD REASON(可选). <br/>
- * date: 2017年6月22日 上午9:36:55 <br/>
- *
- * @author longkaixiang
- * @version
  */
 @Controller
 @RequestMapping(value = "/RedisController")
@@ -62,13 +72,22 @@ public class RedisController {
 	@Autowired
 	KubernetesClientService kubernetesClientService;
 
+	/**
+	 * createRedis:创建redis. <br/>
+	 *
+	 * @param name
+	 * @return String
+	 */
+	@RequestMapping(value = "createRedis.do", method = RequestMethod.POST)
+	@ResponseBody
 	public String createRedis(String name) {
 		Map<String, Object> map = new HashMap<>();
-		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+		KubernetesAPIClientInterface apiClient = kubernetesClientService.getClient();
+		KubernetesAPISClientInterface apisClient = kubernetesClientService.getApisClient();
 		//查询service是否已经存在
 		Service service = null;
 		try {
-			service = client.getService(name);
+			service = apiClient.getService(name);
 		} catch (KubernetesClientException e) {
 			service = null;
 		}
@@ -81,7 +100,7 @@ public class RedisController {
 		//查询configMap是否已经存在
 		ConfigMap configMap = null;
 		try {
-			configMap = client.getConfigMap(name);
+			configMap = apiClient.getConfigMap(name);
 		} catch (KubernetesClientException e) {
 			configMap = null;
 		}
@@ -91,11 +110,24 @@ public class RedisController {
 			return JSON.toJSONString(map);
 		}
 
+		//查询statefulSet是否已经存在
+		StatefulSet statefulSet = null;
+		try {
+			statefulSet = apisClient.getStatefulSet(name);
+		} catch (KubernetesClientException e1) {
+			statefulSet = null;
+		}
+		if (null != statefulSet) {
+			map.put("message", "存在同名statefulSet：["+name+"]");
+			map.put("status", "300");
+			return JSON.toJSONString(map);
+		}
+
 		//创建service
 		User user = CurrentUserUtils.getInstance().getUser();
 		service = generateRedisService(name, user.getNamespace());
 		try {
-			service = client.createService(service);
+			service = apiClient.createService(service);
 		} catch (KubernetesClientException e) {
 			e.printStackTrace();
 			map.put("message", "创建service失败：["+e.getStatus().getReason()+"]");
@@ -114,16 +146,30 @@ public class RedisController {
 		}
 		if (null != configMap) {
 			try {
-				configMap = client.createConfigMap(configMap);
+				configMap = apiClient.createConfigMap(configMap);
 			} catch (KubernetesClientException e) {
 				e.printStackTrace();
+				apiClient.deleteService(name);
 				map.put("message", "创建ConfigMap失败：["+e.getStatus().getReason()+"]");
 				map.put("status", "300");
 				return JSON.toJSONString(map);
 			}
-
 		}
 
+		//创建statefulSet
+		statefulSet = generateRedisStatefulSet(name);
+		try {
+			apisClient.createStatefulSet(statefulSet);
+		} catch (KubernetesClientException e) {
+			e.printStackTrace();
+			apiClient.deleteService(name);
+			apiClient.deleteConfigMap(name);
+			map.put("message", "创建StatefulSet失败：["+e.getStatus().getReason()+"]");
+			map.put("status", "300");
+			return JSON.toJSONString(map);
+		}
+
+		map.put("status", "200");
 		return JSON.toJSONString(map);
 	}
 
@@ -195,8 +241,200 @@ public class RedisController {
 		// meet-cluster.sh文件的配置
 		String meetClusterFile = FileUtils.class.getClassLoader().getResource(MEET_CLUSTER_FILE).getPath();
 		String meetCluster = FileUtils.readFileByLines(meetClusterFile);
-		data.put(MEET_CLUSTER_FILE, meetCluster);
+		data.put(MEET_CLUSTER, meetCluster);
 
 		return kubernetesClientService.generateConfigMap(name, namespace, data);
+	}
+
+	public StatefulSet generateRedisStatefulSet(String name) {
+
+		/*
+		 * 1.创建statefulSet的template
+		 */
+
+		// 1.1创建template的labels
+		Map<String, String> labels = new HashMap<>();
+		labels.put("app", name);
+
+		// 1.2创建template的containers
+		List<Container> containers = new ArrayList<>();
+		// 1.2.1创建container redis-cluster
+		List<ContainerPort> ports1 = new ArrayList<>();
+		ContainerPort port11 = new ContainerPort();
+		port11.setContainerPort(6379);
+		port11.setName("client");
+		ports1.add(port11);
+		ContainerPort port12 = new ContainerPort();
+		port12.setContainerPort(16379);
+		port12.setName("gossip");
+		ports1.add(port12);
+
+		List<String> command = new ArrayList<>();
+		command.add("sh");
+
+		List<String> args = new ArrayList<>();
+		args.add("/conf/bootstrap-pod.sh");
+
+		Probe readinessProbe = new Probe();
+		ExecAction readinessProbeExecAction = new ExecAction();
+		List<String> readinessProbeExec = new ArrayList<>();
+		readinessProbeExec.add("sh");
+		readinessProbeExec.add("-c");
+		readinessProbeExec.add("redis-cli -h $(hostname) ping");
+		readinessProbeExecAction.setCommand(readinessProbeExec);
+		readinessProbe.setExec(readinessProbeExecAction);
+		readinessProbe.setInitialDelaySeconds(15);
+		readinessProbe.setTimeoutSeconds(5);
+
+		Probe livenessProbe = new Probe();
+		ExecAction livenessProbeExecAction = new ExecAction();
+		List<String> livenessProbeExec = new ArrayList<>();
+		livenessProbeExec.add("sh");
+		livenessProbeExec.add("-c");
+		livenessProbeExec.add("redis-cli -h $(hostname) ping");
+		livenessProbeExecAction.setCommand(livenessProbeExec);
+		livenessProbe.setExec(livenessProbeExecAction);
+		livenessProbe.setInitialDelaySeconds(20);
+		livenessProbe.setTimeoutSeconds(3);
+
+		List<EnvVar> env = new ArrayList<>();
+		EnvVar envVar = new EnvVar();
+		envVar.setName("POD_NAMESPACE");
+		EnvVarSource valueFrom = new EnvVarSource();
+		ObjectFieldSelector fieldRef = new ObjectFieldSelector();
+		fieldRef.setFieldPath("metadata.namespace");
+		valueFrom.setFieldRef(fieldRef);
+		envVar.setValueFrom(valueFrom);
+		env.add(envVar);
+
+		List<VolumeMount> volumeMounts = new ArrayList<>();
+		VolumeMount volumeMount1 = new VolumeMount();
+		volumeMount1.setName("data");
+		volumeMount1.setMountPath("/var/lib/redis");
+		volumeMount1.setReadOnly(false);
+		volumeMounts.add(volumeMount1);
+
+		VolumeMount volumeMount2 = new VolumeMount();
+		volumeMount2.setName("conf");
+		volumeMount2.setMountPath("/conf");
+		volumeMount2.setReadOnly(false);
+		volumeMounts.add(volumeMount2);
+
+		VolumeMount volumeMount3 = new VolumeMount();
+		volumeMount3.setName("podinfo");
+		volumeMount3.setMountPath("/etc/podinfo");
+		volumeMount3.setReadOnly(false);
+		volumeMounts.add(volumeMount3);
+
+		Container container1 = kubernetesClientService.generateContainer(name, "dipperroy/redis:3.2.8-rb", ports1, command, args,
+				readinessProbe, livenessProbe, env, volumeMounts);
+		containers.add(container1);
+
+		// 1.2.2创建container redis-exporter
+		List<ContainerPort> ports2 = new ArrayList<>();
+		ContainerPort port21 = new ContainerPort();
+		port21.setName("redis-exporter");
+		port21.setContainerPort(9291);
+		ports2.add(port21);
+
+		Container container2 = kubernetesClientService.generateContainer("redis-exporter", "docker.io/oliver006/redis_exporter",
+				ports2, null, null, null, null, null, null);
+		containers.add(container2);
+
+		// 1.3创建template的volumes
+		List<Volume> volumes = new ArrayList<>();
+		// 1.3.1创建volumes data
+		Volume volume1 = new Volume();
+		volume1.setName("data");
+		PersistentVolumeClaimVolumeSource persistentVolumeClaimVolumeSource = new PersistentVolumeClaimVolumeSource();
+		persistentVolumeClaimVolumeSource.setClaimName("data");
+		volume1.setPersistentVolumeClaim(persistentVolumeClaimVolumeSource);
+		volumes.add(volume1);
+		// 1.3.2创建volumes conf
+		Volume volume2 = new Volume();
+		volume2.setName("conf");
+		ConfigMapVolumeSource configMap = new ConfigMapVolumeSource();
+		configMap.setName("redis-cluster-config");
+		List<KeyToPath> items = new ArrayList<>();
+		KeyToPath keyToPath1 = new KeyToPath();
+		keyToPath1.setKey(REDIS_CONF);
+		keyToPath1.setPath(REDIS_CONF);
+		items.add(keyToPath1);
+		KeyToPath keyToPath2 = new KeyToPath();
+		keyToPath2.setKey(BOOTSTRAP_POD);
+		keyToPath2.setPath(BOOTSTRAP_POD);
+		items.add(keyToPath2);
+		KeyToPath keyToPath3 = new KeyToPath();
+		keyToPath3.setKey(MEET_CLUSTER);
+		keyToPath3.setPath(MEET_CLUSTER);
+		items.add(keyToPath3);
+		configMap.setItems(items);
+		volume2.setConfigMap(configMap);
+		volumes.add(volume2);
+		// 1.3.3创建volumes podinfo
+		Volume volume3 = new Volume();
+		volume3.setName("podinfo");
+		DownwardAPIVolumeSource downwardAPI = new DownwardAPIVolumeSource();
+		List<DownwardAPIVolumeFile> downwardAPIItems = new ArrayList<>();
+
+		DownwardAPIVolumeFile downwardAPIVolumeFile1 = new DownwardAPIVolumeFile();
+		downwardAPIVolumeFile1.setPath("labels");
+		ObjectFieldSelector fieldRef1 = new ObjectFieldSelector();
+		fieldRef1.setFieldPath("metadata.labels");
+		downwardAPIVolumeFile1.setFieldRef(fieldRef1);
+		downwardAPIItems.add(downwardAPIVolumeFile1);
+
+		DownwardAPIVolumeFile downwardAPIVolumeFile2 = new DownwardAPIVolumeFile();
+		downwardAPIVolumeFile2.setPath("annotations");
+		ObjectFieldSelector fieldRef2 = new ObjectFieldSelector();
+		fieldRef2.setFieldPath("metadata.annotations");
+		downwardAPIVolumeFile2.setFieldRef(fieldRef2);
+		downwardAPIItems.add(downwardAPIVolumeFile2);
+
+		DownwardAPIVolumeFile downwardAPIVolumeFile3 = new DownwardAPIVolumeFile();
+		downwardAPIVolumeFile3.setPath("pod_name");
+		ObjectFieldSelector fieldRef3 = new ObjectFieldSelector();
+		fieldRef3.setFieldPath("metadata.name");
+		downwardAPIVolumeFile3.setFieldRef(fieldRef3);
+		downwardAPIItems.add(downwardAPIVolumeFile3);
+
+		DownwardAPIVolumeFile downwardAPIVolumeFile4 = new DownwardAPIVolumeFile();
+		downwardAPIVolumeFile4.setPath("pod_namespace");
+		ObjectFieldSelector fieldRef4 = new ObjectFieldSelector();
+		fieldRef4.setFieldPath("metadata.namespace");
+		downwardAPIVolumeFile4.setFieldRef(fieldRef4);
+		downwardAPIItems.add(downwardAPIVolumeFile4);
+
+		downwardAPI.setItems(downwardAPIItems);
+		volume3.setDownwardAPI(downwardAPI );
+		volumes.add(volume3);
+		// 1.4
+		PodTemplateSpec template = kubernetesClientService.generatePodTemplateSpec(labels, 10, containers,
+				volumes);
+
+		/*
+		 * 2.创建statefulSet的volumeClaimTemplates
+		 */
+		String namespace  = CurrentUserUtils.getInstance().getUser().getNamespace();
+
+		List<PersistentVolumeClaim> volumeClaimTemplates = new ArrayList<>();
+		List<String> accessModes = new ArrayList<>();
+		accessModes.add("ReadWriteOnce");
+		accessModes.add("ReadWriteMany");
+		ResourceRequirements resources = new ResourceRequirements();
+		Map<String, Object> requests = new HashMap<>();
+		requests.put("storage", "1Gi");
+		resources.setRequests(requests);
+
+		String storageClassName = "ceph-rbd";
+		PersistentVolumeClaim persistentVolumeClaim = kubernetesClientService.generatePersistentVolumeClaim("data", namespace, accessModes , resources, storageClassName );
+		volumeClaimTemplates.add(persistentVolumeClaim);
+		/*
+		 * 3.创建statefulSet
+		 */
+		StatefulSet statefulSet = kubernetesClientService.generateStatefulSet(name, namespace, 8, template,
+				volumeClaimTemplates);
+
+		return statefulSet;
 	}
 }

@@ -14,6 +14,7 @@ public class StatefulSet extends AbstractKubernetesExtensionsModel {
 
 	public StatefulSet(){
 		super(Kind.STATEFULSET);
+		setApiVersion("apps/v1beta1");
 	}
 
 	public ObjectMeta getMetadata() {
