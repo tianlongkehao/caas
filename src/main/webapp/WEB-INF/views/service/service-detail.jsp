@@ -579,6 +579,10 @@
 										<tr>
 											<td>块存储：${rbd.rbdname }</td>
 											<td>挂载地址：${rbd.path }</td>
+											<%-- <c:if test="${service.status==1 or service.status==4}">
+											<td serviceRbdId=${rbd.id }><i onclick="delRbd(this)" type="button" value="删除"
+												class="fa fa-trash editEnvBtn"></td>
+										    </c:if> --%>
 										</tr>
 									</c:forEach>
 								</c:if>

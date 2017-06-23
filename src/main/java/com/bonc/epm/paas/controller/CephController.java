@@ -1281,9 +1281,15 @@ public class CephController {
 		List<ServiceCephRbd> serviceCephRbds = serviceRbdDao.findByCephrbdId(imgId);
 		if (CollectionUtils.isEmpty(serviceCephRbds)) {
 			return JSON.toJSONString(map);
+		}else{
+			msg = "服务: " + serviceCephRbds.get(0).getServicename() + "正在使用磁盘: " + cephRbdInfo.getName() + ","
+					+ "请先停止服务再进行操作，重启服务生效！";
+			map.put("msg", msg);
+			map.put("status", "500");
+			return JSON.toJSONString(map);
 		}
 
-		if (!cephRbdInfo.isUsed()) {
+		/*if (!cephRbdInfo.isUsed()) {
 			return JSON.toJSONString(map);
 		} else {
 			msg = "服务: " + serviceCephRbds.get(0).getServicename() + "正在使用磁盘: " + cephRbdInfo.getName() + ","
@@ -1291,7 +1297,7 @@ public class CephController {
 			map.put("msg", msg);
 			map.put("status", "500");
 			return JSON.toJSONString(map);
-		}
+		}*/
 	}
 
 	/**
@@ -1791,6 +1797,18 @@ public class CephController {
 			 */
 		}
 
+		//获取块设备被使用的服务信息
+		List<ServiceCephRbd> serviceCephRbds = new ArrayList<ServiceCephRbd>();
+		if(CollectionUtils.isNotEmpty(cephRbdInfos)){
+           for(CephRbdInfo cephRbdInfo:cephRbdInfos){
+        	   List<ServiceCephRbd> serviceCephRbd = serviceRbdDao.findByCephrbdId(cephRbdInfo.getId());
+        	   if(CollectionUtils.isNotEmpty(serviceCephRbd)){
+        		   serviceCephRbds.add(serviceCephRbd.get(0));
+        	   }
+           }
+		}
+
+		map.put("serviceCephRbds", serviceCephRbds);
 		map.put("cephRbdInfos", cephRbdInfos);
 		map.put("status", 200);
 		return JSON.toJSONString(map);
@@ -1984,4 +2002,43 @@ public class CephController {
 		return result;
 	}
 
+	/**
+	 * 服务删除对块设备的引用
+	 * @param rbdId
+	 * @return
+	 */
+	/*@RequestMapping(value = { "ceph/deleteServiceRbd" }, method = RequestMethod.GET)
+	@ResponseBody
+	public String deleteServiceRbd(long serviceRbdId){
+		Map<String, Object> map = new HashMap<>();
+		map.put("status", "200");
+
+		ServiceCephRbd serviceCephRbd = serviceRbdDao.findOne(serviceRbdId);
+		serviceRbdDao.delete(serviceRbdId);
+		CephRbdInfo cephRbdInfo = cephRbdInfoDao.findOne(serviceCephRbd.getCephrbdId());
+		cephRbdInfo.setUsed(false);
+		cephRbdInfo.setUpdateDate(new Date());
+		cephRbdInfoDao.save(cephRbdInfo);
+
+		return JSON.toJSONString(map);
+	}*/
+
+	@RequestMapping(value = { "ceph/ServiceRbdInfo" }, method = RequestMethod.GET)
+	@ResponseBody
+	public String getServiceRbdInfo(){
+		Map<String, Object> map = new HashMap<>();
+		map.put("status", "200");
+        List<ServiceCephRbd> serviceCephRbds = new ArrayList<ServiceCephRbd>();
+
+		Iterable<ServiceCephRbd> iterable = serviceRbdDao.findAll();
+		if(iterable!=null){
+		   Iterator<ServiceCephRbd> iterator = iterable.iterator();
+		   if(iterator.hasNext()){
+			   serviceCephRbds.add(iterator.next());
+		   }
+		}
+
+		map.put("serviceCephRbds", serviceCephRbds);
+		return JSON.toJSONString(map);
+	}
 }

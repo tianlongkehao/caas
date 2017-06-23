@@ -52,7 +52,7 @@
 													id="checkallbox" /></th>
 												<th>磁盘名称</th>
 	                                            <th>磁盘大小(G)</th>
-	                                            <th>磁盘状态</th>
+	                                            <th>挂载服务</th>
 	                                            <th>描述</th>
 	                                            <th class="item-operation">操作</th>
 											</tr>

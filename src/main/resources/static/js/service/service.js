@@ -989,7 +989,447 @@ function loadServices() {
 		searchingFlag = true;
 	}
 
-	$('.dataTables-example').dataTable({
+	$.ajax({
+			url:""+ctx+"/ceph/ServiceRbdInfo?",
+			type:"get",
+			success:function(data){
+				var data = eval("(" + data + ")");
+				if(data.status =='200'){
+                    var serviceRbds = data.serviceCephRbds;
+                    var len = data.serviceCephRbds.length;
+
+                    $('.dataTables-example').dataTable({
+                		"aoColumnDefs" : [{
+                			"bSortable" : false,
+                			"aTargets" : [0, 6]
+                		}],
+                		"searching" : searchingFlag,
+                		"autoWidth" : false,
+                		"processing" : true,
+                		"serverSide" : true,
+                		"stateSave" : true,
+                		"ordering" : false,
+                		"ajax" : ctx + "/service/page.do?searchService=" + serviceSearchName + "&searchImage=" + serviceSearchImage + "&searchCreatorName=" + serviceSearchCreator,
+                		"columns" : [{
+                			data : null,
+                			render : function(data, type, row) {
+                				var html = '<input type= "checkbox" class="chkItem" style="margin-left:10px;" name="chkItem"' + 'autocomplete="off" id="checkboxID" value="' + row.id + '"' + 'serviceName="' + row.serviceName + '"' + 'serviceNum="' + row.instanceNum + '"' + 'confRam="' + row.ram + '" status="' + row.status + '"' + 'imagename="' + row.imgName + '"' + 'imageversion="' + row.imgVersion + '"' + 'confCpu="' + row.cpuNum + '"/>';
+                				return html;
+                			}
+                		}, {
+                			data : null,
+                			render : function(data, type, row) {
+                				var html = '';
+                				if (row.codeRating == 1) {
+                					html = '<a href="' + row.codeRatingURL + '" target="_blank"><span class="fa_level fa_level_a">A</span></a>';
+                				} else if (row.codeRating == 2) {
+                					html = '<a href="' + row.codeRatingURL + '" target="_blank"><span class="fa_level fa_level_b">B</span></a>';
+                				} else if (row.codeRating == 3) {
+                					html = '<a href="' + row.codeRatingURL + '" target="_blank"><span class="fa_level fa_level_c">C</span></a>';
+                				} else if (row.codeRating == 4) {
+                					html = '<a href="' + row.codeRatingURL + '" target="_blank"><span class="fa_level fa_level_d">D</span></a>';
+                				} else if (row.codeRating == 5) {
+                					html = '<a href="' + row.codeRatingURL + '" target="_blank"><span class="fa_level fa_level_e">E</span></a>';
+                				} else {
+                					html = '<span class="fa_level fa_level_n">无</span>';
+                				}
+                				return html;
+                			}
+                		}, {
+                			data : null,
+                			render : function(data, type, row) {
+                				var html = "";
+                				if (curUserAutority == 1) {
+                					html = '<span serviceId="' + row.id + '"' + 'class="cluster_mirrer_name" style="width: 10px;white-space: nowrap;text-overflow: ellipsis;overflow:hidden;">' + row.serviceName + '</span>' + '<span class="number-node">' + row.instanceNum + '</span>';
+                				} else {
+                					html = '<b ' + 'class="caret margin" style="transform: rotate(-90deg);" rotate="hide"></b>' + '<a href="' + ctx + '/service/detail/' + row.id + '" serviceId="' + row.id + '"' + 'class="cluster_mirrer_name link" style="width: 10px;white-space: nowrap;text-overflow: ellipsis;overflow:hidden;">' + row.serviceName + '</a>' + '<span class="number-node">' + row.instanceNum + '</span>';
+                				}
+                				if (row.updateImage == true) {
+                					html += '<a id="' + row.id + '_code" class="margin cursor console-code-modal"' + 'href="' + ctx + 'ci/findCodeCiId.do?imgId=' + row.imgID + '"' + 'style="margin-left: 5px" ><img src="' + ctx + '/images/sd.gif" title="代码更新"></a>';
+                				}
+
+                				return html;
+                			}
+                		}, {
+                			data : null,
+                			className : "cStatusColumn",
+                			render : function(data, type, row) {
+                				var html = '';
+                				if (row.status == 1) {
+                					html = '<a class="link" onclick="serviceEvent(' + row.id + ','+row.status+')"><i class="fa_stop"></i>' + '未启动 <img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" /></a>';
+                				}
+                				if (row.status == 2) {
+                					html = '<a class="link" onclick="serviceEvent(' + row.id + ','+row.status+')"><i class="fa_success"></i>' + '启动中 <img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" /></a>';
+                				}
+                				if (row.status == 3) {
+                					html = '<a class="link" onclick="serviceEvent(' + row.id + ','+row.status+')"><i class="fa_run"></i>' + '运行中 <img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" /></a>';
+                				}
+                				if (row.status == 4) {
+                					html = '<a class="link" onclick="serviceEvent(' + row.id + ','+row.status+')"><i class="fa_stop"></i>' + '已停止<img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" /></a>';
+                				}
+                				if (row.status == 5) {
+                					html = '<a class="link" onclick="serviceEvent(' + row.id + ','+row.status+')"><i class="fa_stop"></i>' + '启动失败<img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" /></a>';
+                				}
+                				if (row.status == 6) {
+                					html = '<a class="link" onclick="serviceEvent(' + row.id + ','+row.status+')"><i class="fa_run"></i>' + '调试中<img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" /></a>';
+                				}
+                				if (row.status == 7) {
+                					html = '<a class="link" onclick="serviceEvent(' + row.id + ','+row.status+')"><i class="fa_success"></i>' + '升级中<img src="' + ctx + '/images/loading4.gif"' + 'alt="" /></a><a href="javascript:oneStopContainerUpdate(' + row.id + ',&apos;' + row.serviceName + '&apos;)"><i class="fa fa-times fa-stopUpdate"></i></a>';
+                				}
+                				if (row.status == 8) {
+                					html = '<a class="link" onclick="serviceEvent(' + row.id + ','+row.status+')"><i class="fa_success"></i>' + '升级中<img src="' + ctx + '/images/loading4.gif"' + 'alt="" /></a><a href="javascript:oneStopContainerUpdate(' + row.id + ',&apos;' + row.serviceName + '&apos;)"><i class="fa fa-times fa-stopUpdate"></i></a>';
+                				}
+                				return html;
+                			}
+                		}, {
+                			data : null,
+                			render : function(data, type, row) {
+                				var html = "";
+                				if (curUserAutority == 1) {
+                					html = '<span class="cluster_mirrer">' + row.imgName + '</span>';
+                				} else {
+                					html = '<span class="cluster_mirrer">' + '<a class="link" title="点击查看镜像" target="_blank"' + 'href="' + ctx + '/registry/detail/' + row.imgID + '">' + row.imgName + '</a>' + '</span>';
+                				}
+
+                				return html;
+                			}
+                		}, {
+                			data : null,
+                			render : function(data, type, row) {
+                				var html = '<span class="url">';
+                				if (curUserAutority == 1) {
+                					if (row.serviceAddr != null && row.serviceAddr != '') {
+                						html += '<span href="' + row.serviceAddr + '/' + row.servicePath + '"' + 'target="_blank" title="' + row.serviceAddr + '/' + row.servicePath + '">';
+                						if (row.serviceChName != null && row.serviceChName != '') {
+                							html += row.serviceChName;
+                						} else {
+                							html += row.serviceAddr + '/' + row.servicePath;
+                						}
+                						html += '</span>';
+                					}
+                				} else {
+                					if (row.serviceAddr != null && row.serviceAddr != '') {
+                						html += '<a class="link" href="' + row.serviceAddr + '/' + row.servicePath + '"' + 'target="_blank" title="' + row.serviceAddr + '/' + row.servicePath + '">';
+                						if (row.serviceChName != null && row.serviceChName != '') {
+                							html += row.serviceChName;
+                						} else {
+                							html += row.serviceAddr + '/' + row.servicePath;
+                						}
+                						html += '</a>';
+                					}
+                				}
+                				html += '</span>';
+                				return html;
+                			}
+                		}, {
+                			data : null,
+                			render : function(data, type, row) {
+                				var html = '<input type="hidden" class="timeStrap" value="">' + '<i class="fa_time"></i><span>' + row.createDate + '</span>';
+                				return html;
+                			}
+                		}, {
+                			data : null,
+                			render : function(data, type, row) {
+                				var html = '';
+
+                				if (curUserAutority == 1) {
+                					var html = '<span class="cluster_creator">' + row.creatorName + '</span>';
+                				} else {
+                                    var existRbd = false;//是否挂载块设备
+
+                					if (row.status == 3 || row.status == 6) {
+
+                						html += '<a id="' + row.id + '_start" class="no-drop startContainer_a "' + 'href="javascript:oneStartContainer(' + row.id + ',' + row.status + ')"' + 'style="margin-left: 5px" title="启动"><i class="fa fa-play self_a"></i></a>';
+
+                						html += '<a id="' + row.id + '_stop" class="a-live stopContainer_a "' + 'href="javascript:oneStopContainer(' + row.id + ',' + row.status + ')"' + 'style="margin-left: 5px" title="停止"> ' + '<i class="fa fa-power-off"></i></a>';
+
+                					} else if (row.status == 7 || row.status == 8) {
+
+                						html += '<a id="' + row.id + '_start" class="no-drop startContainer_a "' + 'href="javascript:oneStartContainer(' + row.id + ',' + row.status + ')"' + 'style="margin-left: 5px" title="启动"><i class="fa fa-play self_a"></i></a>';
+
+                						html += '<a id="' + row.id + '_stop" class="no-drop stopContainer_a "' + 'href="javascript:oneStopContainer(' + row.id + ',' + row.status + ')"' + 'style="margin-left: 5px" title="停止"> ' + '<i class="fa fa-power-off self_a"></i></a>';
+                					} else {
+                						html += '<a id="' + row.id + '_start" class="a-live startContainer_a "' + 'href="javascript:oneStartContainer(' + row.id + ',' + row.status + ')"' + 'style="margin-left: 5px" title="启动"><i class="fa fa-play"></i></a>';
+
+                						html += '<a id="' + row.id + '_stop" class="no-drop stopContainer_a "' + 'href="javascript:oneStopContainer(' + row.id + ',' + row.status + ')"' + 'style="margin-left: 5px" title="停止"> ' + '<i class="fa fa-power-off self_a"></i></a>';
+                					}
+
+                					if (row.status != 3 && row.status != 6 && row.status != 7 && row.status != 8) {
+                						html += '<a id="' + row.id + '_change" class="a-live change " ' + 'href="javascript:startdebug(' + row.id + ',' + row.status + ')" title="调试"' + 'style="margin-left: 5px">' + '<i class="fa fa-bug"></i>' + '</a> ';
+                					} else {
+                						html += '<a id="' + row.id + '_change" class="a-live change " ' + 'href="javascript:void(0)" title="调试"' + 'style="margin-left: 5px">' + '<i class="fa fa-bug  self_a"></i>' + '</a> ';
+                					}
+
+                					if (row.status == 7 || row.status == 8) {
+                						html += '<ul class="moreFun" style="margin-bottom:0px;line-height:40px;" id="' + row.id + '" serviceName="' + row.serviceName + '" imgName="' + row.imgName + '">' + '<li class="dropdown">' + '<a id="' + row.id + '_moreFun" class="dropdown-toggle no-drop" data-toggle="dropdown" style="margin-left: 5px" title="更多配置">' + '<i class="fa fa-gears self_a"></i></a>';
+                					} else {
+                						html += '<ul class="moreFun" style="margin-bottom:0px;line-height:40px;" id="' + row.id + '" serviceName="' + row.serviceName + '" imgName="' + row.imgName + '">' + '<li class="dropdown">' + '<a id="' + row.id + '_moreFun" class="dropdown-toggle a-live" data-toggle="dropdown" style="margin-left: 5px" title="更多配置">' + '<i class="fa fa-gears"></i></a>';
+                					}
+                					if (row.status != 7 && row.status != 8) {
+                						html += '<ul id="' + row.id + '_dropdown" class="dropdown-menu">' + '<li>';
+
+                						//判断是否存在块设备
+                						for(var i=0;i<len;i++){
+                							if(serviceRbds[i].serviceId == row.id){
+                								existRbd =true;
+                								break;
+                							}
+                						}
+
+                						if (row.status == 6) {
+                							html += '<a id="' + row.id + '_scaleCluster" class="no-drop scaleCluster_a "' + 'href="javascript:void(0)" title="弹性伸缩"' + '> <i class="fa fa-arrows self_a"></i>弹性伸缩</a>';
+                						} else {
+                							if(existRbd){
+                    							html += '<a id="' + row.id + '_scaleCluster" class="no-drop scaleCluster_a "' + 'href="javascript:void(0)" title="弹性伸缩"' + '> <i class="fa fa-arrows self_a"></i>弹性伸缩</a>';
+                    						}else{
+                    							html += '<a id="' + row.id + '_scaleCluster" class="a-live scaleCluster_a "' + 'href="javascript:oneUpGradeContainer(' + row.id + ',&apos;' + row.serviceName + '&apos;,' + row.instanceNum + ',' + row.cpuNum + ',' + row.ram + ')" title="弹性伸缩"' + '> <i class="fa fa-arrows"></i>弹性伸缩</a>';
+                    						}
+                						}
+                						html += '</li>' + '<li>';
+                						if (row.status == 3) {
+                							html += '<a id="' + row.id + '_upgradeCluster" class="a-live upgradeCluster_a " ' + 'href="javascript:oneVersionUpgrade(' + row.id + ',&apos;' + row.serviceName + '&apos;,&apos;' + row.imgName +'&apos;,&apos;'+ row.imgVersion + '&apos;)" title="版本升级"' + '><i class="fa fa-arrow-up"></i>版本升级</a> ';
+                						} else {
+                							html += ' <a id="' + row.id + '_upgradeCluster" class="no-drop upgradeCluster_a " ' + 'href="javascript:oneVersionUpgrade(' + row.id + ',&apos;' + row.serviceName + '&apos;,&apos;' + row.imgName +'&apos;,&apos;'+ row.imgVersion + '&apos;,this)" title="版本升级"' + '><i class="fa fa-arrow-up self_a"></i>版本升级</a>';
+                						}
+                						html += '</li>' + '<li>';
+
+                						if (row.status != 3 && row.status != 6) {
+                							html += '<a id="' + row.id + '_changeConfiguration" class="no-drop changeConfiguration_a " ' + 'href="javascript:void(0);" title="更改配置"' + '><i class="fa fa-cog self_a"></i>更改配置</a> ';
+                						} else {
+                							html += '<a id="' + row.id + '_changeConfiguration" class="a-live changeConfiguration_a " ' + 'href="javascript:oneChangeContainerConf(' + row.id + ',&apos;' + row.serviceName + '&apos;,' + row.instanceNum + ',' + row.cpuNum + ',' + row.ram + ',' + row.status + ');" title="更改配置"' + '><i class="fa fa-cog"></i>更改配置</a> ';
+                						}
+                						if (row.status != 3 && row.status != 6) {
+                							html += '<a id="' + row.id + '_autoFlex" class="no-drop autoFlex_a " ' + 'href="javascript:void(0);" title="自动伸缩"' + '><i class="fa fa-arrows-h self_a"></i>自动伸缩</a> ';
+                						} else {
+                							if(existRbd){
+                								html += '<a id="' + row.id + '_autoFlex" class="no-drop autoFlex_a " ' + 'href="javascript:void(0);" title="自动伸缩"' + '><i class="fa fa-arrows-h self_a"></i>自动伸缩</a> ';
+                							}else{
+                								html += '<a id="' + row.id + '_autoFlex" class="a-live autoFlex_a " ' + 'href="javascript:oneSetAutoFlexInfo(' + row.id + ',&apos;' + row.serviceName + '&apos;,' + row.minReplicas + ',' + row.maxReplicas + ',' + row.targetCPUUtilizationPercentage + ',' + row.status + ');" title="自动伸缩"' + '><i class="fa fa-arrows-h"></i>自动伸缩</a> ';
+                							}
+                						}
+                						html += '</li>' + '</ul>' + '</li>' + '</ul>';
+                					}
+                					html += '<a id="' + row.id + '_del" class="a-live deleteButton_a "' + 'href="javascript:oneDeleteContainer(' + row.id + ')"' + 'style="margin-left: 5px" title="删除"> <i class="fa fa-trash"></i></a>';
+                				}
+                				return html;
+                			}
+                		}],
+
+                		"createdRow" : function(row, data, dataIndex) {
+                			$(row).addClass('clusterId');
+                			$(row).data(row.id);
+                		}
+                	});
+				}else{
+					$('.dataTables-example').dataTable({
+						"aoColumnDefs" : [{
+							"bSortable" : false,
+							"aTargets" : [0, 6]
+						}],
+						"searching" : searchingFlag,
+						"autoWidth" : false,
+						"processing" : true,
+						"serverSide" : true,
+						"stateSave" : true,
+						"ordering" : false,
+						"ajax" : ctx + "/service/page.do?searchService=" + serviceSearchName + "&searchImage=" + serviceSearchImage + "&searchCreatorName=" + serviceSearchCreator,
+						"columns" : [{
+							data : null,
+							render : function(data, type, row) {
+								var html = '<input type= "checkbox" class="chkItem" style="margin-left:10px;" name="chkItem"' + 'autocomplete="off" id="checkboxID" value="' + row.id + '"' + 'serviceName="' + row.serviceName + '"' + 'serviceNum="' + row.instanceNum + '"' + 'confRam="' + row.ram + '" status="' + row.status + '"' + 'imagename="' + row.imgName + '"' + 'imageversion="' + row.imgVersion + '"' + 'confCpu="' + row.cpuNum + '"/>';
+								return html;
+							}
+						}, {
+							data : null,
+							render : function(data, type, row) {
+								var html = '';
+								if (row.codeRating == 1) {
+									html = '<a href="' + row.codeRatingURL + '" target="_blank"><span class="fa_level fa_level_a">A</span></a>';
+								} else if (row.codeRating == 2) {
+									html = '<a href="' + row.codeRatingURL + '" target="_blank"><span class="fa_level fa_level_b">B</span></a>';
+								} else if (row.codeRating == 3) {
+									html = '<a href="' + row.codeRatingURL + '" target="_blank"><span class="fa_level fa_level_c">C</span></a>';
+								} else if (row.codeRating == 4) {
+									html = '<a href="' + row.codeRatingURL + '" target="_blank"><span class="fa_level fa_level_d">D</span></a>';
+								} else if (row.codeRating == 5) {
+									html = '<a href="' + row.codeRatingURL + '" target="_blank"><span class="fa_level fa_level_e">E</span></a>';
+								} else {
+									html = '<span class="fa_level fa_level_n">无</span>';
+								}
+								return html;
+							}
+						}, {
+							data : null,
+							render : function(data, type, row) {
+								var html = "";
+								if (curUserAutority == 1) {
+									html = '<span serviceId="' + row.id + '"' + 'class="cluster_mirrer_name" style="width: 10px;white-space: nowrap;text-overflow: ellipsis;overflow:hidden;">' + row.serviceName + '</span>' + '<span class="number-node">' + row.instanceNum + '</span>';
+								} else {
+									html = '<b ' + 'class="caret margin" style="transform: rotate(-90deg);" rotate="hide"></b>' + '<a href="' + ctx + '/service/detail/' + row.id + '" serviceId="' + row.id + '"' + 'class="cluster_mirrer_name link" style="width: 10px;white-space: nowrap;text-overflow: ellipsis;overflow:hidden;">' + row.serviceName + '</a>' + '<span class="number-node">' + row.instanceNum + '</span>';
+								}
+								if (row.updateImage == true) {
+									html += '<a id="' + row.id + '_code" class="margin cursor console-code-modal"' + 'href="' + ctx + 'ci/findCodeCiId.do?imgId=' + row.imgID + '"' + 'style="margin-left: 5px" ><img src="' + ctx + '/images/sd.gif" title="代码更新"></a>';
+								}
+
+								return html;
+							}
+						}, {
+							data : null,
+							className : "cStatusColumn",
+							render : function(data, type, row) {
+								var html = '';
+								if (row.status == 1) {
+									html = '<a class="link" onclick="serviceEvent(' + row.id + ','+row.status+')"><i class="fa_stop"></i>' + '未启动 <img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" /></a>';
+								}
+								if (row.status == 2) {
+									html = '<a class="link" onclick="serviceEvent(' + row.id + ','+row.status+')"><i class="fa_success"></i>' + '启动中 <img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" /></a>';
+								}
+								if (row.status == 3) {
+									html = '<a class="link" onclick="serviceEvent(' + row.id + ','+row.status+')"><i class="fa_run"></i>' + '运行中 <img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" /></a>';
+								}
+								if (row.status == 4) {
+									html = '<a class="link" onclick="serviceEvent(' + row.id + ','+row.status+')"><i class="fa_stop"></i>' + '已停止<img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" /></a>';
+								}
+								if (row.status == 5) {
+									html = '<a class="link" onclick="serviceEvent(' + row.id + ','+row.status+')"><i class="fa_stop"></i>' + '启动失败<img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" /></a>';
+								}
+								if (row.status == 6) {
+									html = '<a class="link" onclick="serviceEvent(' + row.id + ','+row.status+')"><i class="fa_run"></i>' + '调试中<img src="' + ctx + '/images/loading4.gif"' + 'alt="" class="hide" /></a>';
+								}
+								if (row.status == 7) {
+									html = '<a class="link" onclick="serviceEvent(' + row.id + ','+row.status+')"><i class="fa_success"></i>' + '升级中<img src="' + ctx + '/images/loading4.gif"' + 'alt="" /></a><a href="javascript:oneStopContainerUpdate(' + row.id + ',&apos;' + row.serviceName + '&apos;)"><i class="fa fa-times fa-stopUpdate"></i></a>';
+								}
+								if (row.status == 8) {
+									html = '<a class="link" onclick="serviceEvent(' + row.id + ','+row.status+')"><i class="fa_success"></i>' + '升级中<img src="' + ctx + '/images/loading4.gif"' + 'alt="" /></a><a href="javascript:oneStopContainerUpdate(' + row.id + ',&apos;' + row.serviceName + '&apos;)"><i class="fa fa-times fa-stopUpdate"></i></a>';
+								}
+								return html;
+							}
+						}, {
+							data : null,
+							render : function(data, type, row) {
+								var html = "";
+								if (curUserAutority == 1) {
+									html = '<span class="cluster_mirrer">' + row.imgName + '</span>';
+								} else {
+									html = '<span class="cluster_mirrer">' + '<a class="link" title="点击查看镜像" target="_blank"' + 'href="' + ctx + '/registry/detail/' + row.imgID + '">' + row.imgName + '</a>' + '</span>';
+								}
+
+								return html;
+							}
+						}, {
+							data : null,
+							render : function(data, type, row) {
+								var html = '<span class="url">';
+								if (curUserAutority == 1) {
+									if (row.serviceAddr != null && row.serviceAddr != '') {
+										html += '<span href="' + row.serviceAddr + '/' + row.servicePath + '"' + 'target="_blank" title="' + row.serviceAddr + '/' + row.servicePath + '">';
+										if (row.serviceChName != null && row.serviceChName != '') {
+											html += row.serviceChName;
+										} else {
+											html += row.serviceAddr + '/' + row.servicePath;
+										}
+										html += '</span>';
+									}
+								} else {
+									if (row.serviceAddr != null && row.serviceAddr != '') {
+										html += '<a class="link" href="' + row.serviceAddr + '/' + row.servicePath + '"' + 'target="_blank" title="' + row.serviceAddr + '/' + row.servicePath + '">';
+										if (row.serviceChName != null && row.serviceChName != '') {
+											html += row.serviceChName;
+										} else {
+											html += row.serviceAddr + '/' + row.servicePath;
+										}
+										html += '</a>';
+									}
+								}
+								html += '</span>';
+								return html;
+							}
+						}, {
+							data : null,
+							render : function(data, type, row) {
+								var html = '<input type="hidden" class="timeStrap" value="">' + '<i class="fa_time"></i><span>' + row.createDate + '</span>';
+								return html;
+							}
+						}, {
+							data : null,
+							render : function(data, type, row) {
+								var html = '';
+
+								if (curUserAutority == 1) {
+									var html = '<span class="cluster_creator">' + row.creatorName + '</span>';
+								} else {
+
+									if (row.status == 3 || row.status == 6) {
+
+										html += '<a id="' + row.id + '_start" class="no-drop startContainer_a "' + 'href="javascript:oneStartContainer(' + row.id + ',' + row.status + ')"' + 'style="margin-left: 5px" title="启动"><i class="fa fa-play self_a"></i></a>';
+
+										html += '<a id="' + row.id + '_stop" class="a-live stopContainer_a "' + 'href="javascript:oneStopContainer(' + row.id + ',' + row.status + ')"' + 'style="margin-left: 5px" title="停止"> ' + '<i class="fa fa-power-off"></i></a>';
+
+									} else if (row.status == 7 || row.status == 8) {
+
+										html += '<a id="' + row.id + '_start" class="no-drop startContainer_a "' + 'href="javascript:oneStartContainer(' + row.id + ',' + row.status + ')"' + 'style="margin-left: 5px" title="启动"><i class="fa fa-play self_a"></i></a>';
+
+										html += '<a id="' + row.id + '_stop" class="no-drop stopContainer_a "' + 'href="javascript:oneStopContainer(' + row.id + ',' + row.status + ')"' + 'style="margin-left: 5px" title="停止"> ' + '<i class="fa fa-power-off self_a"></i></a>';
+									} else {
+										html += '<a id="' + row.id + '_start" class="a-live startContainer_a "' + 'href="javascript:oneStartContainer(' + row.id + ',' + row.status + ')"' + 'style="margin-left: 5px" title="启动"><i class="fa fa-play"></i></a>';
+
+										html += '<a id="' + row.id + '_stop" class="no-drop stopContainer_a "' + 'href="javascript:oneStopContainer(' + row.id + ',' + row.status + ')"' + 'style="margin-left: 5px" title="停止"> ' + '<i class="fa fa-power-off self_a"></i></a>';
+									}
+
+									if (row.status != 3 && row.status != 6 && row.status != 7 && row.status != 8) {
+										html += '<a id="' + row.id + '_change" class="a-live change " ' + 'href="javascript:startdebug(' + row.id + ',' + row.status + ')" title="调试"' + 'style="margin-left: 5px">' + '<i class="fa fa-bug"></i>' + '</a> ';
+									} else {
+										html += '<a id="' + row.id + '_change" class="a-live change " ' + 'href="javascript:void(0)" title="调试"' + 'style="margin-left: 5px">' + '<i class="fa fa-bug  self_a"></i>' + '</a> ';
+									}
+
+									if (row.status == 7 || row.status == 8) {
+										html += '<ul class="moreFun" style="margin-bottom:0px;line-height:40px;" id="' + row.id + '" serviceName="' + row.serviceName + '" imgName="' + row.imgName + '">' + '<li class="dropdown">' + '<a id="' + row.id + '_moreFun" class="dropdown-toggle no-drop" data-toggle="dropdown" style="margin-left: 5px" title="更多配置">' + '<i class="fa fa-gears self_a"></i></a>';
+									} else {
+										html += '<ul class="moreFun" style="margin-bottom:0px;line-height:40px;" id="' + row.id + '" serviceName="' + row.serviceName + '" imgName="' + row.imgName + '">' + '<li class="dropdown">' + '<a id="' + row.id + '_moreFun" class="dropdown-toggle a-live" data-toggle="dropdown" style="margin-left: 5px" title="更多配置">' + '<i class="fa fa-gears"></i></a>';
+									}
+									if (row.status != 7 && row.status != 8) {
+										html += '<ul id="' + row.id + '_dropdown" class="dropdown-menu">' + '<li>';
+										if (row.status == 6) {
+											html += '<a id="' + row.id + '_scaleCluster" class="no-drop scaleCluster_a "' + 'href="javascript:void(0)" title="弹性伸缩"' + '> <i class="fa fa-arrows self_a"></i>弹性伸缩</a>';
+										} else {
+											html += '<a id="' + row.id + '_scaleCluster" class="a-live scaleCluster_a "' + 'href="javascript:oneUpGradeContainer(' + row.id + ',&apos;' + row.serviceName + '&apos;,' + row.instanceNum + ',' + row.cpuNum + ',' + row.ram + ')" title="弹性伸缩"' + '> <i class="fa fa-arrows"></i>弹性伸缩</a>';
+										}
+										html += '</li>' + '<li>';
+										if (row.status == 3) {
+											html += '<a id="' + row.id + '_upgradeCluster" class="a-live upgradeCluster_a " ' + 'href="javascript:oneVersionUpgrade(' + row.id + ',&apos;' + row.serviceName + '&apos;,&apos;' + row.imgName +'&apos;,&apos;'+ row.imgVersion + '&apos;)" title="版本升级"' + '><i class="fa fa-arrow-up"></i>版本升级</a> ';
+										} else {
+											html += ' <a id="' + row.id + '_upgradeCluster" class="no-drop upgradeCluster_a " ' + 'href="javascript:oneVersionUpgrade(' + row.id + ',&apos;' + row.serviceName + '&apos;,&apos;' + row.imgName +'&apos;,&apos;'+ row.imgVersion + '&apos;,this)" title="版本升级"' + '><i class="fa fa-arrow-up self_a"></i>版本升级</a>';
+										}
+										html += '</li>' + '<li>';
+
+										if (row.status != 3 && row.status != 6) {
+											html += '<a id="' + row.id + '_changeConfiguration" class="no-drop changeConfiguration_a " ' + 'href="javascript:void(0);" title="更改配置"' + '><i class="fa fa-cog self_a"></i>更改配置</a> ';
+										} else {
+											html += '<a id="' + row.id + '_changeConfiguration" class="a-live changeConfiguration_a " ' + 'href="javascript:oneChangeContainerConf(' + row.id + ',&apos;' + row.serviceName + '&apos;,' + row.instanceNum + ',' + row.cpuNum + ',' + row.ram + ',' + row.status + ');" title="更改配置"' + '><i class="fa fa-cog"></i>更改配置</a> ';
+										}
+										if (row.status != 3 && row.status != 6) {
+											html += '<a id="' + row.id + '_autoFlex" class="no-drop autoFlex_a " ' + 'href="javascript:void(0);" title="自动伸缩"' + '><i class="fa fa-arrows-h self_a"></i>自动伸缩</a> ';
+										} else {
+											html += '<a id="' + row.id + '_autoFlex" class="a-live autoFlex_a " ' + 'href="javascript:oneSetAutoFlexInfo(' + row.id + ',&apos;' + row.serviceName + '&apos;,' + row.minReplicas + ',' + row.maxReplicas + ',' + row.targetCPUUtilizationPercentage + ',' + row.status + ');" title="自动伸缩"' + '><i class="fa fa-arrows-h"></i>自动伸缩</a> ';
+										}
+										html += '</li>' + '</ul>' + '</li>' + '</ul>';
+									}
+									html += '<a id="' + row.id + '_del" class="a-live deleteButton_a "' + 'href="javascript:oneDeleteContainer(' + row.id + ')"' + 'style="margin-left: 5px" title="删除"> <i class="fa fa-trash"></i></a>';
+								}
+								return html;
+							}
+						}],
+
+						"createdRow" : function(row, data, dataIndex) {
+							$(row).addClass('clusterId');
+							$(row).data(row.id);
+						}
+					});
+				}
+			}
+		});
+
+	/*$('.dataTables-example').dataTable({
 		"aoColumnDefs" : [{
 			"bSortable" : false,
 			"aTargets" : [0, 6]
@@ -1192,7 +1632,7 @@ function loadServices() {
 			$(row).addClass('clusterId');
 			$(row).data(row.id);
 		}
-	});
+	});*/
 }
 
 function loadServicesNoSonar() {

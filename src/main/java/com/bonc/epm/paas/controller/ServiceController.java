@@ -400,6 +400,7 @@ public class ServiceController {
 			map.put("memoryValue", Double.parseDouble(memorySize[i]) * 1024);
 			memorySizeList.add(map);
 		}
+
 		model.addAttribute("cpuSizeList", cpuSizeList);
 		model.addAttribute("memorySizeList", memorySizeList);
 		model.addAttribute("userName", userName);

@@ -112,20 +112,32 @@ function loadStorageList(){
 		if(data.status == 200) {
         	var itemsHtml = '';
         	var len = data.cephRbdInfos.length;
+        	var len2 = data.serviceCephRbds.length;
         	for(var i=0; i<len; i++){
         			var rbd = data.cephRbdInfos[i];
+        			var serviceId = 0;
+        			var serviceName = '';
+        			for(var j=0;j<len2;j++){
+        				var serviceRbd = data.serviceCephRbds[j];
+        				if(rbd.id == serviceRbd.cephrbdId){
+        					serviceId = serviceRbd.serviceId;
+        					serviceName = serviceRbd.servicename;
+        					break;
+        				}
+        			}
         			itemsHtml += '<tr>'
         						+'<td style="width: 5%; text-indent:30px">'
         						+'<input class="chkItem" type="checkbox" id="'+rbd.id+'">'
         						+'</td>'
         						+'<td>'+rbd.name+'</td>'
         						+'<td>'+rbd.size+'</td>'
-        						+'<td>'+(rbd.used==true?'已挂载':'未挂载')+'</td>'
+        						//+'<td>'+(rbd.used==true?'已挂载':'未挂载')+'</td>'
+        						+'<td serviceId='+serviceId+'>'+serviceName+'</td>'
         						+'<td>'+rbd.detail+'</td>'
         						+ '<td class="item-operation" rbdId='+rbd.id+' rbd="'+rbd.name+'" size="'+rbd.size +'" detail="'+rbd.detail +'" release="'+rbd.releaseWhenServiceDown+'">'
                             	+'<a onclick="createSnapshoot(this)"><i class="fa fa-camera fa-opr" title="创建快照" style="margin-left:0px"></i></a>'
                             	+'<a onclick="createStrategy(this)"><i class="fa fa-tasks fa-opr" title="设置自动快照策略"></i></a>'
-                            	+'<a onclick="formatStrategy(this)"><i class="fa fa-eraser fa-opr" title="重新初始化磁盘"></i></a>'
+                            	//+'<a onclick="formatStrategy(this)"><i class="fa fa-eraser fa-opr" title="重新初始化磁盘"></i></a>'
                             	+'<ul class="moreFun" style="margin-bottom:0px;line-height:40px;">'
 								+	'<li class="dropdown ">'
 								+		'<a class="dropdown-toggle a-live" data-toggle="dropdown">'
