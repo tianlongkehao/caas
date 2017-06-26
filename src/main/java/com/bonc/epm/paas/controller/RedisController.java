@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +22,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
+import com.bonc.epm.paas.dao.RedisDao;
+import com.bonc.epm.paas.entity.Redis;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
 import com.bonc.epm.paas.kubernetes.apis.KubernetesAPISClientInterface;
@@ -72,19 +75,75 @@ public class RedisController {
 	@Autowired
 	KubernetesClientService kubernetesClientService;
 
+	@Autowired
+	RedisDao redisDao;
+
+	/**
+	 * createRedisService:创建RedisService. <br/>
+	 *
+	 * @param redis
+	 * @return String
+	 */
+	@RequestMapping(value = "createRedisService.do", method = RequestMethod.POST)
+	@ResponseBody
+	public String createRedisService(Redis redis) {
+		Map<String, Object> map = new HashMap<>();
+		// 查询是否有同名服务
+		if (CollectionUtils.isNotEmpty(redisDao.findByName(redis.getName()))) {
+			map.put("message", "存在同名的redis服务：[" + redis.getName() + "]");
+			map.put("status", "200");
+			return JSON.toJSONString(map);
+		}
+		Map<String, Object> createRedisResult = createRedis(redis.getName());
+		if (createRedisResult.get("status").equals("200")) {
+			redisDao.save(redis);
+		}
+		map = createRedisResult;
+		return JSON.toJSONString(map);
+	}
+
+	/**
+	 * deleteRedisService:删除RedisService. <br/>
+	 *
+	 * @param id
+	 * @return String
+	 */
+	@RequestMapping(value = "deleteRedisService.do", method = RequestMethod.GET)
+	@ResponseBody
+	public String deleteRedisService(long id) {
+		Map<String, String> map = new HashMap<>();
+		Redis redis = redisDao.findOne(id);
+		if (null == redis) {
+			map.put("message", "找不到对应的服务：["+id+"]");
+			map.put("status", "300");
+			return JSON.toJSONString(map);
+		}
+		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+		KubernetesAPISClientInterface apisClient = kubernetesClientService.getApisClient();
+
+		try {
+			client.deleteConfigMap(redis.getName());
+			client.deleteService(redis.getName());
+			apisClient.deleteStatefulSet(redis.getName());
+		} catch (KubernetesClientException e) {
+			e.printStackTrace();
+		}
+		redisDao.delete(redis);
+		map.put("status", "200");
+		return JSON.toJSONString(map);
+	}
+
 	/**
 	 * createRedis:创建redis. <br/>
 	 *
 	 * @param name
-	 * @return String
+	 * @return Map<String,Object>
 	 */
-	@RequestMapping(value = "createRedis.do", method = RequestMethod.POST)
-	@ResponseBody
-	public String createRedis(String name) {
+	private Map<String, Object> createRedis(String name) {
 		Map<String, Object> map = new HashMap<>();
 		KubernetesAPIClientInterface apiClient = kubernetesClientService.getClient();
 		KubernetesAPISClientInterface apisClient = kubernetesClientService.getApisClient();
-		//查询service是否已经存在
+		// 查询service是否已经存在
 		Service service = null;
 		try {
 			service = apiClient.getService(name);
@@ -92,12 +151,12 @@ public class RedisController {
 			service = null;
 		}
 		if (null != service) {
-			map.put("message", "存在同名service：["+name+"]");
+			map.put("message", "存在同名service：[" + name + "]");
 			map.put("status", "300");
-			return JSON.toJSONString(map);
+			return map;
 		}
 
-		//查询configMap是否已经存在
+		// 查询configMap是否已经存在
 		ConfigMap configMap = null;
 		try {
 			configMap = apiClient.getConfigMap(name);
@@ -105,12 +164,12 @@ public class RedisController {
 			configMap = null;
 		}
 		if (null != configMap) {
-			map.put("message", "存在同名configMap：["+name+"]");
+			map.put("message", "存在同名configMap：[" + name + "]");
 			map.put("status", "300");
-			return JSON.toJSONString(map);
+			return map;
 		}
 
-		//查询statefulSet是否已经存在
+		// 查询statefulSet是否已经存在
 		StatefulSet statefulSet = null;
 		try {
 			statefulSet = apisClient.getStatefulSet(name);
@@ -118,31 +177,31 @@ public class RedisController {
 			statefulSet = null;
 		}
 		if (null != statefulSet) {
-			map.put("message", "存在同名statefulSet：["+name+"]");
+			map.put("message", "存在同名statefulSet：[" + name + "]");
 			map.put("status", "300");
-			return JSON.toJSONString(map);
+			return map;
 		}
 
-		//创建service
+		// 创建service
 		User user = CurrentUserUtils.getInstance().getUser();
 		service = generateRedisService(name, user.getNamespace());
 		try {
 			service = apiClient.createService(service);
 		} catch (KubernetesClientException e) {
 			e.printStackTrace();
-			map.put("message", "创建service失败：["+e.getStatus().getReason()+"]");
+			map.put("message", "创建service失败：[" + e.getStatus().getReason() + "]");
 			map.put("status", "300");
-			return JSON.toJSONString(map);
+			return map;
 		}
 
-		//创建configMap
+		// 创建configMap
 		try {
-			 configMap = generateRedisConfigMap(name);
+			configMap = generateRedisConfigMap(name);
 		} catch (IOException e) {
 			e.printStackTrace();
-			map.put("message", "初始化ConfigMap失败：["+e.getMessage()+"]");
+			map.put("message", "初始化ConfigMap失败：[" + e.getMessage() + "]");
 			map.put("status", "300");
-			return JSON.toJSONString(map);
+			return map;
 		}
 		if (null != configMap) {
 			try {
@@ -150,13 +209,13 @@ public class RedisController {
 			} catch (KubernetesClientException e) {
 				e.printStackTrace();
 				apiClient.deleteService(name);
-				map.put("message", "创建ConfigMap失败：["+e.getStatus().getReason()+"]");
+				map.put("message", "创建ConfigMap失败：[" + e.getStatus().getReason() + "]");
 				map.put("status", "300");
-				return JSON.toJSONString(map);
+				return map;
 			}
 		}
 
-		//创建statefulSet
+		// 创建statefulSet
 		statefulSet = generateRedisStatefulSet(name);
 		try {
 			apisClient.createStatefulSet(statefulSet);
@@ -164,13 +223,16 @@ public class RedisController {
 			e.printStackTrace();
 			apiClient.deleteService(name);
 			apiClient.deleteConfigMap(name);
-			map.put("message", "创建StatefulSet失败：["+e.getStatus().getReason()+"]");
+			map.put("message", "创建StatefulSet失败：[" + e.getStatus().getReason() + "]");
 			map.put("status", "300");
-			return JSON.toJSONString(map);
+			return map;
 		}
 
+		map.put("service", service);
+		map.put("configMap", configMap);
+		map.put("statefulSet", statefulSet);
 		map.put("status", "200");
-		return JSON.toJSONString(map);
+		return map;
 	}
 
 	/**
@@ -211,7 +273,8 @@ public class RedisController {
 		Map<String, String> selector = new HashMap<>();
 		selector.put("app", name);
 
-		return kubernetesClientService.generateService(annotations, name, namespace, labels, ports, clusterIP, selector);
+		return kubernetesClientService.generateService(annotations, name, namespace, labels, ports, clusterIP,
+				selector);
 	}
 
 	/**
@@ -219,7 +282,8 @@ public class RedisController {
 	 *
 	 * @param name
 	 * @return
-	 * @throws IOException ConfigMap
+	 * @throws IOException
+	 *             ConfigMap
 	 */
 	private ConfigMap generateRedisConfigMap(String name) throws IOException {
 		User user = CurrentUserUtils.getInstance().getUser();
@@ -326,8 +390,8 @@ public class RedisController {
 		volumeMount3.setReadOnly(false);
 		volumeMounts.add(volumeMount3);
 
-		Container container1 = kubernetesClientService.generateContainer(name, "dipperroy/redis:3.2.8-rb", ports1, command, args,
-				readinessProbe, livenessProbe, env, volumeMounts);
+		Container container1 = kubernetesClientService.generateContainer(name, "dipperroy/redis:3.2.8-rb", ports1,
+				command, args, readinessProbe, livenessProbe, env, volumeMounts);
 		containers.add(container1);
 
 		// 1.2.2创建container redis-exporter
@@ -337,8 +401,8 @@ public class RedisController {
 		port21.setContainerPort(9291);
 		ports2.add(port21);
 
-		Container container2 = kubernetesClientService.generateContainer("redis-exporter", "docker.io/oliver006/redis_exporter",
-				ports2, null, null, null, null, null, null);
+		Container container2 = kubernetesClientService.generateContainer("redis-exporter",
+				"docker.io/oliver006/redis_exporter", ports2, null, null, null, null, null, null);
 		containers.add(container2);
 
 		// 1.3创建template的volumes
@@ -354,7 +418,7 @@ public class RedisController {
 		Volume volume2 = new Volume();
 		volume2.setName("conf");
 		ConfigMapVolumeSource configMap = new ConfigMapVolumeSource();
-		configMap.setName("redis-cluster-config");
+		configMap.setName(name);
 		List<KeyToPath> items = new ArrayList<>();
 		KeyToPath keyToPath1 = new KeyToPath();
 		keyToPath1.setKey(REDIS_CONF);
@@ -406,16 +470,15 @@ public class RedisController {
 		downwardAPIItems.add(downwardAPIVolumeFile4);
 
 		downwardAPI.setItems(downwardAPIItems);
-		volume3.setDownwardAPI(downwardAPI );
+		volume3.setDownwardAPI(downwardAPI);
 		volumes.add(volume3);
 		// 1.4
-		PodTemplateSpec template = kubernetesClientService.generatePodTemplateSpec(labels, 10, containers,
-				volumes);
+		PodTemplateSpec template = kubernetesClientService.generatePodTemplateSpec(labels, 10, containers, volumes);
 
 		/*
 		 * 2.创建statefulSet的volumeClaimTemplates
 		 */
-		String namespace  = CurrentUserUtils.getInstance().getUser().getNamespace();
+		String namespace = CurrentUserUtils.getInstance().getUser().getNamespace();
 
 		List<PersistentVolumeClaim> volumeClaimTemplates = new ArrayList<>();
 		List<String> accessModes = new ArrayList<>();
@@ -427,7 +490,8 @@ public class RedisController {
 		resources.setRequests(requests);
 
 		String storageClassName = "ceph-rbd";
-		PersistentVolumeClaim persistentVolumeClaim = kubernetesClientService.generatePersistentVolumeClaim("data", namespace, accessModes , resources, storageClassName );
+		PersistentVolumeClaim persistentVolumeClaim = kubernetesClientService.generatePersistentVolumeClaim("data",
+				namespace, accessModes, resources, storageClassName);
 		volumeClaimTemplates.add(persistentVolumeClaim);
 		/*
 		 * 3.创建statefulSet

@@ -7,7 +7,7 @@
 <link rel="stylesheet" type="text/css"
 	href="<%=path%>/css/mod/redis.css" />
 <script type="text/javascript"
-	src="<%=path%>/js/database/redis.js"></script>
+	src="<%=path%>/js/database/redis-create.js"></script>
 </head>
 <body>
 
@@ -45,39 +45,41 @@
 
 							<%--基本信息--%>
 							<form id="buildForm" name="buildForm"
-								action="<%=path%>/service/storage/build" method="post">
+								action="<%=path%>/RedisController/createRedisService.do" method="post">
 								<div style="margin: 25px 15px" class="createRedisStep1">
 									<div class="infoCred">
 										<span class="labelCred">集群名称：</span> <input type="text"
-											class="form-control conCred" id="" name=""
+											class="form-control conCred" id="name" name="name"
 											value="">
 									</div>
 									<div class="infoCred">
 										<span class="labelCred">使用者：</span> <input type="text"
-											class="form-control conCred" id="" name=""
+											class="form-control conCred" id="user" name="user"
 											value="">
 									</div>
 								    <div class="infoCred">
-						                <span class="labelCred">集群模式：</span> 
-						                <select class="form-control conCred" id="clusterType" name="" onchange="changeClusterType(this)">
+						                <span class="labelCred">集群模式：</span>
+						                <select class="form-control conCred" id="clusterType" onchange="changeClusterType(this)">
 						                    <option value="1">集群</option>
 						                    <option value="2">单机</option>
 						                </select>
+						                <input type="hidden" id = "nodeNum" name ="nodeNum" value = ""/>
+						                <input type="hidden" id = "ram" name ="ram" value = ""/>
 						            </div>
 									<div class="infoCred">
 										<p id="clusterTypeExplain" class="pExplain">集群版架构，扩展CPU及QPS能力，支持8节点及16节点的集群架构</p>
 									</div>
-									<div class="infoCred">   
-										<span class="labelCred">redis版本：</span> 
-										<select class="form-control conCred" id="" name="" >
+									<div class="infoCred">
+										<span class="labelCred">redis版本：</span>
+										<select class="form-control conCred" id="version" name="version" >
 											<option value="1">3.01</option>
 											<option value="2">2.8</option>
 										</select>
 									</div>
-									<div class="infoCred">   
+									<div class="infoCred">
 										<span class="labelCred">redis内存(G)：</span>
 										<div id="redisMemSec">
-											<select class="form-control conCred" id="" name="" >
+											<select class="form-control conCred" id="nodeRam" >
 												<option value="16">16G 集群版 8个节点</option>
 												<option value="32">32G 集群版 8个节点</option>
 												<option value="64">64G 集群版 8个节点</option>
@@ -85,7 +87,7 @@
 											</select>
 										</div>
 									</div>
-									<div class="infoCred">   
+									<div class="infoCred">
 										<span class="labelCred">存储卷大小(G)：</span><input type="number"
 											class="form-control conCred" id="" name=""
 											value="" placeholder="大于redis内存">
@@ -105,8 +107,8 @@
 											class="form-control conCred" id="" name=""
 											value="6379" placeholder="6379">
 									</div>
-									<div class="infoCred">   
-										<span class="labelCred">内存消除策略：</span> 
+									<div class="infoCred">
+										<span class="labelCred">内存消除策略：</span>
 										<select class="form-control conCred" id="" name="" >
 											<option value="1">allkeys_lru</option>
 											<option value="2">Volatile_lruG</option>
@@ -121,7 +123,7 @@
 										<p class="pExplain">volatile-lru(优先移除过期键中最近未使用的key),allkeys-random(随机移除主键中某个key),</p>
 										<p class="pExplain">volatile-random(随机移除过期键中某个key),volatile-ttl(过期键中，优先移除过期时间更早的key)</p>
 									</div>
-									<div class="infoCred"> 
+									<div class="infoCred">
 										<input type="button" class="btn btn-danger btn-sm btn-higher" value="高级">
 									</div>
 								</div>
@@ -143,7 +145,7 @@
 										<p class="pExplain">开启AOF</p>
 									</div>
 									<div class="infoCred normal">
-										<span class="labelCred">同步AOF到磁盘：</span> 
+										<span class="labelCred">同步AOF到磁盘：</span>
 										<select class="form-control conCred" id="" name="">
 											<option value="1">everysec</option>
 											<option value="2">always</option>
@@ -162,7 +164,7 @@
 										<p class="pExplain">客户端超时时间，单位：秒</p>
 									</div>
 									<div class="infoCred normal">
-										<span class="labelCred">是否使用集群：</span> 
+										<span class="labelCred">是否使用集群：</span>
 										<select class="form-control conCred" id="clusterEnabled" name="" disabled>
 											<option value="1">yes</option>
 											<option value="2">no</option>
@@ -203,14 +205,14 @@
 									<div class="infoCred hide">
 										<p class="pExplain">节点配置文件</p>
 									</div>
-									<div class="infoCred"> 
+									<div class="infoCred">
 										<input type="button" class="btn btn-danger btn-sm btn-nohigher" value="返回基本配置">
 									</div>
 								</div>
 								<div class="container" style="width:90%">
 									<div class="list-item-description">
                                         <a href="<%=path %>/db/redis"><span class="btn btn-default" style="margin-right: 30px;">返回</span></a>
-                                        <span id="buildStorage" class="btn btn-primary btn-color pull-right">保存</span>
+                                        <span id="buildBtn" class="btn btn-primary btn-color pull-right">保存</span>
                                     </div>
 								</div>
 							</form>

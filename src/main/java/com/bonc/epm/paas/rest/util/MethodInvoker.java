@@ -32,6 +32,8 @@ import com.bonc.epm.paas.docker.exception.DokcerRegistryClientException;
 import com.bonc.epm.paas.docker.exception.ErrorList;
 import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
 import com.bonc.epm.paas.kubernetes.exceptions.Status;
+import com.bonc.epm.paas.kubernetes.model.ConfigMap;
+import com.bonc.epm.paas.kubernetes.model.Kind;
 import com.bonc.epm.paas.shera.exceptions.SheraClientException;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 
@@ -116,6 +118,11 @@ public class MethodInvoker {
     	    	if (StringUtils.isBlank(response.readEntity(String.class))) { // 调用接口无返回信息，如：删除镜像清单成功后
     	    		return null;
     	    	} else {
+					if (method.getReturnType().equals(ConfigMap.class)
+							&& ((ConfigMap) response.readEntity(method.getReturnType())).getKind()
+									.equals(Kind.STATUS)) {
+						throw new KubernetesClientException("unexpect k8s response", response.readEntity(Status.class));
+					}
     	    		return response.readEntity(method.getReturnType());
     	    	}
     	    }
