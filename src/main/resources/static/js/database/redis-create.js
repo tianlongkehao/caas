@@ -13,13 +13,41 @@ $(document).ready(function(){
 		cfgNoHighter();
 	});
 	$("#buildBtn").click(function(){
-		var clusterType = $("#clusterType").val();
-		if(clusterType == "1"){
-
-		} else {
-
+		//集群名称的判断
+		var name = $("#name").val();
+		if(name.length == 0){
+			layer.tips('集群名称不能为空', '#name', {
+				tips : [1, '#3595CC']
+			});
+			$('#name').focus();
+			return;
 		}
-		var ram = $("#ram").val();
+		var check = /^[a-z][a-z\d]{3,19}$/ ;
+		if (!check.test(name)) {
+			layer.tips('集群名称必须是小写字母开头，只能是小写字母和数字的4-20个字符组成！', '#name', {
+				tips : [1, '#3595CC']
+			});
+			$('#name').focus();
+			return;
+		}
+
+		//使用者的判断
+		var user = $("#user").val();
+		if(user.length == 0){
+			layer.tips('使用者不能为空', '#user', {
+				tips : [1, '#3595CC']
+			});
+			$('#user').focus();
+			return;
+		}
+
+		//给节点数和内存大小赋值
+		var nodeRamList = $("#nodeRam").val().split(",");
+		//节点数
+		$("#nodeNum").val(nodeRamList[1]);
+		//内存
+		$("#ram").val(nodeRamList[0]);
+
 
 		$("#buildForm").submit();
 	});

@@ -72,50 +72,51 @@
 									<div class="infoCred">
 										<span class="labelCred">redis版本：</span>
 										<select class="form-control conCred" id="version" name="version" >
-											<option value="1">3.01</option>
-											<option value="2">2.8</option>
+											<option value="3.01">3.01</option>
+											<option value="2.8">2.8</option>
 										</select>
 									</div>
 									<div class="infoCred">
 										<span class="labelCred">redis内存(G)：</span>
 										<div id="redisMemSec">
 											<select class="form-control conCred" id="nodeRam" >
-												<option value="16">16G 集群版 8个节点</option>
-												<option value="32">32G 集群版 8个节点</option>
-												<option value="64">64G 集群版 8个节点</option>
-												<option value="128">128G 集群版 16个节点</option>
+												<option value="16,8">16G 集群版 8个节点</option>
+												<option value="32,8">32G 集群版 8个节点</option>
+												<option value="64,8">64G 集群版 8个节点</option>
+												<option value="128,16">128G 集群版 16个节点</option>
 											</select>
 										</div>
 									</div>
 									<div class="infoCred">
 										<span class="labelCred">存储卷大小(G)：</span><input type="number"
-											class="form-control conCred" id="" name=""
-											value="" placeholder="大于redis内存">
+											class="form-control conCred" id="storage" name="storage"
+											value="" placeholder="大于redis内存" min="0">
 									</div>
 									<div class="infoCred">
 										<span class="labelCred">CPU(个)：</span> <input type="number"
-											class="form-control conCred" id="" name=""
+											class="form-control conCred" id="cpu" name="cpu"
 											value="2" placeholder="2" disabled>
+						                <input type="hidden" id = "cpu" name ="cpu" value = "2"/>
 									</div>
 									<div class="infoCred normal">
 										<span class="labelCred">数据库(个)：</span> <input type="number"
-											class="form-control conCred" id="" name=""
-											value="16" placeholder="16">
+											class="form-control conCred" id="databaseNum" name="databaseNum"
+											value="16" placeholder="16" min="0">
 									</div>
 									<div class="infoCred normal">
 										<span class="labelCred">端口：</span> <input type="number"
-											class="form-control conCred" id="" name=""
+											class="form-control conCred" id="port" name="port"
 											value="6379" placeholder="6379">
 									</div>
 									<div class="infoCred">
 										<span class="labelCred">内存消除策略：</span>
-										<select class="form-control conCred" id="" name="" >
-											<option value="1">allkeys_lru</option>
-											<option value="2">Volatile_lruG</option>
-											<option value="1">Volatile_random</option>
-											<option value="2">allkeys_random</option>
-											<option value="1">Volatile_ttl</option>
-											<option value="2">noeviction</option>
+										<select class="form-control conCred" id="memoryPolicy" name="memoryPolicy" >
+											<option value="allkeys_lru">allkeys_lru</option>
+											<option value="Volatile_lruG">Volatile_lruG</option>
+											<option value="Volatile_random">Volatile_random</option>
+											<option value="allkeys_random">allkeys_random</option>
+											<option value="Volatile_ttl">Volatile_ttl</option>
+											<option value="noeviction">noeviction</option>
 										</select>
 									</div>
 									<div class="infoCred">
@@ -130,26 +131,28 @@
 								<div style="margin: 25px 15px;display:none" class="createRedisStep2">
 									<div class="infoCred normal">
 										<span class="labelCred">是否开启守护进程：</span> <input type="text"
-											class="form-control conCred" id="" name=""
+											class="form-control conCred" id="daemon" name="daemon"
 											value="no" placeholder="" disabled>
+										<input type="hidden" id = "daemon" name ="daemon" value = "0"/>
 									</div>
 									<div class="infoCred hide">
 										<p class="pExplain">是否开启守护进程，默认：no 不开启</p>
 									</div>
 									<div class="infoCred normal">
 										<span class="labelCred">开启AOF：</span> <input type="text"
-											class="form-control conCred" id="" name=""
+											class="form-control conCred" id="aof" name="aof"
 											value="yes" placeholder="" disabled>
+										<input type="hidden" id = "aof" name ="aof" value = "1"/>
 									</div>
 									<div class="infoCred hide">
 										<p class="pExplain">开启AOF</p>
 									</div>
 									<div class="infoCred normal">
 										<span class="labelCred">同步AOF到磁盘：</span>
-										<select class="form-control conCred" id="" name="">
-											<option value="1">everysec</option>
-											<option value="2">always</option>
-											<option value="3">no</option>
+										<select class="form-control conCred" id="aofSync" name="aofSync">
+											<option value="everysec">everysec</option>
+											<option value="always">always</option>
+											<option value="no">no</option>
 										</select>
 									</div>
 									<div class="infoCred hide">
@@ -157,8 +160,8 @@
 									</div>
 									<div class="infoCred normal">
 										<span class="labelCred">客户端超时时间(s)：</span> <input type="number"
-											class="form-control conCred" id="" name=""
-											value="300" placeholder="">
+											class="form-control conCred" id="clientTimeout" name="clientTimeout"
+											value="300" placeholder="300" min="0">
 									</div>
 									<div class="infoCred hide">
 										<p class="pExplain">客户端超时时间，单位：秒</p>
@@ -175,32 +178,36 @@
 									</div>
 									<div class="infoCred normal">
 										<span class="labelCred">数据库存放目录：</span> <input type="text"
-											class="form-control conCred" id="" name=""
+											class="form-control conCred" id="databaseDir" name="databaseDir"
 											value="/opt/redis" disabled>
+										<input type="hidden" id = "databaseDir" name ="databaseDir" value = "/opt/redis"/>
 									</div>
 									<div class="infoCred hide">
 										<p class="pExplain">数据库存放目录</p>
 									</div>
 									<div class="infoCred normal">
 										<span class="labelCred">数据库文件名：</span> <input type="text"
-											class="form-control conCred" id="" name=""
+											class="form-control conCred" id="databaseFileName" name="databaseFileName"
 											value="dump.rdb" placeholder="" disabled>
+										<input type="hidden" id = "databaseFileName" name ="databaseFileName" value = "dump.rdb"/>
 									</div>
 									<div class="infoCred hide">
 										<p class="pExplain">数据库文件名</p>
 									</div>
 									<div class="infoCred normal">
 										<span class="labelCred">节点互连超时时间(ms)：</span> <input type="text"
-											class="form-control conCred" id="" name=""
+											class="form-control conCred" id="nodeTimeout" name="nodeTimeout"
 											value="15000" placeholder="" disabled>
+										<input type="hidden" id = "nodeTimeout" name ="nodeTimeout" value = "15000"/>
 									</div>
 									<div class="infoCred hide">
 										<p class="pExplain">节点互连超时时间</p>
 									</div>
 									<div class="infoCred normal">
 										<span class="labelCred">节点配置文件：</span> <input type="text"
-											class="form-control conCred" id="" name=""
+											class="form-control conCred" id="nodeConfigFile" name="nodeConfigFile"
 											value="nodes.conf" placeholder="" disabled>
+										<input type="hidden" id = "nodeConfigFile" name ="nodeConfigFile" value = "nodes.conf"/>
 									</div>
 									<div class="infoCred hide">
 										<p class="pExplain">节点配置文件</p>
