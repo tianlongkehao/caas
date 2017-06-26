@@ -1152,7 +1152,8 @@ public class CiController {
             }
         } catch (Exception e) {
             e.printStackTrace();
-        }
+            throw e;
+         }
         return flag;
     }
 
