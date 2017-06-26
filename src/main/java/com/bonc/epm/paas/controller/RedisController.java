@@ -10,6 +10,7 @@ package com.bonc.epm.paas.controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +18,7 @@ import java.util.Map;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -79,6 +81,29 @@ public class RedisController {
 	RedisDao redisDao;
 
 	/**
+	 * 帮助文档
+	 *
+	 * @param model
+	 *            添加返回页面的数据
+	 * @return String
+	 */
+	@RequestMapping(value = "/redis", method = RequestMethod.GET)
+	public String indexRedis(Model model) {
+		List<Redis> redisList = redisDao.findByCreateBy(CurrentUserUtils.getInstance().getUser().getId());
+		model.addAttribute("redisList", redisList);
+		model.addAttribute("menu_flag", "database");
+		model.addAttribute("li_flag", "redis");
+		return "database/redis.jsp";
+	}
+
+	@RequestMapping(value = "/redis/create", method = RequestMethod.GET)
+	public String redisCreate(Model model) {
+		model.addAttribute("menu_flag", "database");
+		model.addAttribute("li_flag", "redis");
+		return "database/redis-create.jsp";
+	}
+
+	/**
 	 * createRedisService:创建RedisService. <br/>
 	 *
 	 * @param redis
@@ -96,6 +121,8 @@ public class RedisController {
 		}
 		Map<String, Object> createRedisResult = createRedis(redis.getName());
 		if (createRedisResult.get("status").equals("200")) {
+			redis.setCreateBy(CurrentUserUtils.getInstance().getUser().getId());
+			redis.setCreateDate(new Date());
 			redisDao.save(redis);
 		}
 		map = createRedisResult;
@@ -114,7 +141,7 @@ public class RedisController {
 		Map<String, String> map = new HashMap<>();
 		Redis redis = redisDao.findOne(id);
 		if (null == redis) {
-			map.put("message", "找不到对应的服务：["+id+"]");
+			map.put("message", "找不到对应的服务：[" + id + "]");
 			map.put("status", "300");
 			return JSON.toJSONString(map);
 		}

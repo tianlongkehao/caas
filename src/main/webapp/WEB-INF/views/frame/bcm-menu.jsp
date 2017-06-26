@@ -216,7 +216,7 @@
 					<span class="nav-label">数据库服务</span>
 				</a>
 					<ul class="nav nav-second-level">
-						<li id="li_redis"><a class="J_menuItem" href="<%=path %>/db/redis"><i class="fa fa_circle"></i>redis</a></li>
+						<li id="li_redis"><a class="J_menuItem" href="<%=path %>/RedisController/redis"><i class="fa fa_circle"></i>redis</a></li>
 					</ul></li>
 				<%-- <li id="menu_storage"><a href="#" class="first-a">
 					<i class="fa-nav fa-nav-storage"></i>

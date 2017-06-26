@@ -1,9 +1,13 @@
 package com.bonc.epm.paas.entity;
 
+import java.util.Date;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+
+import com.alibaba.fastjson.annotation.JSONField;
 
 /**
  * ClassName: Redis <br/>
@@ -108,6 +112,14 @@ public class Redis {
 	 * nodeConfigFile:节点配置文件.
 	 */
 	private String nodeConfigFile;
+
+	/**
+	 * 创建时间
+	 */
+	@JSONField(format = "yyyy-MM-dd HH:mm:ss")
+	private Date createDate;
+
+	private long createBy;
 
 	public long getId() {
 		return id;
@@ -260,4 +272,20 @@ public class Redis {
 	public void setNodeConfigFile(String nodeConfigFile) {
 		this.nodeConfigFile = nodeConfigFile;
 	}
+	public Date getCreateDate() {
+		return createDate;
+	}
+
+	public void setCreateDate(Date createDate) {
+		this.createDate = createDate;
+	}
+
+	public long getCreateBy() {
+		return createBy;
+	}
+
+	public void setCreateBy(long createBy) {
+		this.createBy = createBy;
+	}
+
 }
