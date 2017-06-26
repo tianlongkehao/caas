@@ -111,14 +111,14 @@
 							</a>
 								<ul class="dropdown-menu">
 									<li id="showLogs"><a class="dropdown-pod" style="width: 100%;" >实时日志</a>
-										<ul class="dropdown-menu logsli">
+										<ul class="dropdown-menu logsli" style="margin-left: -2px;">
 											<c:forEach items="${podNameList}" var="pod" >
 										 		<li class="LOG"><a class="dropdown-pod" podName="${pod.podName }" serviceid="${service.id }" value="2" onclick="dropdownLog(this)"
 										 			style="width: 100%;white-space: nowrap;text-overflow: ellipsis;overflow:hidden;" title="${pod.podName }">${pod.podName }</a></li>
 										 	</c:forEach>
 										</ul>
 									</li>
-								 	
+
 									<li><a class="dropdown-pod"  style="width: 100%;">历史日志</a></li>
 								</ul>
 							</li>
