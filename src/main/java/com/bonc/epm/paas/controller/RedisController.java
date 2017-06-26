@@ -154,6 +154,9 @@ public class RedisController {
 			apisClient.deleteStatefulSet(redis.getName());
 		} catch (KubernetesClientException e) {
 			e.printStackTrace();
+			map.put("status", "300");
+			map.put("message", "删除失败：" + e.getStatus().getReason());
+			return JSON.toJSONString(map);
 		}
 		redisDao.delete(redis);
 		map.put("status", "200");

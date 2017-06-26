@@ -1,3 +1,27 @@
+//删除一个服务
+function oneDelete(id){
+	layer.open({
+		title: '删除服务',
+		content: '确定删除shera？',
+		btn: ['确定', '取消'],
+		yes: function(index, layero){
+			layer.close(index);
+			$.ajax({
+				url :""+ ctx + "/RedisController/deleteRedisService.do?id="+id,
+				success : function(data){
+					data = eval("("+data+")");
+					if (data.status == "200") {
+						window.location.reload(true);
+					}
+					else {
+						layer.alert("删除失败：["+data.message+""]");
+					}
+				}
+			});
+		}
+	});
+}
+
 //集群detail
 function clusterDetail(){
 	layer.open({
@@ -9,7 +33,7 @@ function clusterDetail(){
 		yes:function(index,layero){
 
 		}
-	})
+	});
 }
 
 //集群配置
@@ -23,7 +47,7 @@ function cfgCluster(){
 		yes:function(index,layero){
 			layer.close(index);
 		}
-	})
+	});
 }
 
 //一个节点的日志
@@ -37,5 +61,5 @@ function oneNodeLogs(){
 		yes:function(index,layero){
 			layer.close(index);
 		}
-	})
+	});
 }
