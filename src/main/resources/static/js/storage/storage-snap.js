@@ -4,8 +4,16 @@ $(function(){
 
 //加载快照列表
 function loadSnapList(){
+	var snapId = $("#snapId").val();
+	var url='';
+	if(snapId==''){
+		url=ctx+"/storage/snapList";
+	}else{
+		url=ctx+"/storage/snapList/"+snapId;
+	}
+
 	$.ajax({
-		url:""+ctx+"/storage/snapList",
+		url:url,
 		type:"get",
 		success:function(data){
         var data = eval("("+data+")");

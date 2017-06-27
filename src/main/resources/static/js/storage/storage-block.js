@@ -113,6 +113,8 @@ function loadStorageList(){
         	var itemsHtml = '';
         	var len = data.cephRbdInfos.length;
         	var len2 = data.serviceCephRbds.length;
+        	var len3 = data.cephSnaps.length;
+
         	for(var i=0; i<len; i++){
         			var rbd = data.cephRbdInfos[i];
         			var serviceId = 0;
@@ -125,6 +127,24 @@ function loadStorageList(){
         					break;
         				}
         			}
+
+        			var snapHtml = '';
+        			snapHtml += '<ul class="moreFun" style="margin-bottom:0px;line-height:40px;">'
+						 	 	+	'<li class="dropdown ">'
+						 	 	+	'<a class="dropdown-toggle a-live" data-toggle="dropdown">'
+								+	'<i class="fa fa-list-alt fa-opr" title="快照列表"></i></a>'
+								+	'<ul class="dropdown-menu" style="margin-left:-20px;margin-top:40px">';
+
+        			for(var j=0;j<len3;j++){
+        				var snap = data.cephSnaps[j];
+        				if(snap.imgId == rbd.id){
+        					snapHtml+='<li><a href="'+ctx+'/storage/storageSnap/'+snap.id+'">'+snap.name +'</a></li>';
+        				}
+        			}
+
+        			snapHtml += '</ul></li></ul>';
+
+
         			itemsHtml += '<tr>'
         						+'<td style="width: 5%; text-indent:30px">'
         						+'<input class="chkItem" type="checkbox" id="'+rbd.id+'">'
@@ -132,7 +152,7 @@ function loadStorageList(){
         						+'<td>'+rbd.name+'</td>'
         						+'<td>'+rbd.size+'</td>'
         						//+'<td>'+(rbd.used==true?'已挂载':'未挂载')+'</td>'
-        						+'<td serviceId='+serviceId+'>'+serviceName+'</td>'
+        						+'<td serviceId='+serviceId+'><a href="'+ctx+'/service">'+serviceName+'</a></td>'
         						+'<td>'+rbd.detail+'</td>'
         						+ '<td class="item-operation" rbdId='+rbd.id+' rbd="'+rbd.name+'" size="'+rbd.size +'" detail="'+rbd.detail +'" release="'+rbd.releaseWhenServiceDown+'">'
                             	+'<a onclick="createSnapshoot(this)"><i class="fa fa-camera fa-opr" title="创建快照" style="margin-left:0px"></i></a>'
@@ -141,7 +161,7 @@ function loadStorageList(){
                             	+'<ul class="moreFun" style="margin-bottom:0px;line-height:40px;">'
 								+	'<li class="dropdown ">'
 								+		'<a class="dropdown-toggle a-live" data-toggle="dropdown">'
-								+		'<i class="fa fa-gears fa-opr"></i></a>'
+								+		'<i class="fa fa-gears fa-opr" title="设置"></i></a>'
 								+		'<ul class="dropdown-menu" style="margin-left:-20px;margin-top:40px">'
 								+			'<li onclick="releaseStorage(this)"><a>释放</a></li>'
 								+			'<li onclick="changeDescribe(this)"><a>修改磁盘描述</a></li>'
@@ -150,6 +170,7 @@ function loadStorageList(){
 								+		'</ul>'
 								+	'</li>'
 								+'</ul>'
+								+ snapHtml
                                 +'</td>'
         				        +'</tr>';
         	}

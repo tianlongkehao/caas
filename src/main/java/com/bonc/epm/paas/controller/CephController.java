@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -1808,6 +1809,17 @@ public class CephController {
            }
 		}
 
+		//获取所有快照
+		List<CephSnap> cephSnaps = new ArrayList<CephSnap>();
+		Iterable<CephSnap> iterable = cephSnapDao.findAll();
+		if(iterable!=null){
+			Iterator<CephSnap> iterator = iterable.iterator();
+			while(iterator.hasNext()){
+				cephSnaps.add(iterator.next());
+			}
+		}
+
+        map.put("cephSnaps", cephSnaps);
 		map.put("serviceCephRbds", serviceCephRbds);
 		map.put("cephRbdInfos", cephRbdInfos);
 		map.put("status", 200);
@@ -1823,6 +1835,21 @@ public class CephController {
 	@RequestMapping(value = { "storage/storageSnap" }, method = RequestMethod.GET)
 	public String storageSnap(Model model) {
 
+		model.addAttribute("menu_flag", "storage");
+		model.addAttribute("li_flag", "storageSnap");
+		return "storage/storage-snap.jsp";
+	}
+
+	/**
+	 * 快照主页面,此页面由块存储页面转过来的
+	 *
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value = { "storage/storageSnap/{id}" }, method = RequestMethod.GET)
+	public String storageSnap(Model model,@PathVariable long id) {
+
+		model.addAttribute("snapId",id);
 		model.addAttribute("menu_flag", "storage");
 		model.addAttribute("li_flag", "storageSnap");
 		return "storage/storage-snap.jsp";
@@ -1855,6 +1882,23 @@ public class CephController {
 				}
 			}
 		}
+
+		map.put("cephSnaps", cephSnaps);
+		map.put("status", 200);
+		return JSON.toJSONString(map);
+	}
+
+	/**
+	 * 获取指定快照id的快照
+	 *
+	 * @return
+	 */
+	@RequestMapping(value = { "storage/snapList/{id}" }, method = RequestMethod.GET)
+	@ResponseBody
+	public String getSnapList(@PathVariable long id) {
+		Map<String, Object> map = new HashMap<>();
+		List<CephSnap> cephSnaps = new ArrayList<CephSnap>();
+        cephSnaps.add(cephSnapDao.findOne(id));
 
 		map.put("cephSnaps", cephSnaps);
 		map.put("status", 200);

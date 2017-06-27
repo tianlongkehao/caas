@@ -13,7 +13,7 @@
 	<jsp:include page="../frame/bcm-menu.jsp" flush="true">
 		<jsp:param name="service" value="" />
 	</jsp:include>
-
+<input type="hidden" id="snapId" value=${snapId}>
 	<div class="page-container">
 		<article>
 			<div class="page-main">

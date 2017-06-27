@@ -11,7 +11,6 @@
 <jsp:include page="../frame/bcm-menu.jsp" flush="true">
     <jsp:param name="service" value=""/>
 </jsp:include>
-
 <div class="page-container">
     <article>
         <div class="page-main">
