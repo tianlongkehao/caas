@@ -160,7 +160,7 @@ public interface KubernetesAPIS {
 	@DELETE
 	@Path("/apps/v1beta1/namespaces/{namespace}/statefulsets/{name}")
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Status deleteStatefulSet(@PathParam("namespace")String namespace, @PathParam("name")String name) throws KubernetesClientException;
+	public StatefulSet deleteStatefulSet(@PathParam("namespace")String namespace, @PathParam("name")String name) throws KubernetesClientException;
 
 	/**
 	 * deleteStatefulSets:delete collection of StatefulSet. <br/>

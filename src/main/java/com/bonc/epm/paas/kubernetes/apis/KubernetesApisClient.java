@@ -181,7 +181,7 @@ public class KubernetesApisClient implements KubernetesAPISClientInterface {
 	 * @see com.bonc.epm.paas.kubernetes.apis.KubernetesAPISClientInterface#deleteStatefulSet(java.lang.String)
 	 */
 	@Override
-	public Status deleteStatefulSet(String name) throws KubernetesClientException {
+	public StatefulSet deleteStatefulSet(String name) throws KubernetesClientException {
 		try {
 			return apis.deleteStatefulSet(namespace, name);
 		} catch (KubernetesClientException e) {

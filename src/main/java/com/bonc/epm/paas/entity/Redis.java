@@ -16,6 +16,15 @@ import com.alibaba.fastjson.annotation.JSONField;
  * @author longkaixiang
  * @version
  */
+/**
+ * ClassName: Redis <br/>
+ * Function: TODO ADD FUNCTION. <br/>
+ * Reason: TODO ADD REASON(可选). <br/>
+ * date: 2017年6月27日 上午10:40:59 <br/>
+ *
+ * @author longkaixiang
+ * @version
+ */
 @Entity
 public class Redis {
 
@@ -119,7 +128,15 @@ public class Redis {
 	@JSONField(format = "yyyy-MM-dd HH:mm:ss")
 	private Date createDate;
 
+	/**
+	 * createBy:创建人id.
+	 */
 	private long createBy;
+
+	/**
+	 * status:状态.
+	 */
+	private Integer status;
 
 	public long getId() {
 		return id;
@@ -272,6 +289,7 @@ public class Redis {
 	public void setNodeConfigFile(String nodeConfigFile) {
 		this.nodeConfigFile = nodeConfigFile;
 	}
+
 	public Date getCreateDate() {
 		return createDate;
 	}
@@ -286,6 +304,14 @@ public class Redis {
 
 	public void setCreateBy(long createBy) {
 		this.createBy = createBy;
+	}
+
+	public Integer getStatus() {
+		return status;
+	}
+
+	public void setStatus(Integer status) {
+		this.status = status;
 	}
 
 }

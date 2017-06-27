@@ -102,7 +102,7 @@ public interface KubernetesAPISClientInterface {
 	 * @return
 	 * @throws KubernetesClientException StatefulSet
 	 */
-	public Status deleteStatefulSet(@PathParam("name")String name) throws KubernetesClientException;
+	public StatefulSet deleteStatefulSet(@PathParam("name")String name) throws KubernetesClientException;
 
 	/**
 	 * deleteStatefulSets:delete collection of StatefulSet. <br/>

@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
+import com.bonc.epm.paas.constant.RedisConstant;
 import com.bonc.epm.paas.dao.RedisDao;
 import com.bonc.epm.paas.entity.Redis;
 import com.bonc.epm.paas.entity.User;
@@ -96,6 +97,15 @@ public class RedisController {
 		return "database/redis.jsp";
 	}
 
+	@RequestMapping(value = "/redis/detail", method = RequestMethod.GET)
+	public String redisDetail(Long id, Model model) {
+		Redis redis = redisDao.findOne(id);
+		model.addAttribute("redis", redis);
+		model.addAttribute("menu_flag", "database");
+		model.addAttribute("li_flag", "redis");
+		return "database/redis-detail.jsp";
+	}
+
 	@RequestMapping(value = "/redis/create", method = RequestMethod.GET)
 	public String redisCreate(Model model) {
 		model.addAttribute("menu_flag", "database");
@@ -116,16 +126,38 @@ public class RedisController {
 		// 查询是否有同名服务
 		if (CollectionUtils.isNotEmpty(redisDao.findByName(redis.getName()))) {
 			map.put("message", "存在同名的redis服务：[" + redis.getName() + "]");
-			map.put("status", "200");
+			map.put("status", "300");
 			return JSON.toJSONString(map);
 		}
-		Map<String, Object> createRedisResult = createRedis(redis.getName());
-		if (createRedisResult.get("status").equals("200")) {
-			redis.setCreateBy(CurrentUserUtils.getInstance().getUser().getId());
-			redis.setCreateDate(new Date());
-			redisDao.save(redis);
+		redis.setCreateBy(CurrentUserUtils.getInstance().getUser().getId());
+		redis.setCreateDate(new Date());
+		redis.setStatus(RedisConstant.REDIS_STATUS_STOP);
+		redisDao.save(redis);
+		map.put("status", "200");
+		return JSON.toJSONString(map);
+	}
+
+	/**
+	 * modifyRedisService:修改服务配置. <br/>
+	 *
+	 * @param redis
+	 * @return String
+	 */
+	@RequestMapping(value = "modifyRedisService.do", method = RequestMethod.POST)
+	@ResponseBody
+	public String modifyRedisService(Redis redis) {
+		Map<String, Object> map = new HashMap<>();
+		Redis service = redisDao.findOne(redis.getId());
+		if (service == null) {
+			map.put("message", "找不到redis服务：[" + redis.getId() + "]");
+			map.put("status", "300");
+			return JSON.toJSONString(map);
 		}
-		map = createRedisResult;
+		redis.setStatus(service.getStatus());
+		redis.setCreateBy(CurrentUserUtils.getInstance().getUser().getId());
+		redis.setCreateDate(new Date());
+		redisDao.save(redis);
+		map.put("status", "200");
 		return JSON.toJSONString(map);
 	}
 
@@ -138,28 +170,85 @@ public class RedisController {
 	@RequestMapping(value = "deleteRedisService.do", method = RequestMethod.GET)
 	@ResponseBody
 	public String deleteRedisService(long id) {
-		Map<String, String> map = new HashMap<>();
+		Map<String, Object> map = new HashMap<>();
 		Redis redis = redisDao.findOne(id);
 		if (null == redis) {
 			map.put("message", "找不到对应的服务：[" + id + "]");
 			map.put("status", "300");
 			return JSON.toJSONString(map);
 		}
-		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
-		KubernetesAPISClientInterface apisClient = kubernetesClientService.getApisClient();
 
-		try {
-			client.deleteConfigMap(redis.getName());
-			client.deleteService(redis.getName());
-			apisClient.deleteStatefulSet(redis.getName());
-		} catch (KubernetesClientException e) {
-			e.printStackTrace();
+		if (redis.getStatus().equals(RedisConstant.REDIS_STATUS_RUNNING)) {
+			map = deleteRedis(redis.getName());
+			if (map.get("status").equals("200")) {
+				redisDao.delete(redis);
+			}
+		} else {
+			redisDao.delete(redis);
+			map.put("status", "200");
+		}
+		return JSON.toJSONString(map);
+	}
+
+	/**
+	 * startRedisService:启动redis服务. <br/>
+	 *
+	 * @param id
+	 * @return String
+	 */
+	@RequestMapping(value = "startRedisService.do", method = RequestMethod.GET)
+	@ResponseBody
+	public String startRedisService(long id) {
+		Map<String, Object> map = new HashMap<>();
+		Redis redis = redisDao.findOne(id);
+		if (null == redis) {
+			map.put("message", "找不到对应的服务：[" + id + "]");
 			map.put("status", "300");
-			map.put("message", "删除失败：" + e.getStatus().getReason());
 			return JSON.toJSONString(map);
 		}
-		redisDao.delete(redis);
-		map.put("status", "200");
+
+		if (!redis.getStatus().equals(RedisConstant.REDIS_STATUS_RUNNING)) {
+			map = createRedis(redis.getName());
+			if (map.get("status").equals("200")) {
+				redis.setStatus(RedisConstant.REDIS_STATUS_RUNNING);
+				redisDao.save(redis);
+				return JSON.toJSONString(map);
+			}
+		} else {
+			map.put("status", "300");
+			map.put("message", "该服务当前是运行状态！["+redis.getName()+"]");
+		}
+		return JSON.toJSONString(map);
+	}
+
+	/**
+	 * stopRedisService:停止redis服务. <br/>
+	 *
+	 * @param id
+	 * @return String
+	 */
+	@RequestMapping(value = "stopRedisService.do", method = RequestMethod.GET)
+	@ResponseBody
+	public String stopRedisService(long id) {
+		Map<String, Object> map = new HashMap<>();
+		Redis redis = redisDao.findOne(id);
+		if (null == redis) {
+			map.put("message", "找不到对应的服务：[" + id + "]");
+			map.put("status", "300");
+			return JSON.toJSONString(map);
+		}
+
+		if (redis.getStatus().equals(RedisConstant.REDIS_STATUS_RUNNING)) {
+			map = deleteRedis(redis.getName());
+			if (map.get("status").equals("200")) {
+				redis.setStatus(RedisConstant.REDIS_STATUS_STOP);
+				redisDao.save(redis);
+				return JSON.toJSONString(map);
+			}
+		} else {
+			map.put("status", "300");
+			map.put("message", "该服务当前是停止状态！["+redis.getName()+"]");
+		}
 		return JSON.toJSONString(map);
 	}
 
@@ -261,6 +350,25 @@ public class RedisController {
 		map.put("service", service);
 		map.put("configMap", configMap);
 		map.put("statefulSet", statefulSet);
+		map.put("status", "200");
+		return map;
+	}
+
+	private Map<String, Object> deleteRedis(String name){
+		Map<String, Object> map = new HashMap<>();
+		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+		KubernetesAPISClientInterface apisClient = kubernetesClientService.getApisClient();
+
+		try {
+			client.deleteConfigMap(name);
+			client.deleteService(name);
+			apisClient.deleteStatefulSet(name);
+		} catch (KubernetesClientException e) {
+			e.printStackTrace();
+			map.put("status", "300");
+			map.put("message", "删除失败：" + e.getStatus().getReason());
+			return map;
+		}
 		map.put("status", "200");
 		return map;
 	}

@@ -37,10 +37,6 @@
 										<a id="clusterAdd" href="<%=path %>/RedisController/redis/create"
 											title="新建集群"><i class="fa fa-plus"></i>
 										</a>
-										<a id="deleteButton" class="no-drop"
-											href="javascript:delEnvTemplates()" title="删除">
-											<i class="fa fa-trash"></i>
-										</a>
 										<a href="javascript:window.location.reload(true);"
 											id="volReloadBtn" title="刷新"><i class="fa fa-repeat"></i>
 										</a>
@@ -85,13 +81,17 @@
 
 													<td style="">${redis.ram }</td>
 													<td style="">${redis.cpu }</td>
-													<td style="">运行中</td>
+													<c:if test="${redis.status == 1}">
+														<td style="">运行中</td>
+													</c:if>
+													<c:if test="${redis.status == 0}">
+														<td style="">停止</td>
+													</c:if>
 													<td style="">${redis.createDate }</td>
 		                                            <td style="width: 10%;" >
-		                                            	<a class="no-drop" title="启动"><i class="fa fa-play"></i></a>
-		                                            	<a class="no-drop" title="停止"><i class="fa fa-power-off"></i></a>
-		                                            	<a href="<%=path %>/RedisController/redis/create" class="no-drop" title="查看配置"><i class="fa fa-cog"></i></a>
-														<a onclick="changeCfg(this)" clusterType="1" redisMem="32" class="no-drop" title="修改"><i class="fa fa-edit"></i></a>
+		                                            	<a class="no-drop" title="启动" href="javascript:oneStart(${redis.id})"><i class="fa fa-play"></i></a>
+		                                            	<a class="no-drop" title="停止" href="javascript:oneStop(${redis.id})"><i class="fa fa-power-off"></i></a>
+		                                            	<a href="<%=path %>/RedisController/redis/detail?id=${redis.id}" class="no-drop" title="查看配置"><i class="fa fa-cog"></i></a>
 														<a id="deleteButton" class="no-drop" title="删除" href="javascript:oneDelete('${redis.id}')" title="删除" >
 														<i class="fa fa-trash"></i></a>
 		                                            </td>
