@@ -362,7 +362,7 @@ public class RedisController {
 
 		// 创建configMap
 		try {
-			configMap = generateRedisConfigMap(name);
+			configMap = generateRedisConfigMap(name, user.getNamespace());
 		} catch (IOException e) {
 			e.printStackTrace();
 			map.put("message", "初始化ConfigMap失败：[" + e.getMessage() + "]");
@@ -466,11 +466,12 @@ public class RedisController {
 	 * generateRedisConfigMap:初始化redis的configmap. <br/>
 	 *
 	 * @param name
+	 * @param nameSpace
 	 * @return
 	 * @throws IOException
 	 *             ConfigMap
 	 */
-	private ConfigMap generateRedisConfigMap(String name) throws IOException {
+	private ConfigMap generateRedisConfigMap(String name, String nameSpace) throws IOException {
 		User user = CurrentUserUtils.getInstance().getUser();
 		String namespace = user.getNamespace();
 		Map<String, String> data = new HashMap<>();
@@ -488,13 +489,22 @@ public class RedisController {
 		data.put(BOOTSTRAP_POD, bootstrapPod);
 
 		// meet-cluster.sh文件的配置
+		Map<String, String> meetClusterReplaceMap = new HashMap<>();
+		meetClusterReplaceMap.put("${serviceName}", name);
+		meetClusterReplaceMap.put("${nameSpace}", nameSpace);
 		String meetClusterFile = FileUtils.class.getClassLoader().getResource(MEET_CLUSTER_FILE).getPath();
-		String meetCluster = FileUtils.readFileByLines(meetClusterFile);
+		String meetCluster = FileUtils.readFileByLines(meetClusterFile, meetClusterReplaceMap);
 		data.put(MEET_CLUSTER, meetCluster);
 
 		return kubernetesClientService.generateConfigMap(name, namespace, data);
 	}
 
+	/**
+	 * generateRedisStatefulSet:初始化redis的StatefulSet. <br/>
+	 *
+	 * @param name
+	 * @return StatefulSet
+	 */
 	public StatefulSet generateRedisStatefulSet(String name) {
 
 		/*
