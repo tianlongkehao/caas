@@ -180,6 +180,8 @@ public class RedisController {
 		}
 
 		if (redis.getStatus().equals(RedisConstant.REDIS_STATUS_RUNNING)) {
+			redis.setStatus(RedisConstant.REDIS_STATUS_STOPING);
+			redisDao.save(redis);
 			map = deleteRedis(redis.getName());
 			if (map.get("status").equals("200")) {
 				redisDao.delete(redis);
@@ -208,7 +210,7 @@ public class RedisController {
 			return JSON.toJSONString(map);
 		}
 
-		if (!redis.getStatus().equals(RedisConstant.REDIS_STATUS_RUNNING)) {
+		if (redis.getStatus().equals(RedisConstant.REDIS_STATUS_STOP)) {
 			map = createRedis(redis.getName());
 			if (map.get("status").equals("200")) {
 				redis.setStatus(RedisConstant.REDIS_STATUS_RUNNING);
@@ -217,7 +219,7 @@ public class RedisController {
 			}
 		} else {
 			map.put("status", "300");
-			map.put("message", "该服务当前是运行状态！["+redis.getName()+"]");
+			map.put("message", "该服务当前不是停止状态！["+redis.getName()+"]");
 		}
 		return JSON.toJSONString(map);
 	}
@@ -240,6 +242,8 @@ public class RedisController {
 		}
 
 		if (redis.getStatus().equals(RedisConstant.REDIS_STATUS_RUNNING)) {
+			redis.setStatus(RedisConstant.REDIS_STATUS_STOPING);
+			redisDao.save(redis);
 			map = deleteRedis(redis.getName());
 			if (map.get("status").equals("200")) {
 				redis.setStatus(RedisConstant.REDIS_STATUS_STOP);
@@ -248,7 +252,7 @@ public class RedisController {
 			}
 		} else {
 			map.put("status", "300");
-			map.put("message", "该服务当前是停止状态！["+redis.getName()+"]");
+			map.put("message", "该服务当前不是运行状态！["+redis.getName()+"]");
 		}
 		return JSON.toJSONString(map);
 	}
@@ -267,6 +271,11 @@ public class RedisController {
 		Redis redis = redisDao.findOne(id);
 		if (null == redis) {
 			map.put("message", "找不到对应的服务：[" + id + "]");
+			map.put("status", "300");
+			return JSON.toJSONString(map);
+		}
+		if(!redis.getStatus().equals(RedisConstant.REDIS_STATUS_RUNNING)){
+			map.put("message", "该服务不是运行状态：[" + id + "]");
 			map.put("status", "300");
 			return JSON.toJSONString(map);
 		}
@@ -363,8 +372,9 @@ public class RedisController {
 		// 创建configMap
 		try {
 			configMap = generateRedisConfigMap(name, user.getNamespace());
-		} catch (IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
+			apiClient.deleteService(name);
 			map.put("message", "初始化ConfigMap失败：[" + e.getMessage() + "]");
 			map.put("status", "300");
 			return map;
@@ -407,6 +417,16 @@ public class RedisController {
 		KubernetesAPISClientInterface apisClient = kubernetesClientService.getApisClient();
 
 		try {
+			StatefulSet statefulSet = apisClient.getStatefulSet(name);
+			statefulSet.getSpec().setReplicas(0);
+			apisClient.replaceStatefulSet(name, statefulSet);
+			while(CollectionUtils.isNotEmpty(client.getLabelSelectorPods(statefulSet.getSpec().getSelector().getMatchLabels()).getItems())){
+				try {
+					Thread.sleep(3000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
 			client.deleteConfigMap(name);
 			client.deleteService(name);
 			apisClient.deleteStatefulSet(name);

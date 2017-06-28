@@ -21,7 +21,7 @@ public class PersistentVolumeClaim {
 	private Kind kind;
 	private ObjectMeta metadata;
 	private PersistentVolumeClaimSpec spec;
-	private PersistentVolumeClaimStatus status;
+//	private PersistentVolumeClaimStatus status;
 
 	public String getApiVersion() {
 		return apiVersion;
@@ -55,12 +55,12 @@ public class PersistentVolumeClaim {
 		this.spec = spec;
 	}
 
-	public PersistentVolumeClaimStatus getStatus() {
-		return status;
-	}
-
-	public void setStatus(PersistentVolumeClaimStatus status) {
-		this.status = status;
-	}
+//	public PersistentVolumeClaimStatus getStatus() {
+//		return status;
+//	}
+//
+//	public void setStatus(PersistentVolumeClaimStatus status) {
+//		this.status = status;
+//	}
 
 }

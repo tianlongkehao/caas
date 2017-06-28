@@ -87,6 +87,9 @@
 													<c:if test="${redis.status == 0}">
 														<td style="">停止</td>
 													</c:if>
+													<c:if test="${redis.status == 2}">
+														<td style="">正在停止</td>
+													</c:if>
 													<td style="">${redis.createDate }</td>
 		                                            <td style="width: 10%;" >
 		                                            	<a class="no-drop" title="启动" href="javascript:oneStart(${redis.id})"><i class="fa fa-play"></i></a>
@@ -136,30 +139,7 @@
 				<table class="table table-hover table-striped">
 					<tbody id="clusterInfoList">
 						<tr>
-							<td style="width:17%;padding-left:20px">cluster-1 </td>
-							<td style="width:10%;">主节点</td>
-							<td style="width:10%;">192.168.2.50</td>
-							<td style="width:10%;">2255</td>
-							<td style="width:15%;">2017-01-02 15:15</td>
-							<td style="width:15%;">2017-01-02 15:15</td>
-							<td style="width:10%;">
-								<a class="link"><i>重启</i></a>
-								<a class="link" onclick="oneNodeLogs()"><i>日志</i></a>
-								<a class="link"><i>终端</i></a>
-							</td>
-						</tr>
-						<tr>
-							<td style="width:17%;padding-left:20px">cluster-2 </td>
-							<td style="width:10%;">从节点</td>
-							<td style="width:10%;">192.168.2.50</td>
-							<td style="width:10%;">2255</td>
-							<td style="width:15%;">2017-01-02 15:15</td>
-							<td style="width:15%;">2017-01-02 15:15</td>
-							<td style="width:10%;">
-								<a class="link"><i>重启</i></a>
-								<a class="link" onclick="oneNodeLogs()"><i>日志</i></a>
-								<a class="link"><i>终端</i></a>
-							</td>
+							<td style="width:90%;padding-left:20px">获取数据中... </td>
 						</tr>
 					</tbody>
 				</table>

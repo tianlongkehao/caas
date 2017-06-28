@@ -148,7 +148,9 @@ public class FileUtils {
 				Pattern pattern = Pattern.compile("\\$\\{(.+?)\\}");
 				Matcher matcher = pattern.matcher(tempString);
 				if (matcher.find()) {
-					tempString = tempString.replace(matcher.group(0), data.get(matcher.group(0)));
+					for (String key : data.keySet()) {
+						tempString = tempString.replace(key, data.get(key));
+					}
 					bufferstr.append(tempString + "\n");
 				} else {
 					bufferstr.append(tempString + "\n");
