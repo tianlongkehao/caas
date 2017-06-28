@@ -154,3 +154,21 @@ function isChinese(temp){
 	 } 
 	 return false; 
 }
+//批量操作按钮 判断是否有选中项
+function checkboxCheck(){
+	//批量   选中的节点
+	var flag = true;
+	var selectedItems = new Array();
+	$("input:checkbox[name='chkItem']:checked").each(function(i) {
+		selectedItems.push($(this).val());
+	});
+	if (selectedItems.length == 0) {
+		layer.tips('请至少选择一个操作项！','#checkallbox', {
+			tips : [ 1, '#3595CC' ]
+		});
+		$('#checkallbox').focus();
+		flag = false;
+		return flag;
+	}
+	return flag;
+}

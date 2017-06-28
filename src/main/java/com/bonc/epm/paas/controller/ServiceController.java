@@ -22,7 +22,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.conn.ManagedHttpClientConnection;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1677,7 +1676,7 @@ public class ServiceController {
 				service.setUpdateBy(currentUser.getId());
 				serviceDao.save(service);
 				// 保存服务操作信息
-				serviceOperationLogDao.save(service.getServiceName(), service.toString(),
+				serviceOperationLogDao.save(service.getServiceName(), service.toString() + ",imgName:" + imgName + ",imgVersion:" + imgVersion,
 						ServiceConstant.OPERATION_TYPE_ROLLINGUPDATE);
 
 				String image = dockerClientService.generateRegistryImageName(imgName, imgVersion);
@@ -2842,25 +2841,32 @@ public class ServiceController {
 		List<Container> containerList = new ArrayList<Container>();
 		// 获取特殊条件的pods
 		try {
-			com.bonc.epm.paas.kubernetes.model.Service k8sService = client.getService(service.getServiceName());
-			PodList podList = client.getLabelSelectorPods(k8sService.getSpec().getSelector());
-			if (podList != null) {
-				List<Pod> pods = podList.getItems();
-				if (CollectionUtils.isNotEmpty(pods)) {
-					int i = 1;
-					for (Pod pod : pods) {
-						Container container = new Container();
-						container
-								.setContainerName(service.getServiceName() + "-" + service.getImgVersion() + "-" + i++);
-						container.setServiceAddr(pod.getMetadata().getName());
-						container.setServiceid(service.getId());
-						if (kubernetesClientService.isRunning(pod)) {
-							container.setContainerStatus(0);
-						} else {
-							container.setContainerStatus(1);
-						}
+			com.bonc.epm.paas.kubernetes.model.Service k8sService;
+			try {
+				k8sService = client.getService(service.getServiceName());
+			} catch (Exception e1) {
+				k8sService = null;
+			}
+			if (k8sService != null) {
+				PodList podList = client.getLabelSelectorPods(k8sService.getSpec().getSelector());
+				if (podList != null) {
+					List<Pod> pods = podList.getItems();
+					if (CollectionUtils.isNotEmpty(pods)) {
+						int i = 1;
+						for (Pod pod : pods) {
+							Container container = new Container();
+							container
+							.setContainerName(service.getServiceName() + "-" + service.getImgVersion() + "-" + i++);
+							container.setServiceAddr(pod.getMetadata().getName());
+							container.setServiceid(service.getId());
+							if (kubernetesClientService.isRunning(pod)) {
+								container.setContainerStatus(0);
+							} else {
+								container.setContainerStatus(1);
+							}
 
-						containerList.add(container);
+							containerList.add(container);
+						}
 					}
 				}
 			}
@@ -2997,6 +3003,7 @@ public class ServiceController {
 		} catch (Exception e) {
 			map.put("status", "400");
 			LOG.error("日志读取错误：" + e);
+			e.printStackTrace();
 		}
 
 		return JSON.toJSONString(map);
@@ -3038,6 +3045,7 @@ public class ServiceController {
 		} catch (Exception e) {
 			datamap.put("status", "400");
 			LOG.error("日志读取错误：" + e);
+			e.printStackTrace();
 		}
 		return JSON.toJSONString(datamap);
 	}
@@ -3144,6 +3152,7 @@ public class ServiceController {
 		} catch (Exception e) {
 			datamap.put("status", "400");
 			LOG.error("日志读取错误：" + e);
+			e.printStackTrace();
 		}
 
 		return JSON.toJSONString(datamap);
@@ -3183,8 +3192,8 @@ public class ServiceController {
 		} catch (IOException e) {
 			LOG.error("FileController  downloadTemplate:" + e.getMessage());
 		} catch (Exception e) {
-			e.printStackTrace();
 			LOG.error("日志读取错误：" + e);
+			e.printStackTrace();
 		}
 	}
 

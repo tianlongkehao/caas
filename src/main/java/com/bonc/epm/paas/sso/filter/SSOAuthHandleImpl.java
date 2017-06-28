@@ -62,6 +62,9 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle{
     @Autowired
     private CasClientConfigurationProperties configProps;
 
+    @Autowired
+    private CephController ceph;
+
     /**
      * kubernetesClientService
      */
@@ -206,7 +209,6 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle{
      */
     private void createCeph(String namespace) {
         try {
-            CephController ceph = new CephController();
             ceph.connectCephFS();
             ceph.createNamespaceCephFS(namespace);
         }
@@ -323,7 +325,7 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle{
      */
     private boolean createNamespace(String namespace) throws ServiceException {
         // 以用户名(登陆帐号)为name，创建client ??
-        KubernetesAPIClientInterface client = kubernetesClientService.getClient("");
+        KubernetesAPIClientInterface client = kubernetesClientService.getClient(namespace);
         // 是否创建nameSpace
         try {
             client.getNamespace(namespace);

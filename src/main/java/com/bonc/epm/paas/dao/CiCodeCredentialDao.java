@@ -15,12 +15,13 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
 import com.bonc.epm.paas.entity.CiCodeCredential;
 @Transactional
 public interface CiCodeCredentialDao extends CrudRepository<CiCodeCredential,Long> {
-    
+
     /**
      * Description: <br>
      * 根据创建者查询所有的数据
@@ -28,7 +29,7 @@ public interface CiCodeCredentialDao extends CrudRepository<CiCodeCredential,Lon
      * @return  list
      */
     List<CiCodeCredential> findByCreateBy(long createBy);
-    
+
     /**
      * Description: <br>
      * 根据创建者和代码仓库类型查询数据
@@ -37,4 +38,8 @@ public interface CiCodeCredentialDao extends CrudRepository<CiCodeCredential,Lon
      * @return list
      */
     List<CiCodeCredential> findByCreateByAndCodeType(long createBy,int codeType);
+
+
+    @Query("select c from CiCodeCredential c where c.Type = 2 and c.userName = ?1")
+    List<CiCodeCredential> findRepeat(String userName);
 }

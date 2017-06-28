@@ -304,7 +304,7 @@
 					<option value="2">SSH用户名和密钥</option>
 				</select>
 			</div>
-			<div class="infoCred">
+			<div class="infoCred normal">
 				<span class="labelCred1">用户名：</span> <input type="text"
 					class="form-control conCred" id="userNameCred" name="userName"
 					value="">
@@ -315,11 +315,23 @@
 					value="">
 			</div>
 			<input type="hidden" id="privateKey" name="privateKey" value=""></input>
-			<div class="infoCred">
+			<div class="infoCred normal">
 				<span class="labelCred1">描述：</span>
 				<textarea type="text" class="form-control conCred"
 					style="height: 100px" id="keyRemark" name="keyRemark" rows="8"
 					value=""></textarea>
+			</div>
+			<div class="infoCred sshInfoCred" style="display:none">
+				<span class="labelCred1">密钥：</span> <select
+					class="form-control conCred" id="sshKeyList" name="type">
+					
+				</select>
+			</div>
+			<div class="infoCred sshInfoCred" id="sshPwdInfo" style="display:none">
+				<div style="width: 90%; margin: 0 auto;margin-top:10px">
+					<span>认证已经生成，请添加下面的公钥到对应代码托管平台。<i class="fa fa-clipboard" onclick="copySshPwd()" style="margin-left:10px"></i>&nbsp;(复制)</span>
+					<textarea rows="8" id="sshPassword" style="width:100%;margin-top:10px;border:1px solid #ddd"></textarea>
+				</div>
 			</div>
 		</div>
 	</div>
