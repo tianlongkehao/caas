@@ -78,7 +78,7 @@ function oneDelete(id) {
 }
 
 //集群detail
-function clusterDetail() {
+function clusterDetail(id) {
 	layer.open({
 		type : 1,
 		title : "集群节点信息",
@@ -86,7 +86,37 @@ function clusterDetail() {
 		area : ['1000px', '600px'],
 		btn : ['保存', '关闭'],
 		yes : function(index, layero) {
-
+			layer.close(index);
+		}
+	});
+	$.ajax({
+		url : ctx + "/RedisController/getPodList.do?id=" + id,
+		type : "get",
+		success : function(data){
+			data = eval("(" + data + ")");
+			var podHtml = "";
+			if(data.status != "200"){
+				podHtml = "<tr><td>" + data.message + "</td></tr>";
+				$("#clusterInfoList").empty().append(podHtml);
+			} else {
+				for(var i in data.podList){
+					var pod = data.podList[i];
+					podHtml +=	'<tr>'
+							+		'<td style="width:17%;padding-left:20px">' + pod.metadata.name+'</td>'
+							+		'<td style="width:10%;">主节点</td>'
+							+		'<td style="width:10%;">192.168.2.50</td>'
+							+		'<td style="width:10%;">2255</td>'
+							+		'<td style="width:15%;">2017-01-02 15:15</td>'
+							+		'<td style="width:15%;">2017-01-02 15:15</td>'
+							+		'<td style="width:10%;">'
+							+			'<a class="link"><i>重启</i></a>'
+							+			'<a class="link" onclick="oneNodeLogs()"><i>日志</i></a>'
+							+			'<a class="link"><i>终端</i></a>'
+							+		'</td>'
+							+	'</tr>';
+				}
+				$("#clusterInfoList").empty().append(podHtml);
+			}
 		}
 	});
 }

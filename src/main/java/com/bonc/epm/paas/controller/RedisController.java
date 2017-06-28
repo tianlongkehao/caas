@@ -44,6 +44,7 @@ import com.bonc.epm.paas.kubernetes.model.KeyToPath;
 import com.bonc.epm.paas.kubernetes.model.ObjectFieldSelector;
 import com.bonc.epm.paas.kubernetes.model.PersistentVolumeClaim;
 import com.bonc.epm.paas.kubernetes.model.PersistentVolumeClaimVolumeSource;
+import com.bonc.epm.paas.kubernetes.model.PodList;
 import com.bonc.epm.paas.kubernetes.model.PodTemplateSpec;
 import com.bonc.epm.paas.kubernetes.model.Probe;
 import com.bonc.epm.paas.kubernetes.model.ResourceRequirements;
@@ -249,6 +250,52 @@ public class RedisController {
 			map.put("status", "300");
 			map.put("message", "该服务当前是停止状态！["+redis.getName()+"]");
 		}
+		return JSON.toJSONString(map);
+	}
+
+	/**
+	 * getPodList:获取redis服务的podlist. <br/>
+	 *
+	 * @param id
+	 * @return String
+	 */
+	@RequestMapping(value = "getPodList.do", method = RequestMethod.GET)
+	@ResponseBody
+	public String getPodList(long id) {
+		Map<String, Object> map = new HashMap<>();
+		//判断服务是否存在
+		Redis redis = redisDao.findOne(id);
+		if (null == redis) {
+			map.put("message", "找不到对应的服务：[" + id + "]");
+			map.put("status", "300");
+			return JSON.toJSONString(map);
+		}
+
+		KubernetesAPIClientInterface apiClient = kubernetesClientService.getClient();
+		KubernetesAPISClientInterface apisClient = kubernetesClientService.getApisClient();
+		//获取StatefulSet
+		StatefulSet statefulSet;
+		try {
+			statefulSet = apisClient.getStatefulSet(redis.getName());
+		} catch (KubernetesClientException e) {
+			e.printStackTrace();
+			map.put("message", "找不到对应的StatefulSet：[" + e.getStatus().getReason() + "]");
+			map.put("status", "300");
+			return JSON.toJSONString(map);
+		}
+		//获取PodList
+		PodList pods;
+		try {
+			pods = apiClient.getLabelSelectorPods(statefulSet.getSpec().getSelector().getMatchLabels());
+		} catch (KubernetesClientException e) {
+			e.printStackTrace();
+			map.put("message", "找不到对应的PodList：[" + e.getStatus().getReason() + "]");
+			map.put("status", "300");
+			return JSON.toJSONString(map);
+		}
+
+		map.put("podList", pods.getItems());
+		map.put("status", "200");
 		return JSON.toJSONString(map);
 	}
 

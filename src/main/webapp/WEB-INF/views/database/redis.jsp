@@ -69,7 +69,7 @@
 														<input type="checkbox" class="chkItem" name="chkItem"
 															value="" />
 													</td>
-													<td style=""><a class="link" onclick="clusterDetail(this)">${redis.name}</a></td>
+													<td style=""><a class="link" onclick="clusterDetail(${redis.id})">${redis.name}</a></td>
 													<td style="">${redis.user }</td>
 													<td style="">${redis.nodeNum }</td>
 													<c:if test="${redis.nodeNum > 1}">

@@ -6,7 +6,6 @@
 <%@include file="../frame/header.jsp"%>
 <link rel="stylesheet" type="text/css" href="<%=path%>/css/mod/redis.css" />
 <script type="text/javascript" src="<%=path%>/js/database/redis-create.js"></script>
-<script type="text/javascript" src="<%=path%>/js/database/redis-detail.js"></script>
 </head>
 <body>
 
