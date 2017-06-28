@@ -1,0 +1,949 @@
+.contentMain {
+	margin-bottom:30px;
+}
+
+.aside-btn {
+    height: 60px;
+    position: relative;
+    padding: 0 20px;
+    background: #EAEEF1;
+}
+
+.aside-btn .btns-group {
+    position: absolute;
+    bottom: -1px;
+}
+
+.btns-group > span.btn {
+    margin-right: 10px;
+    height: 36px;
+    min-width: 70px;
+    border-radius: 2px;
+    padding: 7px 12px;
+}
+
+.btns-group .btn-white {
+    background: #fff;
+    color: #3C7BCA;
+}
+
+.itemTable .ci-table thead {
+    background: #f5f6f6;
+}
+
+.ci-listTr {
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+}
+
+.bj-code-source {
+    background: #EDF4FC;
+    width: 100px;
+    text-align: center;
+    height: 30px;
+    border-radius: 20px;
+    display: inline-block;
+    line-height: 30px;
+    color: #333;
+}
+
+.itemTable .ci-table .ci-listTr:hover {
+    background:#FAFAFA;
+}
+
+.itemTable .ci-table .ci-listTr:hover .bj-code-source {
+    background:#4e8fde;
+    color: #fff;
+    transition: all .5s ease;
+}
+
+.bj-green {
+    display: inline-block;
+    padding: 5px 15px;
+    border-radius: 2px;
+    background: #13C563;
+    text-indent: 0;
+    cursor: pointer;
+    color: #fff;
+}
+
+.bj-green i{
+    color:#fff;
+    font-size:18px
+}
+
+.bj-drop{
+    display:inline-block;
+    padding:5px 15px;
+    border-radius:2px;
+    background:#999;
+    text-indent:0;
+    cursor:no-drop;
+    color: #fff;
+}
+
+.bj-drop i{
+    color:#fff;
+    font-size:18px;
+}
+
+@media screen and (min-width: 1200px) {
+    .item-obj {
+        padding: 30px 70px 50px;
+    }
+}
+
+.item-obj {
+    background: #fff;
+    overflow: hidden;
+}
+
+.item-obj .container {
+    width:100%;
+}
+
+.item-obj .depot-name .form-group > div {
+    height: 40px;
+    line-height: 40px;
+}
+
+.item-obj .depot-name .name-note{
+    float: left;
+    display: inline-block;
+    height: 40px;
+    line-height: 40px;
+    text-indent: 10px;
+    font-size: 16px;
+    background: #F5F6F6;
+}
+
+.item-obj .depot-name .name-input {
+    line-height: 18px;
+    height: 40px;
+    padding: 5px 0;
+    text-indent: 5px;
+    position: relative;
+    left: -1px;
+}
+
+.item-obj .depot-name #tag {
+    background: #F5F6F6;
+}
+
+.item-obj .depot-name .btn-groups {
+    border-radius: 2px;
+    border: 1px solid #4280CB;
+    display: inline-block;
+}
+
+.item-obj .depot-name .btn-groups .btns {
+    width: 80px;
+    text-align: center;
+    height: 40px;
+    display: inline-block;
+    float: left;
+    cursor: pointer;
+}
+
+.item-obj .depot-name .btn-groups .active {
+    background: #4280CB;
+    color: #fff;
+}
+
+
+.item-obj .registryinfo {
+    border: 1px solid #DADADA;
+    margin-top: 20px;
+    padding: 5px;
+}
+
+.item-obj .registryinfo .registry tr {
+    height: 50px;
+}
+
+.item-obj .registryinfo .registry tr td {
+    line-height: 20px;
+    border: 0;
+}
+
+.item-obj .registryinfo .registry tr td .reg-text,
+.item-obj .registryinfo .registry tr td .code-branch {
+    color: #4E8FDE;
+    text-align: center;
+    display: inline-block;
+}
+
+td .reg-input, li .reg-input {
+    padding: 5px;
+    text-indent: 5px;
+    border-radius: 2px;
+    border: 1px solid #DADADA;
+    height: 36px;
+}
+
+td .dockerfileinput {
+    display: inline-block;
+    margin-left: 5px;
+}
+
+.tables>tbody>tr>th,
+.tables>tbody>tr>td {
+    padding: 8px;
+}
+
+
+/* 详细页面 */
+.ci-body {
+    background: #fff;
+    padding: 50px;
+    min-width: 750px;
+}
+
+.ci-body .ci-head {
+    height: 50px;
+    border-bottom: 1px solid #DADADA;
+}
+
+.ci-body .ci-head .ci-name {
+    font-size: 20px;
+    line-height: 40px;
+    vertical-align: super;
+}
+
+.ci-body .ci-content-tabmain {
+    margin-top: 60px;
+}
+
+.ci-tab {
+    display: inline-block;
+    height: 50px;
+    line-height: 45px;
+    text-align: center;
+    position: relative;
+    top: 3px;
+    cursor: pointer;
+    padding: 0 1%;
+    min-width: 80px;
+}
+
+.ci-body .ci-content-tabmain .active {
+    color: #4E8FDE;
+    border-left: 1px solid #DADADA;
+    border-right: 1px solid #DADADA;
+    border-bottom: 0;
+    border-top: 2px solid #4E8FDE;
+    background: #fff;
+}
+
+.ci-body .ci-content-tabmain .code-tabmain {
+    padding: 30px;
+    border: 1px solid #DADADA;
+    border-radius: 2px;
+}
+
+.log-details {
+    overflow-y: hidden;
+    clear: both;
+}
+
+.event-line {
+    padding: 0 20px 0 50px;
+    position: relative;
+}
+
+.event-line:nth-of-type(odd):before {
+    content: '';
+    position: absolute;
+    height: 100%;
+    width: 2px;
+    background: #E7EAEF;
+    left: 15px;
+}
+
+.event-line:nth-of-type(even):before {
+    content: '';
+    position: absolute;
+    height: 100%;
+    width: 2px;
+    background: #E7EAEF;
+    left: 15px;
+}
+
+.event-line:nth-of-type(2n+1):before {
+    content: '';
+    position: absolute;
+    height: 140%;
+    width: 2px;
+    background: #E7EAEF;
+    left: 15px;
+    top: -40%;
+    z-index: 0;
+}
+
+.event-line:nth-of-type(1):before {
+    top: 0;
+}
+
+
+
+.event-status {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    position: absolute;
+    left: 0;
+    top: 10px;
+    z-index: 1;
+}
+
+.event-status>.notes {
+    font-size: 1.2em;
+    text-align: center;
+    width: 100%;
+    height: 100%;
+    color: #fff;
+    line-height: 1.8em;
+}
+
+.event-status.error {
+    background: #F81A1F;
+    line-height: 28px;
+}
+
+.event-status.success {
+    background: #2fba66;
+    line-height: 28px;
+}
+
+.event-title {
+    text-indent: 0;
+    line-height: 50px;
+    overflow: hidden;
+    border: 1px solid #E1E1E1;
+    border-radius: 2px;
+    margin-top: 20px;
+}
+
+
+.lives .title-name {
+    color: #2FBA66;
+    border-bottom: 1px solid #e5e5e5;
+    background: #F8F8F8;
+}
+.title-name {
+    width: 60%;
+    float: left;
+    height: 50px;
+    cursor: pointer;
+}
+
+.title-name .event-names {
+    text-indent: 20px;
+    display: inline-block;
+    width: 70%;
+    height: 50px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    min-width: 150px;
+    position: relative;
+}
+
+.title-name .time-on-status {
+    vertical-align: top;
+    display: inline-block;
+    width: 28%;
+    min-width: 60px;
+    white-space: nowrap;
+    padding-left: 15px;
+}
+
+.title-name .event-names .btn-version {
+    background: #EDF4FC;
+    text-align: center;
+    height: 30px;
+    border-radius: 20px;
+    display: inline-block;
+    line-height: 30px;
+    color: #333;
+    text-indent: 0;
+    width: 70px;
+    position: absolute;
+    right: 0;
+    margin-top: 10px;
+}
+
+.title-name.error {
+    color: #f81a1f;
+}
+
+.lives .time-line-time {
+    border-bottom: 1px solid #e5e5e5;
+    background: #F8F8F8;
+}
+.time-line-time {
+    display: inline-block;
+    float: right;
+    color: #999;
+    cursor: pointer;
+    width: 40%;
+    height: 50px;
+}
+
+.event-sign {
+    width: 50px;
+    display: inline-block;
+    height: 40px;
+    line-height: 40px;
+    float: right;
+    margin-top: 5px;
+    margin-left: 1px;
+    cursor: pointer;
+}
+
+.fa_caret {
+    text-indent: 5px;
+    margin-top: 5px;
+    font-size: 2em;
+    cursor: pointer;
+    -webkit-transform: rotate(0deg);
+    -ms-transform: rotate(0deg);
+    -otransform: rotate(0deg);
+    -moz-transform: rotate(0deg);
+    transform: rotate(0deg);
+    transition: all .15s;
+}
+
+.datetimes {
+    display: inline-block;
+    height: 40px;
+    width: 35%;
+    margin-top: 5px;
+    line-height: 40px;
+    white-space: nowrap;
+}
+
+.time-on-timeout {
+    display: inline-block;
+    width: 30%;
+    white-space: nowrap;
+    text-align: center;
+}
+
+.time-on-stop {
+    display: inline-block;
+    width: 10%;
+    white-space: nowrap;
+    text-align: center;
+}
+
+.time-line-message {
+    display: none;
+    text-overflow: ellipsis;
+    padding: 0 1em;
+    overflow: hidden;
+    padding-bottom: 2px;
+}
+
+.config-details .col-2x {
+    width: 172px;
+    float: left;
+    padding-right: 4px;
+}
+
+.other-details .col-9x {
+    width: 75%;
+    margin: 10px auto;
+}
+
+.other-details .col-9x .btn-deleteitem {
+    width: 100%;
+    height: 50px;
+    font-size: 16px;
+    background: #13c563;
+    line-height: 50px;
+    padding: 0;
+    margin: 10px 0;
+    border: 0;
+    background: #EF7772;
+}
+
+.other-details .col-9x .other-hint {
+    color: #666;
+}
+
+.other-details .col-9x .other-hint .gray-radius {
+    display: inline-block;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    color: #fff;
+    background: gray;
+    text-align: center;
+    margin-right: 5px;
+}
+
+.other-details .col-9x .other-hint {
+    color: #666;
+}
+
+#buildForm{
+    margin-top:20px;
+}
+
+.edit-name-c {
+    display: inline-block;
+    width: 80px;
+}
+
+#storageSizeSliderData{
+    width:400px;
+}
+
+#storageSizeUpdateSliderData {
+    width: 230px;
+}
+
+.slider.slider-horizontal .slider-handle{
+    background: #5cb85c;
+}
+
+.slider.slider-horizontal .slider-selection{
+    background: #009933;
+}
+
+#storageSize_input,
+#storageSizeUpdateSlider_input{
+    width: 70px;
+    text-indent: 8px;
+    margin-left: 20px;
+}
+
+.popWin {
+    padding: 30px;
+}
+
+.detail-succeed {
+    height: 280px;
+    /* border-bottom: 1px solid #DFDDDD; */
+    position: relative;
+    margin-top: 2%;
+}
+.vol_list{
+	border-bottom: 1px solid #DFDDDD;
+	cursor:pointer;
+}
+
+.icon-img {
+    width: 130px;
+    height: 130px;
+    background: rgba(123, 105, 105, 0.3);
+    border-radius: 20px;
+    float: left;
+    text-align: center;
+    margin-left: 3%;
+    margin-right: 3%;
+    color: #fff;
+}
+
+.type-icon {
+    width: 80%;
+    height: 80px;
+    margin: 25px auto;
+    overflow: hidden;
+}
+
+.type-icon>i {
+    font-size: 60px;
+    color: #666;
+    line-height: 80px;
+}
+
+ul.succeed-content.pull-left {
+    float: left;
+    margin-left: 20px;
+}
+
+.pull-left {
+    float: left!important;
+}
+
+ol, ul {
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+li {
+    display: list-item;
+    text-align: -webkit-match-parent;
+}
+
+.succeed-content li {
+    line-height: 30px;
+}
+
+.parameter-list {
+    position: relative;
+    width: 400px;
+}
+
+.pull-right {
+    float: right!important;
+}
+
+.param-text {
+    position: absolute;
+    width: 50%;
+    left: 150px;
+    top: 40px;
+}
+p {
+    margin: 0 0 10px;
+}
+
+span.i {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    background: #D5D5D5;
+    margin-right: 15px;
+}
+
+.param-used span.i {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    background: #3D8DDB;
+    margin-right: 15px;
+}
+/* ����������Ϣ */
+.modalCrealApp {
+    background: #fff;
+    min-height: 100%;
+}
+
+.modalCrealApp .steps-main {
+    margin: 0 auto;
+    overflow: hidden;
+    padding-bottom: 10px;
+}
+
+.progre {
+    text-align: center;
+    border-bottom: 2px solid #e2e2e4;
+    width: 570px;
+    margin: 30px auto;
+    height: 45px;
+}
+
+.modalCrealApp .steps-main .progre {
+    width: 100%;
+    border: 0;
+}
+
+.modalCrealApp .steps-main .progre .radius_step {
+    color: #999;
+    height: 45px;
+    width: 50%;
+    float: left;
+    border-bottom: 2px solid #e2e2e4;
+}
+
+.radius_step {
+    color: #999;
+    padding: 0 20px;
+    height: 45px;
+    width: 190px;
+    float: left;
+}
+
+.radius_step span {
+    margin: 3px auto;
+    padding: 6px 10px;
+    border-radius: 30px;
+    background: #cbcbcb;
+    color: #fff;
+}
+
+.radius_step.action span {
+    background: #418ac7;
+}
+
+.step-inner {
+    position: relative;
+    left: 0;
+    width: 1400px;
+    height: 280px;
+    overflow: hidden;
+}
+.step-inner #update_tenement .host_step1 .blankapp .row .stepLabel{
+    line-height: 34px;
+    margin-bottom: 0px;
+    width: 20%;
+    float: left ;
+}
+
+.modalCrealApp .steps-main .step-inner {
+    position: relative;
+    width: 300%;
+    overflow: hidden;
+    min-height: 300px;
+    height: auto;
+}
+
+.host_step1, .host_step2, .host_step3 {
+    float: left;
+    width: 700px;
+}
+
+.modalCrealApp .steps-main .step-inner .host_step1 {
+    height: auto;
+    min-height: 200px;
+}
+
+.modalCrealApp .steps-main .step-inner .host_step1,
+.modalCrealApp .steps-main .step-inner .host_step2,
+.modalCrealApp .steps-main .step-inner .host_step3 {
+    width: 33.33%;
+    padding: 0 4rem;
+}
+
+.select-server {
+    width: 140px;
+    text-align: right;
+    float: left;
+    height: 50px;
+    line-height: 35px;
+}
+
+.select-server > span {
+    padding-right: 10px;
+    text-align: right;
+}
+
+.modalCrealApp .steps-main .step-inner .host_step1 .select-server,
+.modalCrealApp .steps-main .step-inner .host_step2 .select-server,
+.modalCrealApp .steps-main .step-inner .host_step3 .select-server {
+    width: auto;
+    float: left;
+    height: 50px;
+    line-height: 35px;
+}
+.s-title{
+	line-height:34px;
+}
+#defVol{
+	width: 100px;
+	font-size: 12px;
+	border: 1px solid #ccc;
+	border-radius: 5px;
+	line-height: 30px;
+	text-indent: 8px;
+}
+.s-unit{
+	margin-right:15px;
+}
+.is-unit{
+	margin-right:15px;
+	position: relative;
+    left: -30px;
+}
+.param-set{
+	padding-top: 10px;
+	padding-bottom: 10px;
+}
+.volNumber{
+	padding-top: 14px;
+}
+/* storage-quick.jsp */
+.q-storage{
+	width: 80%;
+	float:left;
+	line-height:34px;
+}
+.s-edit-name{
+	width:18%;
+	float:left;
+	line-height:34px;
+	display:inline-block;
+}
+i.fa-toggle-onORoff{
+	background:url(../../images/off_on.png) no-repeat;
+	width:56px;
+	height: 22px;
+	margin-top: 6px;
+    float: left;
+}
+i.fa-on{
+	background-position: 2px -23px;
+}
+i.fa-off{
+	background-position: 2px 0px;
+}
+.toggle-text{
+	line-height:35px;
+}
+#storage-mark{
+	margin-top:10px;
+}
+#updatedefVol{
+	width: 80px;
+    font-size: 8px;
+    height: 25px;
+    border-radius: 3px;
+    border: 1px solid #ccc;
+}
+.fa-opr{
+	float:left;
+	line-height:40px;
+	margin-left:6px;
+}
+.createTimeInfo{
+	width: 358px;
+    height: 110px;
+    float: right;
+    padding-top:6px;
+}
+.createTimeInfo li,.repeatDateInfo li{
+	float:left;
+	margin-right:8px;
+}
+.repeatDateInfo,.retainTimeInfo,.releaseStorageInfo{
+	width: 358px;
+    height: 40px;
+    float: right;
+    padding-top:6px;
+}
+.retainTimeInput{
+	width:50px;
+	border-radius:4px;
+}
+.storageUnit{
+	line-height:40px;
+	height:40px;
+	position:absolute;
+	right:48px;
+}
+ul.dropdown-menu li{
+	cursor:pointer;
+}
+a{
+	cursor:pointer;
+}
+.setTab {
+    width: 100%;
+    height: 45px;
+    background: #EFF4F5;
+    line-height: 45px;
+}
+
+.setTab a {
+    text-align: center;
+    color: #666;
+    cursor: pointer;
+}
+
+.setTab a.Record {
+    width: 110px;
+    height: 100%;
+    display: inline-block;
+}
+
+.setTab a.active {
+    font-weight: 500;
+    border-bottom: 1px solid #B8C4CE;
+    background: #e4ebee;
+}
+
+.account_table {
+    background: #fff;
+    min-height: calc(100% - 130px);
+}
+/* quickDetail */
+.center-style {
+    width: 98%;
+    margin: 0px auto;
+    margin-bottom:20px;
+}
+.baseInfo .navbar-nav li a {
+    padding-top: 20px;
+    padding-bottom: 18px;
+}
+.contentMain .baseInfo {
+    height: 60px;
+    line-height: 60px;
+    border: 1px solid #DDDDDD;
+    background: #fff;
+    border-radius: 4px;
+    /* overflow: hidden; */
+}
+
+.contentMain .baseInfo a {
+    width: 110px;
+    text-align: center;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.containerInfo {
+    overflow: hidden;
+    width: 98%;
+    margin-left: 1%;
+    min-height: 200px;
+    background: #fff;
+    margin-bottom: 40px;
+}
+
+.table {
+    margin: 0px;
+    background: #fff;
+}
+
+.containerInstances table thead,
+.containerInfo .table thead {
+    background: #e4eaec;
+}
+
+.containerInfo .table tr,
+.containerInstances .table tr {
+    text-indent: 10px;
+}
+
+table.w50 thead tr th {
+    border: 1px solid #e4eaec;
+}
+
+.table .BORDER td {
+    border: 1px solid #eee;
+}
+
+.contentMain table.w50 td {
+    width: 50%;
+}
+
+
+.ve_top {
+    line-height: 30px;
+    width: 150px;
+    display: inline-block;
+    letter-spacing: 1px;
+    float: left;
+}
+
+.cpu,.memory{
+	width: 20px;
+}
+
+.cpu-edit,.mem-edit{
+	width:18%;
+	float:left;
+	display:inline-block;
+}
+
+
+
+
+
+
+
+
