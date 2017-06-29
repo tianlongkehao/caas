@@ -38,6 +38,7 @@ import com.bonc.epm.paas.dao.CephSnapDao;
 import com.bonc.epm.paas.dao.CommonOperationLogDao;
 import com.bonc.epm.paas.dao.ServiceRbdDao;
 import com.bonc.epm.paas.dao.SnapStrategyDao;
+import com.bonc.epm.paas.dao.TensorflowDao;
 import com.bonc.epm.paas.dao.UserResourceDao;
 import com.bonc.epm.paas.entity.CommonOperationLog;
 import com.bonc.epm.paas.entity.CommonOprationLogUtils;
@@ -145,6 +146,9 @@ public class CephController {
 
 	@Autowired
 	private UserResourceDao userResourceDao;
+
+	@Autowired
+	private TensorflowDao tensorflowDao;
 
 	/*
 	 * @Autowired private ServiceDao serviceDao;
@@ -2037,7 +2041,8 @@ public class CephController {
 		List<CephRbdInfo> result = new ArrayList<CephRbdInfo>();
 		if (CollectionUtils.isNotEmpty(temp)) {
 			for (CephRbdInfo cephRbdInfo : temp) {
-				if (CollectionUtils.isEmpty(serviceRbdDao.findByCephrbdId(cephRbdInfo.getId()))) {
+				if (CollectionUtils.isEmpty(serviceRbdDao.findByCephrbdId(cephRbdInfo.getId()))&&
+						null!=tensorflowDao.findByRbdId(cephRbdInfo.getId())) {
 					result.add(cephRbdInfo);
 				}
 			}

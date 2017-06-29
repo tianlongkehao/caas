@@ -55,6 +55,12 @@ public class Tensorflow {
 	 */
 	private int status;
 
+	private String proxyZone;
+
+	private String containerPort;
+
+	private String nodePort;
+
 	public long getId() {
 		return id;
 	}
@@ -173,6 +179,30 @@ public class Tensorflow {
 
 	public void setRbd(String rbd) {
 		this.rbd = rbd;
+	}
+
+	public String getProxyZone() {
+		return proxyZone;
+	}
+
+	public void setProxyZone(String proxyZone) {
+		this.proxyZone = proxyZone;
+	}
+
+	public String getContainerPort() {
+		return containerPort;
+	}
+
+	public void setContainerPort(String containerPort) {
+		this.containerPort = containerPort;
+	}
+
+	public String getNodePort() {
+		return nodePort;
+	}
+
+	public void setNodePort(String nodePort) {
+		this.nodePort = nodePort;
 	}
 
 }

@@ -146,6 +146,17 @@
                 </div>
         </li>
         <li class="line-h-3">
+        	<div class="param-set">
+                <span class="cpu-edit">nginx代理区域：</span>
+												<c:forEach items="${zoneList}" var="zone">
+                                                    <label class="checkbox-inline"> <input
+                                                        type="checkbox" id="${zone }" name="nginxserv"
+                                                        value="${zone }"> ${zone }区
+                                                     </label>
+												</c:forEach>
+			</div>
+        </li>
+        <li class="line-h-3">
             <span class="s-edit-name">镜像:<font color="red">*</font></span>
             <select id="image" class="form-control q-storage">
             	<option value=0>--请选择镜像--</option>
@@ -158,6 +169,9 @@
             <span class="s-edit-name">存储:</span>
             <select id="storage" class="form-control q-storage">
             	<option value="0">--请选择块设备--</option>
+            	<c:forEach items="${rbds}" var="rbd">
+            	    <option value=${rbd.id }>${rbd.name }</option>
+            	</c:forEach>
             </select>
         </li>
         <li class="line-h-3">

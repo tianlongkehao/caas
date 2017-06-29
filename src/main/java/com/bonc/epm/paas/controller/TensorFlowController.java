@@ -3,12 +3,17 @@ package com.bonc.epm.paas.controller;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,19 +22,37 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
 import com.bonc.epm.paas.constant.UserConstant;
-import com.bonc.epm.paas.dao.ImageDao;
+import com.bonc.epm.paas.dao.CephRbdInfoDao;
+import com.bonc.epm.paas.dao.PortConfigDao;
 import com.bonc.epm.paas.dao.ServiceDao;
 import com.bonc.epm.paas.dao.TensorflowDao;
 import com.bonc.epm.paas.dao.TensorflowImageDao;
+import com.bonc.epm.paas.entity.PortConfig;
 import com.bonc.epm.paas.entity.Service;
 import com.bonc.epm.paas.entity.Tensorflow;
 import com.bonc.epm.paas.entity.TensorflowImage;
 import com.bonc.epm.paas.entity.User;
+import com.bonc.epm.paas.entity.ceph.CephRbdInfo;
+import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
+import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
+import com.bonc.epm.paas.kubernetes.model.ReplicationController;
+import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 
 @Controller
 @RequestMapping(value = "/tensorflow")
 public class TensorFlowController {
+
+	private static final Logger LOG = LoggerFactory.getLogger(TensorFlowController.class);
+
+	@Value("${nginxConf.io}")
+	private boolean NGINXCONF_IO;
+
+	@Value("${nginxConf.io.serverAddr}")
+	private String SERVERADDR;
+
+	@Value("${docker.io.username}")
+	private String REGISTRY_ADDR;
 
 	@Autowired
 	private ServiceController serviceController;
@@ -42,6 +65,20 @@ public class TensorFlowController {
 
 	@Autowired
 	private TensorflowImageDao tensorflowImageDao;
+
+	@Autowired
+	private CephController cephController;
+
+	@Autowired
+	private CephRbdInfoDao cephRbdInfoDao;
+
+	@Autowired
+	private KubernetesClientService kubernetesClientService;
+
+	@Autowired
+	private PortConfigDao portConfigDao;
+
+	private static Set<Integer> smalSet = new HashSet<Integer>();
 
 	/**
 	 * 主页面
@@ -66,6 +103,8 @@ public class TensorFlowController {
 			}
 		}
 
+        serviceController.getNginxServer(model);
+        model.addAttribute("rbds", cephController.getUnUsedCephRbd());
         model.addAttribute("images", tensorflowImages);
 		model.addAttribute("tensorflows",tensorflows);
 		model.addAttribute("username", user.getUserName());
@@ -85,6 +124,21 @@ public class TensorFlowController {
 		Map<String, Object> map = new HashMap<String, Object>();
 		User user = CurrentUserUtils.getInstance().getUser();
 
+		if (NGINXCONF_IO) {
+			tensorflow.setUrl("http://" + user.getUserName() + "." + SERVERADDR);
+		} else {
+			tensorflow.setUrl(SERVERADDR);
+		}
+
+		int mapPort = serviceController.vailPortSet();
+        if (-1 == mapPort) {
+        	map.put("status", "500");
+			return JSON.toJSONString(map);
+		}
+        smalSet.add(mapPort);
+
+        tensorflow.setContainerPort("8888");
+        tensorflow.setContainerPort(""+mapPort);
 		tensorflow.setCreateDate(new Date());
 		tensorflow.setNamespace(user.getNamespace());
 		tensorflow.setCreateBy(user.getId());
@@ -118,6 +172,14 @@ public class TensorFlowController {
 	public String deleteTensorFlow(long id) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		User user = CurrentUserUtils.getInstance().getUser();
+
+		Tensorflow tensorflow =tensorflowDao.findOne(id);
+		long rbdId = tensorflow.getRbdId();
+		if(rbdId!=0){
+           CephRbdInfo cephRbdInfo =  cephRbdInfoDao.findOne(rbdId);
+           cephRbdInfo.setUsed(false);
+           cephRbdInfoDao.save(cephRbdInfo);
+		}
 
 		tensorflowDao.delete(id);
 
@@ -182,8 +244,51 @@ public class TensorFlowController {
 	public String start(long id){
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("status", "200");
+		Tensorflow tensorflow = tensorflowDao.findOne(id);
 
-        Tensorflow tensorflow = tensorflowDao.findOne(id);
+		List<PortConfig> portConfigs = new ArrayList<PortConfig>();
+        PortConfig portConfig = new PortConfig();
+        portConfig.setContainerPort(tensorflow.getContainerPort());
+        portConfig.setMapPort(tensorflow.getNodePort());
+        portConfig.setProtocol("TCP");
+        portConfigs.add(portConfig);
+
+        KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+        try {
+        	//创建服务
+    		com.bonc.epm.paas.kubernetes.model.Service k8sService = kubernetesClientService.generateService(tensorflow.getName(),
+    				portConfigs,tensorflow.getProxyZone(), tensorflow.getUrl(), null);
+    		k8sService = client.createService(k8sService);
+		} catch (KubernetesClientException e) {
+			LOG.error("tensorflow"+tensorflow.getName()+"服务创建失败!");
+			map.put("status", "500");
+			return JSON.toJSONString(map);
+		}
+
+
+		String image = REGISTRY_ADDR +"/"+tensorflow.getImage();
+
+		try {
+			//创建rc
+			ReplicationController controller = kubernetesClientService.generateSimpleReplicationController(tensorflow.getName(),
+					1, null, null,null, image, portConfigs, (double)(tensorflow.getCpu()),
+					String.valueOf(tensorflow.getMemory()), tensorflow.getProxyZone(), "", "",
+					null, null, null, null, false);
+
+			controller = client.createReplicationController(controller);
+		} catch (KubernetesClientException e) {
+			LOG.error("tensorflow"+tensorflow.getName()+"RC创建失败!");
+			map.put("status", "500");
+			return JSON.toJSONString(map);
+		}
+
+		//保存rbd使用状态信息
+		 CephRbdInfo cephRbdInfo = cephRbdInfoDao.findOne(tensorflow.getRbdId());
+		 if(null!=cephRbdInfo){
+			 cephRbdInfo.setUsed(true);
+			 cephRbdInfoDao.save(cephRbdInfo);
+		 }
+
         tensorflow.setStatus(1);
         tensorflowDao.save(tensorflow);
 		return JSON.toJSONString(map);

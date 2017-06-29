@@ -163,6 +163,16 @@ function add(){
                             	var rbd = (rbdId==0?'':$('#storage option:selected').text());
                             	var password = $("#password").val();
                             	var detail = $("#mark").val();
+                            	var nginxstr = "";
+                        	    $('input[name="nginxserv"]:checked').each(function(){
+                            		var servname = $(this).val();
+                            		var servid = $(this).attr('id');
+                            		if ("" == nginxstr) {
+                            			nginxstr = servid;
+                            		} else {
+                            			nginxstr += ","+servid;
+                            		}
+                            	});
 
                             	$.ajax({
                 	         		url : ctx + "/tensorflow/add.do",
@@ -170,7 +180,7 @@ function add(){
                 	         		data: {"name":tensorflowname,"imageId":imageId,"image":image,
                 	         			"rbdId":rbdId,"rbd":rbd
                 	         			,"password":password,"cpu":cpu
-                	         			,"memory":mem,"detail":detail},
+                	         			,"memory":mem,"detail":detail,"proxyZone":nginxstr},
                 	         		success: function(data) {
                 	         			var data = eval("("+data+")");
                 	                 	if (data.status == 200) {
