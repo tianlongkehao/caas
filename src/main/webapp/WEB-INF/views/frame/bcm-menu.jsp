@@ -112,6 +112,7 @@
 						<li id="li_service"><a class="J_menuItem" href="<%=path %>/service"><i class="fa fa_circle"></i>服务管理</a></li>
 						<%-- <li id="li_storage"><a class="J_menuItem" href="<%=path %>/service/storage"><i class="fa fa_circle"></i>存储与备份</a></li> --%>
 						<li id="li_import"><a class="J_menuItem" href="<%=path %>/service/import"><i class="fa fa_circle"></i>引入外部服务</a></li>
+						<li id="li_tensorflow"><a class="J_menuItem" href="<%=path %>/tensorflow/list"><i class="fa fa_circle"></i>TensorFlow</a></li>
 					</ul></li>
 				<li id="menu_ci"><a href="#" class="first-a">
 					<i class="fa-nav fa-nav-ci"></i>
