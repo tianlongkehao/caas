@@ -50,15 +50,58 @@
 													type="checkbox" autocomplete="off" class="chkAll"
 													id="checkallbox" /></th>
 												<th style="width: 10%;">名称</th>
-												<th style="width: 10%;">Cpu</th>
+												<th style="width: 5%;">Cpu</th>
 												<th style="width: 10%;">内存(G)</th>
+												<th style="width: 15%;">镜像</th>
 												<th style="width: 15%;">存储卷</th>
 												<th style="width: 15%;">访问路径</th>
 												<th style="width: 15%;">创建时间</th>
-												<th style="width: 20%;" class="item-operation">操作</th>
+												<th style="width: 10%;" class="item-operation">操作</th>
 											</tr>
 										</thead>
 										<tbody id="tensorflowList">
+
+										    <c:forEach items="${tensorflows}" var="tensorflow">
+                                                <tr>
+                                                	<td style="width: 5%; text-indent: 30px;">
+                                                		<input type="checkbox" class="chkItem" name="chkItem"/>
+                                                	</td>
+                                                	<td style="width: 10%;">
+                                                        <a href="javascript:detail(${tensorflow.id })" title="查看详细信息">${tensorflow.name }</a>
+                                                	</td>
+                                                	<td style="width: 5%;">
+                                                         ${tensorflow.cpu }
+                                                	</td>
+                                                	<td style="width: 10%;">
+                                                         ${tensorflow.memory }
+                                                	</td>
+                                                	<td style="width: 15%;">
+                                                         ${tensorflow.image }
+                                                	</td>
+                                                	<td style="width: 15%;">
+                                                         ${tensorflow.rbd }
+                                                	</td>
+                                                	<td style="width: 15%;">
+                                                         ${tensorflow.url }
+                                                	</td>
+                                                	<td style="width: 15%;">
+                                                         ${tensorflow.createDate }
+                                                	</td>
+                                                	<td style="width: 10%;">
+                                                		<c:choose>
+                                                			<c:when test="${tensorflow.status == 0}">
+                                                				<a class="a-live" href="javascript:start(${tensorflow.id })" style="margin-left: 5px" title="开始"><i class="fa fa-play self_a"></i></a>
+																<a class="no-drop" style="margin-left: 5px" title="停止" ><i class="fa fa-power-off"></i></a>
+                                                			</c:when>
+                                                			<c:otherwise>
+                                                				<a class="no-drop" style="margin-left: 5px" title="开始"><i class="fa fa-play self_a"></i></a>
+																<a class="a-live" href="javascript:stop(${tensorflow.id })" style="margin-left: 5px" title="停止" ><i class="fa fa-power-off"></i></a>
+                                                			</c:otherwise>
+                                                		</c:choose>
+	 													<a href="javascript:remove(${tensorflow.id })" style="margin-left: 5px" title="删除" ><i class="fa fa-trash"></i></a>
+													</td>
+                                                </tr>
+										    </c:forEach>
 
 										</tbody>
 										<tfoot class="hide">
@@ -81,24 +124,24 @@
     <div id="tensorflowAdd" style="display:none">
     <ul class="popWin">
         <li class="line-h-3">
-            <span class="s-edit-name">服务名称：<font color="red">*</font></span><span class="s-edit-name">${username}-</span>
+            <span class="s-edit-name">服务名称：<font color="red">*</font></span><span id="prefix" class="s-edit-name">${username}-</span>
             <input id="tensorflowName" style="padding-top:8px;padding-bottom:5px;float:left;width:62%;" type="text" value="">
         </li>
         <li class="line-h-3">
             <div class="param-set">
                 <span class="mem-edit">Cpu:<font color="red">*</font></span>
-                <input type="radio" name="cpu" class="cpu" value="4" checked>4
-                <input type="radio" name="cpu" class="cpu" value="8">8
-                <input type="radio" name="cpu" class="cpu" value="16">16
+                <input type="radio" name="cpu" class="cpu" value=4 checked>4
+                <input type="radio" name="cpu" class="cpu" value=8>8
+                <input type="radio" name="cpu" class="cpu" value=16>16
                 <span style="color:#1E90FF; padding-left:15px;float:right">剩余:<span id="restCpu">${leftcpu }</span></span>
             </div>
         </li>
         <li class="line-h-3">
             <div class="param-set">
                 <span class="cpu-edit">内存:<font color="red">*</font></span>
-                <input type="radio" name="memory" class="memory" value="8" checked>8<span>G</span>
-                <input type="radio" name="memory" class="memory" value="16">16<span>G</span>
-                <input type="radio" name="memory" class="memory" value="32">32<span>G</span>
+                <input type="radio" name="memory" class="memory" value=8 checked>8<span>G</span>
+                <input type="radio" name="memory" class="memory" value=16>16<span>G</span>
+                <input type="radio" name="memory" class="memory" value=32>32<span>G</span>
                 <span style="color:#1E90FF; padding-left:15px;float:right">剩余:<span id="restMem">${leftmemory }</span>G</span>
                 </div>
         </li>
@@ -106,6 +149,9 @@
             <span class="s-edit-name">镜像:<font color="red">*</font></span>
             <select id="image" class="form-control q-storage">
             	<option value=0>--请选择镜像--</option>
+            	<c:forEach items="${images}" var="image">
+            	    <option value=${image.id }>${image.name }:${image.version }</option>
+            	</c:forEach>
             </select>
         </li>
         <li class="line-h-3">
@@ -132,23 +178,23 @@
 <div id="tensorflowDetail" style="display:none">
     <ul class="popWin">
         <li class="line-h-3">
-            <span class="s-edit-name">服务名称：</span><span class="s-edit-name"></span>
+            <span class="s-edit-name">服务名称：</span><span id="name2"></span>
         </li>
         <li class="line-h-3">
             <div class="param-set">
-                <span class="mem-edit">Cpu:</span>
+                <span class="mem-edit">Cpu:</span><span id="cpu2"></span>
             </div>
         </li>
         <li class="line-h-3">
             <div class="param-set">
-                <span class="cpu-edit">内存:</span>
+                <span class="cpu-edit">内存(G):</span><span id="memory2"></span>
             </div>
         </li>
         <li class="line-h-3">
-            <span class="s-edit-name">镜像:</span>
+            <span class="s-edit-name">镜像:</span><span id="image2"></span>
         </li>
         <li class="line-h-3">
-            <span class="s-edit-name">存储:</span>
+            <span class="s-edit-name">存储:</span><span id="storage2"></span>
         </li>
         <li class="line-h-3">
             <span class="s-edit-name">描述：</span>
@@ -161,9 +207,9 @@
 		$('.dataTables-example').dataTable({
 			"aoColumnDefs" : [ {
 				"bSortable" : false,
-				"aTargets" : [ 0, 6 ]
+				"aTargets" : [ 0, 8 ]
 			} ],
-			"aaSorting" : [ [ 5, "desc" ] ]
+			"aaSorting" : [ [ 7, "desc" ] ]
 		});
 		$("#checkallbox").parent().removeClass("sorting_asc");
 	</script>

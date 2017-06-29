@@ -12,6 +12,8 @@ import javax.persistence.Lob;
 
 import com.alibaba.fastjson.annotation.JSONField;
 
+import retrofit.http.Streaming;
+
 @Entity
 public class Tensorflow {
 
@@ -23,7 +25,11 @@ public class Tensorflow {
 
 	private long imageId;
 
+	private String image;
+
 	private long rbdId;
+
+	private String rbd;
 
 	private String namespace;
 
@@ -47,7 +53,7 @@ public class Tensorflow {
 	/**
 	 * 0:停止，1：运行中
 	 */
-	private byte status;
+	private int status;
 
 	public long getId() {
 		return id;
@@ -105,11 +111,11 @@ public class Tensorflow {
 		this.createDate = createDate;
 	}
 
-	public long getCreator() {
+	public long getCreateBy() {
 		return createBy;
 	}
 
-	public void setCreator(long createBy) {
+	public void setCreateBy(long createBy) {
 		this.createBy = createBy;
 	}
 
@@ -145,12 +151,28 @@ public class Tensorflow {
 		this.memory = memory;
 	}
 
-	public byte getStatus() {
+	public int getStatus() {
 		return status;
 	}
 
-	public void setStatus(byte status) {
+	public void setStatus(int status) {
 		this.status = status;
+	}
+
+	public String getImage() {
+		return image;
+	}
+
+	public void setImage(String image) {
+		this.image = image;
+	}
+
+	public String getRbd() {
+		return rbd;
+	}
+
+	public void setRbd(String rbd) {
+		this.rbd = rbd;
 	}
 
 }

@@ -3,14 +3,14 @@
  * Time：2017年6月28日10:57:56
  */
 $(function(){
-	loadTensorflowList();
+	//loadTensorflowList();
 })
 
 
 /**
  * 加载数据
  */
-function loadTensorflowList(){
+/*function loadTensorflowList(){
 	var itemsHtml = '';
 	itemsHtml += '<tr>'
 	+'<td style="width: 5%; text-indent: 30px;">'
@@ -33,14 +33,28 @@ function loadTensorflowList(){
 
     $("#tensorflowList").empty().append(itemsHtml);
 
-}
+}*/
 
 /**
  * 启动
  * @param obj
  */
 function start(id){
-   alert("启动"+id+"成功！");
+	$.ajax({
+ 		url : ctx + "/tensorflow/start.do",
+ 		type: "POST",
+ 		data: {"id":id},
+ 		success: function(data) {
+ 			var data = eval("("+data+")");
+         	if (data.status == 200) {
+         		layer.msg("启动成功！",{icon: 6});
+         		window.location.reload();
+         	}
+         	else {
+         		layer.alert("新增失败！请检查服务器连接");
+         	}
+ 		}
+ 	});
 }
 
 /**
@@ -48,7 +62,21 @@ function start(id){
  * @param obj
  */
 function stop(id){
-	alert("停止"+id+"成功！");
+	$.ajax({
+ 		url : ctx + "/tensorflow/stop.do",
+ 		type: "POST",
+ 		data: {"id":id},
+ 		success: function(data) {
+ 			var data = eval("("+data+")");
+         	if (data.status == 200) {
+         		layer.msg("停止成功！",{icon: 6});
+         		window.location.reload();
+         	}
+         	else {
+         		layer.alert("新增失败！请检查服务器连接");
+         	}
+ 		}
+ 	});
 }
 
 /**
@@ -56,11 +84,52 @@ function stop(id){
  * @param obj
  */
 function remove(id){
-	alert("删除"+id+"成功！");
+	$.ajax({
+ 		url : ctx + "/tensorflow/delete.do",
+ 		type: "POST",
+ 		data: {"id":id},
+ 		success: function(data) {
+ 			var data = eval("("+data+")");
+         	if (data.status == 200) {
+         		layer.msg("删除成功！",{icon: 6});
+         		window.location.reload();
+         	}
+         	else {
+         		layer.alert("新增失败！请检查服务器连接");
+         	}
+ 		}
+ 	});
 }
 
+//获取数据
 function detail(id){
+	$.ajax({
+ 		url : ctx + "/tensorflow/detail.do",
+ 		type: "POST",
+ 		data: {"id":id},
+ 		success: function(data) {
+ 			var data = eval("("+data+")");
+         	if (data.status == 200) {
+               var tensorflow = data.tensorflow;
+               $("#name2").html(tensorflow.name);
+               $("#cpu2").html(tensorflow.cpu);
+               $("#memory2").html(tensorflow.memory);
+               $("#image2").html(tensorflow.image);
+               $("#storage2").html(tensorflow.rbd);
+               $("#mark2").val(tensorflow.detail);
 
+               layer.open({
+            	   type: 1,
+            	   area: ['500px', '400px'],
+            	   shadeClose: true,
+            	   content: $("#tensorflowDetail")
+            	   });
+         	}
+         	else {
+         		layer.alert("新增失败！请检查服务器连接");
+         	}
+ 		}
+ 	});
 }
 
 /**
@@ -74,8 +143,8 @@ function add(){
 		content: $("#tensorflowAdd"),
 		btn: ['确定', '取消'],
 		yes: function(index, layero){
-           if(verify){
-        	   var tensorflowname = $("#tensorflowName").val();
+           if(verify()){
+        	   var tensorflowname = $("#prefix").html() +$("#tensorflowName").val().trim();
         	   $.ajax({
         		   url : ctx + "/tensorflow/exist.do",
 	         		type: "POST",
@@ -89,17 +158,19 @@ function add(){
                             	var cpu= $("input[name='cpu']:checked").val();;
                             	var mem = $("input[name='memory']:checked").val();;
                             	var imageId = $("#image").val();
+                            	var image = $('#image option:selected').text();
                             	var rbdId = $("#storage").val();
+                            	var rbd = (rbdId==0?'':$('#storage option:selected').text());
                             	var password = $("#password").val();
                             	var detail = $("#mark").val();
 
                             	$.ajax({
                 	         		url : ctx + "/tensorflow/add.do",
                 	         		type: "POST",
-                	         		data: {"id":id,"serName":importSerName,"serAddress":importSerIn
-                	         			,"refAddress":importSerOut,"viDomain":importSerVis
-                	         			,"refPort":importSerOutPort,"importSerMode":importSerMode
-                	         			,"refSerDesc":importSerDesc,"useNginx":useNginx,"zone":zone},
+                	         		data: {"name":tensorflowname,"imageId":imageId,"image":image,
+                	         			"rbdId":rbdId,"rbd":rbd
+                	         			,"password":password,"cpu":cpu
+                	         			,"memory":mem,"detail":detail},
                 	         		success: function(data) {
                 	         			var data = eval("("+data+")");
                 	                 	if (data.status == 200) {
@@ -128,11 +199,17 @@ function add(){
 }
 
 function verify(){
-   var tensorflowname = $("#tensorflowName").val();
+   var tensorflowname = $("#tensorflowName").val().trim();
    if(tensorflowname==''){
 	   layer.tips('名称不能为空!','#tensorflowName',{tips: [1, '#3595CC']});
 		$('#tensorflowName').focus();
 		return false;
+   }
+   var reg=/^[a-z]([-a-z0-9]*[a-z0-9])?$/;
+   if(!reg.test(tensorflowname)){
+	    layer.tips('名称只能由小写字母、数字及横线组成，且首字母不能为数字及横线。','#tensorflowName',{tips: [1, '#3595CC'],time: 3000});
+	    $('#tensorflowName').focus();
+	    return false;
    }
 
    var image =$("#image").val();
@@ -163,6 +240,7 @@ function verify(){
 
    var cpu =$("input[name='cpu']:checked").val();
    var restCpu = $("#restCpu").html();
+   cpu = Number(cpu);
    if(restCpu!=''&&cpu>restCpu){
 	   layer.tips('剩余cpu不足，请申请更多资源!','#restCpu',{tips: [1, '#3595CC']});
 	   return false;
@@ -170,6 +248,7 @@ function verify(){
 
    var mem =$("input[name='memory']:checked").val();
    var restMem =  $("#restMem").html();
+   mem=Number(mem);
    if(restMem!=''&&mem>restMem){
 	   layer.tips('剩余内存不足，请申请更多资源!','#restMem',{tips: [1, '#3595CC']});
 	   return false;
