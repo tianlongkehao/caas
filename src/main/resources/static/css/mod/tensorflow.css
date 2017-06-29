@@ -940,6 +940,14 @@ table.w50 thead tr th {
 	display:inline-block;
 }
 
+.a-live {
+	color: #E14344;
+}
+
+.no-drop{
+    cursor: no-drop;
+    color: #BFBFBF;
+}
 
 
 
