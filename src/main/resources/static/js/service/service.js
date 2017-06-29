@@ -1621,9 +1621,11 @@ function serviceEvent(serviceId,serviceStatus){
 		url : "" + ctx + "/service/getServiceEvents.do?id="+serviceId,
 		type : 'get',
 		success : function(data) {
+			layer.closeAll();
 			layer.open({
 				type : 1,
 				title : '服务事件',
+				id : 'serviceEvent',
 				content : $("#serviceEventInfo"),
 				area : ['800px','550px'],
 				btn : ['关闭'],
@@ -1753,9 +1755,11 @@ function onePodEvent(obj){
 					}
 				}
 				$("#onepodItemsInfo").empty().append(onepodHtml);
+				layer.closeAll();
 				layer.open({
 					type : 1,
 					title : 'pod事件',
+					id : 'onePodEvent',
 					content : $("#podEventInfo"),
 					area : ['800px','550px'],
 					btn : ['关闭'],
