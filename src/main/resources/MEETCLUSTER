@@ -2,7 +2,7 @@
 
 set -e
 
-PORT=6379
+PORT=${port}
 CLUSTER_IPS=""
 
 CLUSTER_BUILDER=$(getent hosts ${serviceName}-5.${serviceName}.${nameSpace}.svc.cluster.local|awk {'print $1'})

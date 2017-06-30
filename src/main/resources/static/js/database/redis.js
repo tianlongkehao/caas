@@ -27,6 +27,7 @@ function oneStop(id) {
 		btn : ['确定', '取消'],
 		yes : function(index, layero) {
 			layer.close(index);
+			$("#redisStatus_"+id).html("正在停止<img src='" + ctx + "/images/loading4.gif' alt=''/>");
 			$.ajax({
 				url : "" + ctx + "/RedisController/stopRedisService.do?id=" + id,
 				success : function(data) {
@@ -56,9 +57,13 @@ function oneDelete(id) {
 		btn : ['确定', '取消'],
 		yes : function(index, layero) {
 			layer.close(index);
+			var loading = layer.load(1, {
+				shade : [0.3, '#000']
+			});
 			$.ajax({
 				url : "" + ctx + "/RedisController/deleteRedisService.do?id=" + id,
 				success : function(data) {
+					layer.close(loading);
 					data = eval("(" + data + ")");
 					if (data.status == "200") {
 						layer.msg("删除成功！", {
@@ -83,8 +88,8 @@ function clusterDetail(id) {
 		type : 1,
 		title : "集群节点信息",
 		content : $(".clusterDetailInfo"),
-		area : ['1000px', '600px'],
-		btn : ['保存', '关闭'],
+		area : ['700px', '600px'],
+		btn : ['关闭'],
 		yes : function(index, layero) {
 			layer.close(index);
 		}
@@ -103,15 +108,12 @@ function clusterDetail(id) {
 					var pod = data.podList[i];
 					podHtml +=	'<tr>'
 							+		'<td style="width:17%;padding-left:20px">' + pod.metadata.name+'</td>'
-							+		'<td style="width:10%;">主节点</td>'
-							+		'<td style="width:10%;">192.168.2.50</td>'
-							+		'<td style="width:10%;">2255</td>'
-							+		'<td style="width:15%;">2017-01-02 15:15</td>'
-							+		'<td style="width:15%;">2017-01-02 15:15</td>'
+							+		'<td style="width:10%;">' + pod.status.podIP + '</td>'
+							+		'<td style="width:10%;">' + data.redis.port + '</td>'
 							+		'<td style="width:10%;">'
 							+			'<a class="link"><i>重启</i></a>'
 							+			'<a class="link" onclick="oneNodeLogs()"><i>日志</i></a>'
-							+			'<a class="link"><i>终端</i></a>'
+							+			'<a class="link" href="' + ctx + '/RedisController/cmd/' + id + '/' + pod.metadata.name + '" target="_blank"><i>终端</i></a>'
 							+		'</td>'
 							+	'</tr>';
 				}

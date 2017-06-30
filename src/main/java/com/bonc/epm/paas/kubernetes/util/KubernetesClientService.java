@@ -712,7 +712,7 @@ public class KubernetesClientService {
 	}
 
 	public Container generateContainer(String name, String image, List<ContainerPort> ports, List<String> command,
-			List<String> args, Probe readinessProbe, Probe livenessProbe, List<EnvVar> env, List<VolumeMount> volumeMounts) {
+			List<String> args, Probe readinessProbe, Probe livenessProbe, List<EnvVar> env, List<VolumeMount> volumeMounts, ResourceRequirements resources) {
 		Container container = new Container();
 		container.setName(name);
 		container.setImage(image);
@@ -734,6 +734,9 @@ public class KubernetesClientService {
 		}
 		if (null != volumeMounts) {
 			container.setVolumeMounts(volumeMounts);
+		}
+		if (null != resources) {
+			container.setResources(resources);
 		}
 		return container;
 	}

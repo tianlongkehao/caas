@@ -110,11 +110,11 @@
 									<div class="infoCred">
 										<span class="labelCred">内存消除策略：</span>
 										<select class="form-control conCred" id="memoryPolicy" name="memoryPolicy" >
-											<option value="allkeys_lru">allkeys_lru</option>
-											<option value="Volatile_lruG">Volatile_lruG</option>
-											<option value="Volatile_random">Volatile_random</option>
-											<option value="allkeys_random">allkeys_random</option>
-											<option value="Volatile_ttl">Volatile_ttl</option>
+											<option value="allkeys-lru">allkeys-lru</option>
+											<option value="volatile-lru">volatile-lru</option>
+											<option value="volatile-random">volatile-random</option>
+											<option value="allkeys-random">allkeys-random</option>
+											<option value="volatile-ttl">volatile-ttl</option>
 											<option value="noeviction">noeviction</option>
 										</select>
 									</div>

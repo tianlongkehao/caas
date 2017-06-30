@@ -130,11 +130,11 @@
 									<div class="infoCred">
 										<span class="labelCred">内存消除策略：</span>
 										<select class="form-control conCred" id="memoryPolicy" name="memoryPolicy">
-											<option value="allkeys_lru">allkeys_lru</option>
-											<option value="Volatile_lruG">Volatile_lruG</option>
-											<option value="Volatile_random">Volatile_random</option>
-											<option value="allkeys_random">allkeys_random</option>
-											<option value="Volatile_ttl">Volatile_ttl</option>
+											<option value="allkeys-lru">allkeys-lru</option>
+											<option value="volatile-lru">volatile-lru</option>
+											<option value="volatile-random">volatile-random</option>
+											<option value="allkeys-random">allkeys-random</option>
+											<option value="volatile-ttl">volatile-ttl</option>
 											<option value="noeviction">noeviction</option>
 										</select>
 										<input type="hidden" id="memoryPolicyValue"  value="${redis.memoryPolicy }">
@@ -295,19 +295,19 @@
 		}
 	}
 	switch($("#memoryPolicyValue").val()){
-	case "allkeys_lru":
+	case "allkeys-lru":
 		document.getElementById("memoryPolicy")[0].selected=true;
 		break;
-	case "Volatile_lruG":
+	case "volatile-lru":
 		document.getElementById("memoryPolicy")[1].selected=true;
 		break;
-	case "Volatile_random":
+	case "volatile-random":
 		document.getElementById("memoryPolicy")[2].selected=true;
 		break;
-	case "allkeys_random":
+	case "allkeys-random":
 		document.getElementById("memoryPolicy")[3].selected=true;
 		break;
-	case "Volatile_ttl":
+	case "volatile-ttl":
 		document.getElementById("memoryPolicy")[4].selected=true;
 		break;
 	case "noeviction":

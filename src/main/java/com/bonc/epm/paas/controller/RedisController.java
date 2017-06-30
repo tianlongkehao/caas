@@ -17,8 +17,10 @@ import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -35,6 +37,7 @@ import com.bonc.epm.paas.kubernetes.model.ConfigMap;
 import com.bonc.epm.paas.kubernetes.model.ConfigMapVolumeSource;
 import com.bonc.epm.paas.kubernetes.model.Container;
 import com.bonc.epm.paas.kubernetes.model.ContainerPort;
+import com.bonc.epm.paas.kubernetes.model.ContainerStatus;
 import com.bonc.epm.paas.kubernetes.model.DownwardAPIVolumeFile;
 import com.bonc.epm.paas.kubernetes.model.DownwardAPIVolumeSource;
 import com.bonc.epm.paas.kubernetes.model.EnvVar;
@@ -44,6 +47,7 @@ import com.bonc.epm.paas.kubernetes.model.KeyToPath;
 import com.bonc.epm.paas.kubernetes.model.ObjectFieldSelector;
 import com.bonc.epm.paas.kubernetes.model.PersistentVolumeClaim;
 import com.bonc.epm.paas.kubernetes.model.PersistentVolumeClaimVolumeSource;
+import com.bonc.epm.paas.kubernetes.model.Pod;
 import com.bonc.epm.paas.kubernetes.model.PodList;
 import com.bonc.epm.paas.kubernetes.model.PodTemplateSpec;
 import com.bonc.epm.paas.kubernetes.model.Probe;
@@ -75,6 +79,36 @@ public class RedisController {
 	private static final String BOOTSTRAP_POD_FILE = "BOOTSTRAPPOD";
 	private static final String MEET_CLUSTER = "meet-cluster.sh";
 	private static final String MEET_CLUSTER_FILE = "MEETCLUSTER";
+
+	/**
+	 * redis每个pod的redis容器的cpu大小
+	 */
+	@Value("${redis.cpu.size}")
+	private String REDIS_CPU_SIZE;
+
+	/**
+	 * redis每个pod的redis-explorer容器的cpu大小
+	 */
+	@Value("${redis.explorer.cpu.size}")
+	private String REDIS_EXPLORER_CPU_SIZE;
+
+	/**
+	 * redis每个pod的redis-explorer容器的memory大小
+	 */
+	@Value("${redis.explorer.memory.size}")
+	private String REDIS_EXPLORER_MEMORY_SIZE;
+
+	/**
+	 * entry地址
+	 */
+	@Value("${entry.host}")
+	private String ENTRY_HOST;
+
+	/**
+	 * docker api 端口
+	 */
+	@Value("${docker.io.port}")
+	private Integer DOCKER_IO_PORT;
 
 	@Autowired
 	KubernetesClientService kubernetesClientService;
@@ -211,7 +245,20 @@ public class RedisController {
 		}
 
 		if (redis.getStatus().equals(RedisConstant.REDIS_STATUS_STOP)) {
-			map = createRedis(redis.getName());
+			String ram = (redis.getRam() * 2 / redis.getNodeNum()) + "Gi";
+			String storage = (redis.getRam() * 2 / redis.getNodeNum()) + "Gi";
+			String databaseNum = redis.getDatabaseNum() + "";
+			Integer replicas = redis.getNodeNum();
+			String maxmemorypolicy = redis.getMemoryPolicy();
+			String appendfsync = redis.getAofSync();
+			Integer clientTimeoutSeconds = redis.getClientTimeout();
+			String clusterenabled = null;
+			if (redis.getNodeNum() == 1) {
+				clusterenabled = "no";
+			} else {
+				clusterenabled = "yes";
+			}
+			map = createRedis(redis.getName(),redis.getVersion(), redis.getPort(), ram, storage, databaseNum, replicas, maxmemorypolicy, appendfsync, clientTimeoutSeconds, clusterenabled  );
 			if (map.get("status").equals("200")) {
 				redis.setStatus(RedisConstant.REDIS_STATUS_RUNNING);
 				redisDao.save(redis);
@@ -303,18 +350,76 @@ public class RedisController {
 			return JSON.toJSONString(map);
 		}
 
+		map.put("redis", redis);
 		map.put("podList", pods.getItems());
 		map.put("status", "200");
 		return JSON.toJSONString(map);
+	}
+
+	@RequestMapping(value = { "cmd/{id}/{podName}" }, method = RequestMethod.GET)
+	public String serviceCmd(Model model, @PathVariable long id, @PathVariable String podName) {
+		Redis redis = redisDao.findOne(id);
+		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+		List<Pod> podList = new ArrayList<>();
+		String hostIP = null;
+		String containerID = null;
+		Pod pod = null;
+		// 通过服务名获取pod列表
+		com.bonc.epm.paas.kubernetes.model.Service k8sService = null;
+		try {
+			k8sService = client.getService(redis.getName());
+		} catch (Exception e) {
+			k8sService = null;
+		}
+		if (k8sService != null) {
+			PodList pods = client.getLabelSelectorPods(k8sService.getSpec().getSelector());
+			if (pods != null) {
+				podList = pods.getItems();
+				if (CollectionUtils.isNotEmpty(podList)) {
+					for (Pod poditem : podList) {
+						if (poditem.getMetadata().getName().equals(podName)) {
+							pod = poditem;
+							hostIP = poditem.getStatus().getHostIP();
+							List<ContainerStatus> containers = poditem.getStatus().getContainerStatuses();
+							for(ContainerStatus container : containers){
+								if (container.getName().equals(redis.getName())) {
+									containerID = container.getContainerID();
+									break;
+								}
+							}
+							break;
+						}
+					}
+				}
+			}
+		}
+
+		model.addAttribute("pod", pod);
+		model.addAttribute("dockerServerURL", hostIP);
+		model.addAttribute("containerid", containerID);
+		model.addAttribute("entryHost", ENTRY_HOST);
+		model.addAttribute("dockerIOPort", DOCKER_IO_PORT);
+
+		return "service/service-cmd.jsp";
 	}
 
 	/**
 	 * createRedis:创建redis. <br/>
 	 *
 	 * @param name
+	 * @param port
+	 * @param version
+	 * @param ram
+	 * @param storage
+	 * @param databaseNum
+	 * @param replicas
+	 * @param maxmemorypolicy
+	 * @param appendfsync
+	 * @param clientTimeoutSeconds
+	 * @param clusterenabled
 	 * @return Map<String,Object>
 	 */
-	private Map<String, Object> createRedis(String name) {
+	private Map<String, Object> createRedis(String name, String version, Integer port, String ram, String storage, String databaseNum, Integer replicas, String maxmemorypolicy, String appendfsync, Integer clientTimeoutSeconds, String clusterenabled) {
 		Map<String, Object> map = new HashMap<>();
 		KubernetesAPIClientInterface apiClient = kubernetesClientService.getClient();
 		KubernetesAPISClientInterface apisClient = kubernetesClientService.getApisClient();
@@ -359,7 +464,7 @@ public class RedisController {
 
 		// 创建service
 		User user = CurrentUserUtils.getInstance().getUser();
-		service = generateRedisService(name, user.getNamespace());
+		service = generateRedisService(name, user.getNamespace(), port);
 		try {
 			service = apiClient.createService(service);
 		} catch (KubernetesClientException e) {
@@ -371,7 +476,7 @@ public class RedisController {
 
 		// 创建configMap
 		try {
-			configMap = generateRedisConfigMap(name, user.getNamespace());
+			configMap = generateRedisConfigMap(name, user.getNamespace(), databaseNum, Integer.toString(port), maxmemorypolicy, appendfsync, clusterenabled);
 		} catch (Exception e) {
 			e.printStackTrace();
 			apiClient.deleteService(name);
@@ -392,7 +497,7 @@ public class RedisController {
 		}
 
 		// 创建statefulSet
-		statefulSet = generateRedisStatefulSet(name);
+		statefulSet = generateRedisStatefulSet(name, version, ram, storage, port, replicas, clientTimeoutSeconds);
 		try {
 			apisClient.createStatefulSet(statefulSet);
 		} catch (KubernetesClientException e) {
@@ -445,9 +550,10 @@ public class RedisController {
 	 *
 	 * @param name
 	 * @param namespace
+	 * @param port
 	 * @return Service
 	 */
-	private Service generateRedisService(String name, String namespace) {
+	private Service generateRedisService(String name, String namespace, Integer port) {
 		Map<String, String> annotations = new HashMap<>();
 		annotations.put("service.alpha.kubernetes.io/tolerate-unready-endpoints", "true");
 
@@ -457,14 +563,14 @@ public class RedisController {
 		List<ServicePort> ports = new ArrayList<>();
 		ServicePort servicePort1 = new ServicePort();
 		servicePort1.setName("client");
-		servicePort1.setPort(6379);
-		servicePort1.setTargetPort(6379);
+		servicePort1.setPort(port);
+		servicePort1.setTargetPort(port);
 		ports.add(servicePort1);
 
 		ServicePort servicePort2 = new ServicePort();
 		servicePort2.setName("gossip");
-		servicePort2.setPort(16379);
-		servicePort2.setTargetPort(16379);
+		servicePort2.setPort(port + 10000);
+		servicePort2.setTargetPort(port + 10000);
 		ports.add(servicePort2);
 
 		ServicePort servicePort3 = new ServicePort();
@@ -487,31 +593,44 @@ public class RedisController {
 	 *
 	 * @param name
 	 * @param nameSpace
+	 * @param databaseNum
+	 * @param databaseNum
+	 * @param port
+	 * @param maxmemorypolicy
+	 * @param appendfsync
+	 * @param clusterenabled
 	 * @return
 	 * @throws IOException
 	 *             ConfigMap
 	 */
-	private ConfigMap generateRedisConfigMap(String name, String nameSpace) throws IOException {
+	private ConfigMap generateRedisConfigMap(String name, String nameSpace, String databaseNum, String port, String maxmemorypolicy, String appendfsync, String clusterenabled) throws IOException {
 		User user = CurrentUserUtils.getInstance().getUser();
 		String namespace = user.getNamespace();
 		Map<String, String> data = new HashMap<>();
 
 		// redis.conf文件的配置
 		Map<String, String> redisConfReplaceMap = new HashMap<>();
-		// TODO 替换文字
+		redisConfReplaceMap.put("${databases}", databaseNum);
+		redisConfReplaceMap.put("${maxmemorypolicy}", maxmemorypolicy);
+		redisConfReplaceMap.put("${appendfsync}", appendfsync);
+		redisConfReplaceMap.put("${clusterenabled}", clusterenabled);
 		String redisConfFile = FileUtils.class.getClassLoader().getResource(REDIS_CONF_FILE).getPath();
 		String redisConf = FileUtils.readFileByLines(redisConfFile, redisConfReplaceMap);
 		data.put(REDIS_CONF, redisConf);
 
 		// bootstrap-pod.sh文件的配置
+		Map<String, String> bootstrapPodReplaceMap = new HashMap<>();
+		bootstrapPodReplaceMap.put("${serviceName}", name);
+		bootstrapPodReplaceMap.put("${port}", port);
 		String bootstrapPodFile = FileUtils.class.getClassLoader().getResource(BOOTSTRAP_POD_FILE).getPath();
-		String bootstrapPod = FileUtils.readFileByLines(bootstrapPodFile);
+		String bootstrapPod = FileUtils.readFileByLines(bootstrapPodFile, bootstrapPodReplaceMap);
 		data.put(BOOTSTRAP_POD, bootstrapPod);
 
 		// meet-cluster.sh文件的配置
 		Map<String, String> meetClusterReplaceMap = new HashMap<>();
 		meetClusterReplaceMap.put("${serviceName}", name);
 		meetClusterReplaceMap.put("${nameSpace}", nameSpace);
+		meetClusterReplaceMap.put("${port}", port);
 		String meetClusterFile = FileUtils.class.getClassLoader().getResource(MEET_CLUSTER_FILE).getPath();
 		String meetCluster = FileUtils.readFileByLines(meetClusterFile, meetClusterReplaceMap);
 		data.put(MEET_CLUSTER, meetCluster);
@@ -523,9 +642,16 @@ public class RedisController {
 	 * generateRedisStatefulSet:初始化redis的StatefulSet. <br/>
 	 *
 	 * @param name
+	 * @param version
+	 * @param ram
+	 * @param ram
+	 * @param storage
+	 * @param port
+	 * @param replicas
+	 * @param clientTimeoutSeconds
 	 * @return StatefulSet
 	 */
-	public StatefulSet generateRedisStatefulSet(String name) {
+	public StatefulSet generateRedisStatefulSet(String name, String version, String ram, String storage, Integer port, Integer replicas, Integer clientTimeoutSeconds) {
 
 		/*
 		 * 1.创建statefulSet的template
@@ -540,11 +666,11 @@ public class RedisController {
 		// 1.2.1创建container redis-cluster
 		List<ContainerPort> ports1 = new ArrayList<>();
 		ContainerPort port11 = new ContainerPort();
-		port11.setContainerPort(6379);
+		port11.setContainerPort(port);
 		port11.setName("client");
 		ports1.add(port11);
 		ContainerPort port12 = new ContainerPort();
-		port12.setContainerPort(16379);
+		port12.setContainerPort(port + 10000);
 		port12.setName("gossip");
 		ports1.add(port12);
 
@@ -574,7 +700,7 @@ public class RedisController {
 		livenessProbeExecAction.setCommand(livenessProbeExec);
 		livenessProbe.setExec(livenessProbeExecAction);
 		livenessProbe.setInitialDelaySeconds(20);
-		livenessProbe.setTimeoutSeconds(3);
+		livenessProbe.setTimeoutSeconds(clientTimeoutSeconds);
 
 		List<EnvVar> env = new ArrayList<>();
 		EnvVar envVar = new EnvVar();
@@ -605,8 +731,16 @@ public class RedisController {
 		volumeMount3.setReadOnly(false);
 		volumeMounts.add(volumeMount3);
 
-		Container container1 = kubernetesClientService.generateContainer(name, "dipperroy/redis:3.2.8-rb", ports1,
-				command, args, readinessProbe, livenessProbe, env, volumeMounts);
+		ResourceRequirements resources = new ResourceRequirements();
+		Map<String, Object> limits = new HashMap<>();
+		limits.put("cpu", REDIS_CPU_SIZE);
+		limits.put("memory", ram);
+
+		resources.setLimits(limits );
+
+		Container container1 = kubernetesClientService.generateContainer(name, "dipperroy/redis:" + version, ports1,
+				command, args, readinessProbe, livenessProbe, env, volumeMounts, resources);
+
 		containers.add(container1);
 
 		// 1.2.2创建container redis-exporter
@@ -616,8 +750,13 @@ public class RedisController {
 		port21.setContainerPort(9291);
 		ports2.add(port21);
 
+		ResourceRequirements resources2 = new ResourceRequirements();
+		Map<String, Object> limits2 = new HashMap<>();
+		limits2.put("cpu", REDIS_EXPLORER_CPU_SIZE);
+		limits2.put("memory", REDIS_EXPLORER_MEMORY_SIZE);
+		resources2.setLimits(limits2 );
 		Container container2 = kubernetesClientService.generateContainer("redis-exporter",
-				"docker.io/oliver006/redis_exporter", ports2, null, null, null, null, null, null);
+				"docker.io/oliver006/redis_exporter", ports2, null, null, null, null, null, null, resources2);
 		containers.add(container2);
 
 		// 1.3创建template的volumes
@@ -699,19 +838,19 @@ public class RedisController {
 		List<String> accessModes = new ArrayList<>();
 		accessModes.add("ReadWriteOnce");
 		accessModes.add("ReadWriteMany");
-		ResourceRequirements resources = new ResourceRequirements();
+		ResourceRequirements resources3 = new ResourceRequirements();
 		Map<String, Object> requests = new HashMap<>();
-		requests.put("storage", "1Gi");
-		resources.setRequests(requests);
+		requests.put("storage", storage);
+		resources3.setRequests(requests);
 
 		String storageClassName = "ceph-rbd";
 		PersistentVolumeClaim persistentVolumeClaim = kubernetesClientService.generatePersistentVolumeClaim("data",
-				namespace, accessModes, resources, storageClassName);
+				namespace, accessModes, resources3, storageClassName);
 		volumeClaimTemplates.add(persistentVolumeClaim);
 		/*
 		 * 3.创建statefulSet
 		 */
-		StatefulSet statefulSet = kubernetesClientService.generateStatefulSet(name, namespace, 8, template,
+		StatefulSet statefulSet = kubernetesClientService.generateStatefulSet(name, namespace, replicas, template,
 				volumeClaimTemplates);
 
 		return statefulSet;

@@ -82,13 +82,13 @@
 													<td style="">${redis.ram }</td>
 													<td style="">${redis.cpu }</td>
 													<c:if test="${redis.status == 1}">
-														<td style="">运行中</td>
+														<td id="redisStatus_${redis.id }" style="">运行中</td>
 													</c:if>
 													<c:if test="${redis.status == 0}">
-														<td style="">停止</td>
+														<td id="redisStatus_${redis.id }" style="">停止</td>
 													</c:if>
 													<c:if test="${redis.status == 2}">
-														<td style="">正在停止</td>
+														<td id="redisStatus_${redis.id }" style="">正在停止<img src="<%=path%>/images/loading4.gif" alt=""/></td>
 													</c:if>
 													<td style="">${redis.createDate }</td>
 		                                            <td style="width: 10%;" >
@@ -121,16 +121,16 @@
 	</div>
 	<!-- 集群详情弹窗 -->
 	<div class="clusterDetailInfo" style="display: none">
-		<div class="tableInfo">
+		<div class="tableInfo" >
 			<table class="table" style="margin-top:20px;margin-bottom:4px;">
 				<thead>
 					<tr>
 						<th style="width:17%;padding-left:20px">节点名称</th>
-						<th style="width:10%;">节点类型</th>
+<!-- 						<th style="width:10%;">节点类型</th> -->
 						<th style="width:10%;">IP</th>
 						<th style="width:10%;">端口</th>
-						<th style="width:15%;">创建时间</th>
-						<th style="width:15%;">更新时间</th>
+<!-- 						<th style="width:15%;">创建时间</th> -->
+<!-- 						<th style="width:15%;">更新时间</th> -->
 						<th style="width:10%;">操作</th>
 					</tr>
 				</thead>
@@ -165,12 +165,12 @@
 			<div class="infoCred">
 				<span class="labelCred">内存消除策略：</span>
 					<select class="form-control conCred" id="" name="" >
-						<option value="1">allkeys_lru</option>
-						<option value="2">Volatile_lruG</option>
-						<option value="1">Volatile_random</option>
-						<option value="2">allkeys_random</option>
-						<option value="1">Volatile_ttl</option>
-						<option value="2">noeviction</option>
+						<option value="allkeys-lru">allkeys-lru</option>
+						<option value="volatile-lru">volatile-lru</option>
+						<option value="volatile-random">volatile-random</option>
+						<option value="allkeys-random">allkeys-random</option>
+						<option value="volatile-ttl">volatile-ttl</option>
+						<option value="noeviction">noeviction</option>
 					</select>
 			</div>
 			<div class="infoCred">
