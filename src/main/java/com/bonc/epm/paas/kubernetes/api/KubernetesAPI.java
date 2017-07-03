@@ -44,6 +44,8 @@ import com.bonc.epm.paas.kubernetes.model.Namespace;
 import com.bonc.epm.paas.kubernetes.model.NamespaceList;
 import com.bonc.epm.paas.kubernetes.model.Node;
 import com.bonc.epm.paas.kubernetes.model.NodeList;
+import com.bonc.epm.paas.kubernetes.model.PersistentVolume;
+import com.bonc.epm.paas.kubernetes.model.PersistentVolumeClaim;
 import com.bonc.epm.paas.kubernetes.model.Pod;
 import com.bonc.epm.paas.kubernetes.model.PodList;
 import com.bonc.epm.paas.kubernetes.model.ReplicationController;
@@ -703,4 +705,44 @@ public interface KubernetesAPI {
 	public EventList getFieldSelectorEvents(@PathParam("namespace") String namespace,
 			@QueryParam("fieldSelector") String fieldSelector) throws KubernetesClientException;
 
+	/**
+	 * getPersistentVolumeClaim:read the specified PersistentVolumeClaim. <br/>
+	 *
+	 * @param namespaces
+	 * @param name
+	 * @return
+	 * @throws KubernetesClientException PersistentVolumeClaim
+	 */
+	@GET
+	@Path("/namespaces/{namespace}/persistentvolumeclaims/{name}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public PersistentVolumeClaim getPersistentVolumeClaim(@PathParam("namespace") String namespaces, @PathParam("name") String name) throws KubernetesClientException;
+
+	/**
+	 * getPersistentVolumeClaim:delete a PersistentVolumeClaim. <br/>
+	 *
+	 * @param namespaces
+	 * @param name
+	 * @return
+	 * @throws KubernetesClientException PersistentVolumeClaim
+	 */
+	@DELETE
+	@Path("/namespaces/{namespace}/persistentvolumeclaims/{name}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public PersistentVolumeClaim deletePersistentVolumeClaim(@PathParam("namespace") String namespaces, @PathParam("name") String name) throws KubernetesClientException;
+
+	/**
+	 * getPersistentVolumeClaim:delete a PersistentVolume. <br/>
+	 *
+	 * @param name
+	 * @return
+	 * @throws KubernetesClientException PersistentVolumeClaim
+	 */
+	@DELETE
+	@Path("/persistentvolumes/{name}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public PersistentVolume deletePersistentVolume(@PathParam("name") String name) throws KubernetesClientException;
 }

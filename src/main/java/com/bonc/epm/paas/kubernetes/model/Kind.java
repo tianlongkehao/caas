@@ -17,7 +17,9 @@ public enum Kind {
 	HORIZONTALPODAUTOSCALER("HorizontalPodAutoscaler"),HORIZONTALPODAUTOSCALERLIST("HorizontalPodAutoscalerList"),
 	CONFIGMAP("ConfigMap"),CONFIGMAPLIST("ConfigMapList"),
 	EVENT("Event"),EVENTLIST("EventList"),
-	STATEFULSET("StatefulSet"),STATEFULSETLIST("StatefulSetList");
+	STATEFULSET("StatefulSet"),STATEFULSETLIST("StatefulSetList"),
+	PERSISTENTVOLUME("PersistentVolume"),PERSISTENTVOLUMELIST("PersistentVolumeList"),
+	PERSISTENTVOLUMECLAIM("PersistentVolumeClaim"),PERSISTENTVOLUMECLAIMLIST("PersistentVolumeClaimList");
 
 	private final String text;
 

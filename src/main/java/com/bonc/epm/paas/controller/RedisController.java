@@ -46,6 +46,7 @@ import com.bonc.epm.paas.kubernetes.model.EnvVar;
 import com.bonc.epm.paas.kubernetes.model.EnvVarSource;
 import com.bonc.epm.paas.kubernetes.model.ExecAction;
 import com.bonc.epm.paas.kubernetes.model.KeyToPath;
+import com.bonc.epm.paas.kubernetes.model.Kind;
 import com.bonc.epm.paas.kubernetes.model.ObjectFieldSelector;
 import com.bonc.epm.paas.kubernetes.model.PersistentVolumeClaim;
 import com.bonc.epm.paas.kubernetes.model.PersistentVolumeClaimVolumeSource;
@@ -233,8 +234,8 @@ public class RedisController {
 		}
 
 		if (redis.getStatus().equals(RedisConstant.REDIS_STATUS_RUNNING)) {
-			redis.setStatus(RedisConstant.REDIS_STATUS_STOPING);
-			redisDao.save(redis);
+//			redis.setStatus(RedisConstant.REDIS_STATUS_STOPING);
+//			redisDao.save(redis);
 			map = deleteRedis(redis.getName());
 			if (map.get("status").equals("200")) {
 				redisDao.delete(redis);
@@ -264,8 +265,12 @@ public class RedisController {
 		}
 
 		if (redis.getStatus().equals(RedisConstant.REDIS_STATUS_STOP)) {
-			String ram = (redis.getRam() * 2 / redis.getNodeNum()) + "Gi";
-			String storage = (redis.getStorage() * 2 / redis.getNodeNum()) + "Gi";
+			String ram = (redis.getRam() * 2.0 / redis.getNodeNum()) + "Gi";
+			String storage = (redis.getStorage() * 2.0 / redis.getNodeNum()) + "Gi";
+
+//			ram = "100Mi";
+//			storage = "15Mi";
+
 
 			String databaseNum = redis.getDatabaseNum() + "";
 			Integer replicas = redis.getNodeNum();
@@ -309,8 +314,8 @@ public class RedisController {
 		}
 
 		if (redis.getStatus().equals(RedisConstant.REDIS_STATUS_RUNNING)) {
-			redis.setStatus(RedisConstant.REDIS_STATUS_STOPING);
-			redisDao.save(redis);
+//			redis.setStatus(RedisConstant.REDIS_STATUS_STOPING);
+//			redisDao.save(redis);
 			map = deleteRedis(redis.getName());
 			if (map.get("status").equals("200")) {
 				redis.setStatus(RedisConstant.REDIS_STATUS_STOP);
@@ -548,7 +553,34 @@ public class RedisController {
 			List<Pod> pods = client.getLabelSelectorPods(statefulSet.getSpec().getSelector().getMatchLabels()).getItems();
 			for (Pod pod : pods) {
 				try {
-					client.deletePod(pod.getMetadata().getName());
+					List<Volume> volumes = pod.getSpec().getVolumes();
+					for (Volume volume : volumes) {
+						if (volume.getPersistentVolumeClaim() != null) {
+							//删除pv pvc pod
+							String claimName = volume.getPersistentVolumeClaim().getClaimName();
+//							PersistentVolumeClaim persistentVolumeClaim = client.getPersistentVolumeClaim(claimName);
+//							if (persistentVolumeClaim.getKind().equals(Kind.PERSISTENTVOLUMECLAIM)) {
+//								String volumeName = persistentVolumeClaim.getSpec().getVolumeName();
+//								try {
+//									client.deletePersistentVolume(volumeName);
+//								} catch (KubernetesClientException e) {
+//									LOG.error(e.getStatus().getReason());
+//								}
+//							}
+							try {
+								client.deletePersistentVolumeClaim(claimName);
+							} catch (KubernetesClientException e) {
+								LOG.error(e.getStatus().getReason());
+							}
+							try {
+								client.deletePod(pod.getMetadata().getName());
+							} catch (KubernetesClientException e) {
+								LOG.error(e.getStatus().getReason());
+							}
+							break;
+						}
+
+					}
 				} catch (KubernetesClientException e) {
 					LOG.info("redis服务停止时，删除pod[" + pod.getMetadata().getName() + "]异常：" + e.getStatus().getReason());
 				}
@@ -776,8 +808,8 @@ public class RedisController {
 		limits2.put("cpu", REDIS_EXPLORER_CPU_SIZE);
 		limits2.put("memory", REDIS_EXPLORER_MEMORY_SIZE);
 		resources2.setLimits(limits2 );
-		Container container2 = kubernetesClientService.generateContainer(REDIS_EXPLORER_IMAGE,
-				"docker.io/oliver006/redis_exporter", ports2, null, null, null, null, null, null, resources2);
+		Container container2 = kubernetesClientService.generateContainer("redis-exporter",
+				REDIS_EXPLORER_IMAGE, ports2, null, null, null, null, null, null, resources2);
 		containers.add(container2);
 
 		// 1.3创建template的volumes
