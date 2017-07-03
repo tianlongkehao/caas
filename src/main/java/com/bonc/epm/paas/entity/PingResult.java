@@ -9,7 +9,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
-import javax.persistence.Transient;
 
 import com.alibaba.fastjson.annotation.JSONField;
 
@@ -35,11 +34,7 @@ public class PingResult {
 	@Basic(fetch = FetchType.LAZY)
 	private String pingResult;
 
-	@Transient
 	private String ip;
-
-	@Transient
-	private boolean success;
 
 	public long getId() {
 		return id;
@@ -89,11 +84,4 @@ public class PingResult {
 		this.ip = ip;
 	}
 
-	public boolean isSuccess() {
-		return success;
-	}
-
-	public void setSuccess(boolean success) {
-		this.success = success;
-	}
 }

@@ -121,11 +121,12 @@
 		
 		var colorData = [ '#7EB26D', '#EAB839', '#6ED0E0' ];
 
-		
-
 		var aPods = [];
 		var aCons = [];
 		
+		 var loading = layer.load(0, {
+				shade : [ 0.3, '#000' ]
+			});
 		//默认监控5分钟
 
 		 if (document.getElementById('search_namespace') != null) {
@@ -143,6 +144,7 @@
 						+ timePeriod + "&nameSpace=" + nameSpace + "&podName="
 						+ podName,
 				success : function(data) {
+					layer.closeAll();
 					var jsonData = $.parseJSON(data);
 					createMap(jsonData);
 					if (isNamespace) {
@@ -189,9 +191,8 @@
 						boundaryGap : false,
 						data : containerData.xValue
 					};
-
-					var seriesDataMem = MemSeriesData(
-							containerDataYval, j);
+					//memory
+					var seriesDataMem = MemSeriesData(containerDataYval, j);
 					//纵坐标
 					var c = {
 						type : 'value',
@@ -212,12 +213,10 @@
 					//MEMORY纵坐标数据
 					option.series = seriesDataMem;
 					//内存画布
-					addContainerMemImg();
-					var containersMemImg = document
-							.getElementById('resourceContainer').children[count];
+					addContainerLeftImg();
+					var containersMemImg = document.getElementById('resourceContainer').children[count];
 					$(containersMemImg).addClass(containerDataYval.name);
-					$(containersMemImg).addClass(
-							containerDataYval.val[j].titleText);
+					$(containersMemImg).addClass(containerDataYval.val[j].titleText);
 					var containersMem = echarts.init(containersMemImg);
 					//绘制内存监控图
 					containersMem.setOption(option);
@@ -227,16 +226,14 @@
 					option.yAxis = [];
 					option.xAxis = [];
 
-					
 					//绘制cpu监控图
-					var seriesDataCpu = cpuSeriesData(
-							containerDataYval, j);
+					var seriesDataCpu = cpuSeriesData(containerDataYval, j);
 					//CPU纵坐标
 					var c = {
 						type : 'value',
 						scale : true,
 						axisLabel : {
-							formatter : '{value} ms'
+							formatter : '{value} 个'
 						}
 					};
 					var objcpu = setOtherOptionCpu(containerDataYval,j);
@@ -248,7 +245,7 @@
 					//CPU横坐标数据
 					option.series = seriesDataCpu;
 
-					addContainerCpuImg();
+					addContainerRightImg();
 					var containersCpuImg = document
 							.getElementById('resourceContainer').children[count];
 					$(containersCpuImg).addClass(containerDataYval.name);
@@ -259,15 +256,87 @@
 					containersCpu.setOption(option);
 					
 					count++;
+					//清空option的数据，以备下次使用
 					option.yAxis = [];
 					option.xAxis = [];
+					
+					//TODO
+					//Sockets
+					var seriesDataSockets = socketsSeriesData(containerDataYval, j);
+					//纵坐标
+					var c = {
+						type : 'value',
+						scale : true,
+						axisLabel : {
+							formatter : '{value} 个'
+						}
+					};
+					//添加 内存option数据
+					var objmem = setOtherOptionSockets(containerDataYval,j);
+					option.legend.data = objmem.memLegend;
+					option.title.text = objmem.titleText;
+					
+					option.xAxis.push(xAxis);
+					option.yAxis.push(c);
+					//MEMORY纵坐标数据
+					option.series = seriesDataSockets;
+					//内存画布
+					addContainerLeftImg();
+					var containersMemImg = document.getElementById('resourceContainer').children[count];
+					$(containersMemImg).addClass(containerDataYval.name);
+					$(containersMemImg).addClass(containerDataYval.val[j].titleText);
+					var containersSockets = echarts.init(containersMemImg);
+					//绘制内存监控图
+					containersSockets.setOption(option);
+					count++;
+					//清空option的数据，以备下次使用
+					option.yAxis = [];
+					option.xAxis = [];
+					
+					//TODO
+					
+					//threads
+					var threadsDataSockets = threadsSeriesData(containerDataYval, j);
+					//纵坐标
+					var c = {
+						type : 'value',
+						scale : true,
+						axisLabel : {
+							formatter : '{value} 个'
+						}
+					};
+					//添加 内存option数据
+					var objmem = setOtherOptionThreads(containerDataYval,j);
+					option.legend.data = objmem.memLegend;
+					option.title.text = objmem.titleText;
+					
+					option.xAxis.push(xAxis);
+					option.yAxis.push(c);
+					//MEMORY纵坐标数据
+					option.series = threadsDataSockets;
+					//内存画布
+					addContainerRightImg();
+					var containersMemImg = document.getElementById('resourceContainer').children[count];
+					$(containersMemImg).addClass(containerDataYval.name);
+					$(containersMemImg).addClass(containerDataYval.val[j].titleText);
+					var containersThreads = echarts.init(containersMemImg);
+					//绘制内存监控图
+					containersThreads.setOption(option);
+					count++;
+					//清空option的数据，以备下次使用
+					option.yAxis = [];
+					option.xAxis = [];
+					
+					//TODO
 					
 					var aaaObj = {};
 					aaaObj.mem = containersMem;
 					aaaObj.cpu = containersCpu;
+					aaaObj.soc = containersSockets;
+					aaaObj.threads = containersThreads;
 					aCons.push(aaaObj);
 					//实时刷新功能
-					showDynamic(containersMem,containersCpu);
+					//showDynamic(containersMem,containersCpu,containersSockets,containersThreads);
 				}
 				aPods.push(aCons);
 			}
@@ -316,10 +385,52 @@
 			}
 			return objcpu;
 		}
+		//TODO
+		function setOtherOptionSockets(containerDataYval,j){
+			var containerDataYmem = containerDataYval.val[j].val[2];
+			var memLegend = [];
+			for (var i = 0; i < containerDataYmem.val.length; i++) {
+				var containerDataYmemVal = containerDataYmem.val[i].yAxis;
+				var a = {
+					name : containerDataYmem.val[i].legendName,
+					icon : 'roundRect'
+				};
+				memLegend.push(a);	
+				
+				var titleText = containerDataYval.name + " "
+				+ containerDataYval.val[j].titleText + " "
+				+ containerDataYmem.title;
+				var objmem = {};
+				objmem.memLegend = memLegend;
+				objmem.titleText = titleText;
+			}
+			return objmem;		
+		}
+		//TODO
+		function setOtherOptionThreads(containerDataYval,j){
+			var containerDataYmem = containerDataYval.val[j].val[3];
+			var memLegend = [];
+			for (var i = 0; i < containerDataYmem.val.length; i++) {
+				var containerDataYmemVal = containerDataYmem.val[i].yAxis;
+				var a = {
+					name : containerDataYmem.val[i].legendName,
+					icon : 'roundRect'
+				};
+				memLegend.push(a);	
+				
+				var titleText = containerDataYval.name + " "
+				+ containerDataYval.val[j].titleText + " "
+				+ containerDataYmem.title;
+				var objmem = {};
+				objmem.memLegend = memLegend;
+				objmem.titleText = titleText;
+			}
+			return objmem;		
+		}
 		function showDynamic(containersMem,containersCpu){
-			setInterval(function() {
-				update(containersMem, containersCpu);
-			}, 60000);
+// 			setInterval(function() {
+// 				update(containersMem, containersCpu);
+// 			}, 60000);
 		}
 		//局部刷新
 		function update(aPods){
@@ -329,6 +440,7 @@
 						+ "5m" + "&nameSpace=" + "" + "&podName="
 						+ "",
 				success : function(data) {
+					layer.close(loading);
 					var containerData = $.parseJSON(data);
 					//按POD循环
 					for (var s = 0; s < containerData.yValue.length; s++) {
@@ -357,8 +469,7 @@
 						    });
 							
 							
-							var seriesDataCpu = cpuSeriesData(
-									containerDataYval, j);
+							var seriesDataCpu = cpuSeriesData(containerDataYval, j);
 							
 							containersCpu.setOption({
 								xAxis: abc
@@ -384,13 +495,13 @@
 		}
 
 		//添加container memory画布
-		function addContainerMemImg() {
+		function addContainerLeftImg() {
 			var memTxt = '<div class="table-lists pod"  style="margin-top: 10px; float: left;width: 49.5%;height:260px;">'
 					+ '</div>';
 			$("#resourceContainer").append(memTxt);
 		}
 		//添加container cpu画布
-		function addContainerCpuImg() {
+		function addContainerRightImg() {
 			var cpuTxt = '<div class="table-lists pod"  style="margin-top: 10px; float: right;width: 49.5%;height:260px;">'
 					+ '</div>';
 			$("#resourceContainer").append(cpuTxt);
@@ -439,6 +550,9 @@
 		
 		//筛选租户
 		function searchNamespace() {
+			var loading = layer.load(0, {
+	    		shade : [ 0.3, '#000' ]
+	    	});
 			//操作租户筛选时，让实例筛选可选，并锁定为空白
 			$("#search_pod").removeAttr("disabled");
 			$("#search_pod")[0].children[0].selected = true;
@@ -463,7 +577,9 @@
 		}
 
 		function searchPod() {
-
+			var loading = layer.load(0, {
+				shade : [ 0.3, '#000' ]
+			});
 			if (document.getElementById("search_namespace") != null) {
 
 				var pod0val = $("#search_pod")[0].value;
@@ -491,6 +607,9 @@
 		}
 
 		function searchTime() {
+			var loading = layer.load(0, {
+				shade : [ 0.3, '#000' ]
+			});
 			if (document.getElementById("search_namespace") != null) {
 				//管理员登录，有namespace请款下，时间筛选
 				removePod();
@@ -522,6 +641,7 @@
 			}
 		}
 		//监控中的series:[]
+		//生成cpu监控
 		function MemSeriesData( containerDataYval, j) {
 			var seriesData = [];
 			var containerDataYmem = containerDataYval.val[j].val[0];
@@ -639,139 +759,131 @@
 			}
 			return seriesData;
 		}
+		//TODO
+		//生成sockets监控
+		function socketsSeriesData( containerDataYval, j) {
+			var seriesData = [];
+			var containerDataYmem = containerDataYval.val[j].val[2];
+			//循环memory的三条数据线containerDataYmem.val.length=3
+			for (var i = 0; i < containerDataYmem.val.length; i++) {
+				var containerDataYmemVal = containerDataYmem.val[i].yAxis;
+				//红色预警，当使用量超过总量的90%时，显示红色
+				var seriesVal = {
+							name : containerDataYmem.val[i].legendName,
+							type : 'line',
+							barWidth : 5,
+							barHeight : 2,
+							itemStyle : {
+								normal : {
+									color : colorData[i]
+								}
+							},
+							label : {},
+							areaStyle : {
+								normal : {
+									color : colorData[i],
+									opacity : 0.3
+								}
+							},
+							data : containerDataYmemVal
+						};
+				if(i == 1){
+					for (var arrayNum = 0; arrayNum < containerDataYmemVal.length; arrayNum++) {
+						var usageVal = containerDataYmem.val[1].yAxis[arrayNum];
+						var limitVal = containerDataYmem.val[0].yAxis[arrayNum];
+						console.log("usageVal"+usageVal);
+						console.log("limitVal"+limitVal);
+						
+						if (null!=usageVal && null!=limitVal && usageVal >= limitVal * 0.9) {
+							
+							var dangerSeriesLabel = {
+									normal : {
+										show : true,
+										position : 'top',
+										textStyle : {
+											color : '#CC0000'
+										}
+									}
+								};
+							var dangerSeriesAreaStyle = {
+									normal : {
+										color : '#CC0000',
+										opacity : 0.6
+									}
+								};
+							seriesVal.label=dangerSeriesLabel;
+							seriesVal.areaStyle=dangerSeriesAreaStyle;
+							break
+						}	
+					}
+				}
+				seriesData.push(seriesVal);
+			}
+			return seriesData;
+		}
+		//TODO
+		//生成threads监控
+		function threadsSeriesData( containerDataYval, j) {
+			var seriesData = [];
+			var containerDataYmem = containerDataYval.val[j].val[3];
+			//循环memory的三条数据线containerDataYmem.val.length=3
+			for (var i = 0; i < containerDataYmem.val.length; i++) {
+				var containerDataYmemVal = containerDataYmem.val[i].yAxis;
+				//红色预警，当使用量超过总量的90%时，显示红色
+				var seriesVal = {
+							name : containerDataYmem.val[i].legendName,
+							type : 'line',
+							barWidth : 5,
+							barHeight : 2,
+							itemStyle : {
+								normal : {
+									color : colorData[i]
+								}
+							},
+							label : {},
+							areaStyle : {
+								normal : {
+									color : colorData[i],
+									opacity : 0.3
+								}
+							},
+							data : containerDataYmemVal
+						};
+				if(i == 1){
+					for (var arrayNum = 0; arrayNum < containerDataYmemVal.length; arrayNum++) {
+						var usageVal = containerDataYmem.val[1].yAxis[arrayNum];
+						var limitVal = containerDataYmem.val[0].yAxis[arrayNum];
+						console.log("usageVal"+usageVal);
+						console.log("limitVal"+limitVal);
+						
+						if (null!=usageVal && null!=limitVal && usageVal >= limitVal * 0.9) {
+							
+							var dangerSeriesLabel = {
+									normal : {
+										show : true,
+										position : 'top',
+										textStyle : {
+											color : '#CC0000'
+										}
+									}
+								};
+							var dangerSeriesAreaStyle = {
+									normal : {
+										color : '#CC0000',
+										opacity : 0.6
+									}
+								};
+							seriesVal.label=dangerSeriesLabel;
+							seriesVal.areaStyle=dangerSeriesAreaStyle;
+							break
+						}	
+					}
+				}
+				seriesData.push(seriesVal);
+			}
+			return seriesData;
+		}
 
-// 		     var containerData = {
-// 		    'xValue': ['2014-11-19', '2014-11-20', '2014-11-21', '2014-11-22', '2014-11-23', '2014-11-24', '2014-11-25', '2014-11-26', '2014-11-27'],
-// 		    'yValue': [{
-// 		    'name': 'pod01', 'val': [{
-// 		    'titleText': 'container01',
-// 		    'val': [{
-// 		    'title': 'memory',
-// 		    'val': [{
-// 		    'legendName': 'Limit Current',
-// 		    'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
-// 		    },
-// 		    {
-// 		    'legendName': 'Usage Current',
-// 		    'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-// 		    },
-// 		    {
-// 		    'legendName': 'Working Set Current',
-// 		    'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
-// 		    }]
-// 		    },
-// 		    {
-// 		    'title': 'cpu',
-// 		    'val': [{
-// 		    'legendName': 'Limit Current',
-// 		    'yAxis': [320, 182, 391, 234, 390, 330, 310, 290, 330]
-// 		    },
-// 		    {
-// 		    'legendName': 'Usage Current',
-// 		    'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-// 		    }]
-// 		    }]
-// 		    },
-// 		    {
-// 		    'titleText': 'container02', 'val': [{
-		
-// 		    'title': 'memory',
-// 		    'val': [{
-// 		    'legendName': 'Limit Current',
-// 		    'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
-// 		    },
-// 		    {
-// 		    'legendName': 'Usage Current',
-// 		    'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-// 		    },
-// 		    {
-// 		    'legendName': 'Working Set Current',
-// 		    'yAxis': [98, 90, 96, 96, 93, 95, 86, 89, 85]
-// 		    }]
-// 		    },
-// 		    {
-// 		    'title': 'cpu',
-// 		    'val': [{
-// 		    'legendName': 'cLimit Current',
-// 		    'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
-// 		    },
-// 		    {
-// 		    'legendName': 'cUsage Current',
-// 		    'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-// 		    }]
-		
-// 		    }]
-// 		    }]
-// 		    },
-// 		    {
-// 		    'name': 'pod02', 'val': [{
-// 		    'titleText': 'container03', 'val': [{
-		
-// 		    'title': 'memory',
-// 		    'val': [{
-// 		    'legendName': 'Limit Current',
-// 		    'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
-// 		    },
-// 		    {
-// 		    'legendName': 'Usage Current',
-// 		    'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-// 		    },
-// 		    {
-// 		    'legendName': 'Working Set Current',
-// 		    'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
-// 		    }]
-// 		    }
-// 		    ,
-		
-// 		    {
-// 		    'title': 'cpu',
-// 		    'val': [{
-// 		    'legendName': 'cpu Limit Current',
-// 		    'yAxis': [320, 182, 391, 234, 390, 330, 310, 290, 330]
-// 		    },
-// 		    {
-// 		    'legendName': 'cpu Usage Current',
-// 		    'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-// 		    }]
-		
-		
-// 		    }]
-// 		    }, {
-// 		    'titleText': 'container04', 'val': [{
-		
-// 		    'title': 'memory',
-// 		    'val': [{
-// 		    'legendName': 'Limit Current',
-// 		    'yAxis': [220, 182, 191, 234, 290, 330, 310, 290, 330]
-// 		    },
-// 		    {
-// 		    'legendName': 'Usage Current',
-// 		    'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-// 		    },
-// 		    {
-// 		    'legendName': 'Working Set Current',
-// 		    'yAxis': [10, 11, 10, 12, 12, 12, 12, 12, 12]
-// 		    }]
-// 		    }
-// 		    ,
-		
-// 		    {
-// 		    'title': 'cpu',
-// 		    'val': [{
-// 		    'legendName': 'Limit Current',
-// 		    'yAxis': [320, 182, 391, 234, 390, 330, 310, 290, 330]
-// 		    },
-// 		    {
-// 		    'legendName': 'Usage Current',
-// 		    'yAxis': [120, 132, 101, 134, 90, 230, 210, 101, 134]
-// 		    }]
-		
-		
-// 		    }]
-// 		    }]
-// 		    }
-// 		    ]
-// 		    };   
 	</script>
 </body>
 </html>

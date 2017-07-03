@@ -100,6 +100,7 @@ import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
 import com.bonc.epm.paas.shera.api.SheraAPIClientInterface;
 import com.bonc.epm.paas.shera.model.ChangeGit;
 import com.bonc.epm.paas.shera.util.SheraClientService;
+import com.bonc.epm.paas.util.ConvertUtil;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 import com.bonc.epm.paas.util.PoiUtils;
 import com.bonc.epm.paas.util.RandomString;
@@ -851,19 +852,22 @@ public class ServiceController {
 		try {
 			ResourceQuota quota = client.getResourceQuota(currentUser.getNamespace());
 			if (quota.getStatus() != null) {
-				long hard = kubernetesClientService.transMemory(quota.getStatus().getHard().get("memory"));
-				long used = kubernetesClientService.transMemory(quota.getStatus().getUsed().get("memory"));
+				double hard = ConvertUtil.convertMemory(quota.getStatus().getHard().get("memory"));
+				double used = ConvertUtil.convertMemoryBy2(quota.getStatus().getUsed().get("memory"));
 
-				double leftCpu = kubernetesClientService.transCpu(quota.getStatus().getHard().get("cpu"))
-						- kubernetesClientService.transCpu(quota.getStatus().getUsed().get("cpu"));
+				double leftCpu = ConvertUtil.convertCpu(quota.getStatus().getHard().get("cpu"))
+						- ConvertUtil.convertCpu(quota.getStatus().getUsed().get("cpu"));
 
-				long leftmemory = hard - used;
+				double leftmemory = hard - used;
 
-				leftCpu = leftCpu * RATIO_LIMITTOREQUESTCPU - REST_RESOURCE_CPU;
+				leftCpu = leftCpu * RATIO_LIMITTOREQUESTCPU;
+				long tempCpu = (long)Math.ceil(leftCpu)-REST_RESOURCE_CPU;
+
 				leftmemory = leftmemory * RATIO_LIMITTOREQUESTMEMORY;
+				long tempMem = (long)Math.ceil(leftmemory) -REST_RESOURCE_MEMORY;
 
-				model.addAttribute("leftcpu", leftCpu);
-				model.addAttribute("leftmemory", Math.ceil(leftmemory / 1000.0 - REST_RESOURCE_MEMORY));
+				model.addAttribute("leftcpu", tempCpu);
+				model.addAttribute("leftmemory", tempMem);
 			} else {
 				LOG.info("用户 " + currentUser.getUserName() + " 没有定义名称为 " + currentUser.getNamespace() + " 的Namespace ");
 			}
@@ -1605,7 +1609,7 @@ public class ServiceController {
 				service.setUpdateBy(currentUser.getId());
 				serviceDao.save(service);
 				// 保存服务操作信息
-				serviceOperationLogDao.save(service.getServiceName(), service.toString(),
+				serviceOperationLogDao.save(service.getServiceName(), service.toString() + ",imgName:" + imgName + ",imgVersion:" + imgVersion,
 						ServiceConstant.OPERATION_TYPE_ROLLINGUPDATE);
 
 				String image = dockerClientService.generateRegistryImageName(imgName, imgVersion);
@@ -1657,6 +1661,23 @@ public class ServiceController {
 				}
 				client.deleteReplicationController(serviceName);
 				LOG.info("Deleting old controller:" + serviceName);
+				/*
+				 * 增加此段代码确认rc是否已经被删除
+				 */
+				while (true) {
+					try {
+						if (client.getReplicationController(serviceName) == null) {
+							break;
+						}
+						try {
+							Thread.sleep(3000);
+						} catch (InterruptedException e) {
+							LOG.error(e.getMessage());
+						}
+					} catch (Exception e) {
+						break;
+					}
+				}
 
 				// 将新RC的名字重命名为旧RC名字
 				if (serviceDao.getServiceStatus(id) != ServiceConstant.CONSTRUCTION_STATUS_UPDATE) {
@@ -1694,34 +1715,6 @@ public class ServiceController {
 				map.put("status", "200");
 				LOG.info("replicationController:" + serviceName + " rolling updated.");
 
-				// 服务版本升级 使用 kubectl rolling-update 命令行
-				/*
-				 * KubernetesAPIClientInterface client =
-				 * kubernetesClientService.getClient(); ReplicationController
-				 * controller = client.getReplicationController(serviceName);
-				 * String NS = controller.getMetadata().getNamespace(); String
-				 * cmd = "kubectl rolling-update " + serviceName +
-				 * " --namespace=" + NS + " --update-period=10s --image=" +
-				 * dockerClientService.generateRegistryImageName(imgName,
-				 * imgVersion); boolean flag = cmdexec(cmd); if (flag) {
-				 * service.setImgVersion(imgVersion); //取得对应的imageid Image image
-				 * = imageDao.findByNameAndVersion(service.getImgName(),
-				 * imgVersion); service.setImgID(image.getId());
-				 *
-				 * Date currentDate = new Date(); User currentUser =
-				 * CurrentUserUtils.getInstance().getUser();
-				 * service.setUpdateDate(currentDate);
-				 * service.setUpdateBy(currentUser.getId()); service =
-				 * serviceDao.save(service); // 保存服务操作信息
-				 * serviceOperationLogDao.save(service.getServiceName(),
-				 * service.toString(),
-				 * ServiceConstant.OPERATION_TYPE_ROLLINGUPDATE);
-				 *
-				 * map.put("status", "200"); } else { String rollBackCmd =
-				 * "kubectl rolling-update " + serviceName + " --namespace="+ NS
-				 * + " --rollback"; cmdexec(rollBackCmd); map.put("status",
-				 * "400"); }
-				 */
 			}
 		} catch (KubernetesClientException e) {
 			map.put("status", "400");
@@ -1941,7 +1934,21 @@ public class ServiceController {
 			if (serviceDao.getServiceStatus(id) != ServiceConstant.CONSTRUCTION_STATUS_UPDATE) {
 				return true;
 			}
-			nextController = client.updateReplicationController(nextControllerName, i);
+			try {
+				nextController = client.updateReplicationController(nextControllerName, i);
+			} catch (Exception e) {
+				/*
+				 * 解释下异常后再次调用原因：在测试环境中 发生了一个修改副本数时出现的异常【 cannot be updated: the
+				 * object has been modified; please apply your changes to the
+				 * latest version and try again】所以这里设置为如果发生异常则再次尝试一次修改副本数
+				 */
+				try {
+					Thread.sleep(10000);
+				} catch (InterruptedException e1) {
+					LOG.error(e1.getMessage());
+				}
+				nextController = client.updateReplicationController(nextControllerName, i);
+			}
 			boolean podStatus = true;
 			PodList podList = client.getLabelSelectorPods(nextController.getSpec().getSelector());
 			while (podStatus) {
@@ -2696,25 +2703,32 @@ public class ServiceController {
 		List<Container> containerList = new ArrayList<Container>();
 		// 获取特殊条件的pods
 		try {
-			com.bonc.epm.paas.kubernetes.model.Service k8sService = client.getService(service.getServiceName());
-			PodList podList = client.getLabelSelectorPods(k8sService.getSpec().getSelector());
-			if (podList != null) {
-				List<Pod> pods = podList.getItems();
-				if (CollectionUtils.isNotEmpty(pods)) {
-					int i = 1;
-					for (Pod pod : pods) {
-						Container container = new Container();
-						container
-								.setContainerName(service.getServiceName() + "-" + service.getImgVersion() + "-" + i++);
-						container.setServiceAddr(pod.getMetadata().getName());
-						container.setServiceid(service.getId());
-						if (kubernetesClientService.isRunning(pod)) {
-							container.setContainerStatus(0);
-						} else {
-							container.setContainerStatus(1);
-						}
+			com.bonc.epm.paas.kubernetes.model.Service k8sService;
+			try {
+				k8sService = client.getService(service.getServiceName());
+			} catch (Exception e1) {
+				k8sService = null;
+			}
+			if (k8sService != null) {
+				PodList podList = client.getLabelSelectorPods(k8sService.getSpec().getSelector());
+				if (podList != null) {
+					List<Pod> pods = podList.getItems();
+					if (CollectionUtils.isNotEmpty(pods)) {
+						int i = 1;
+						for (Pod pod : pods) {
+							Container container = new Container();
+							container
+							.setContainerName(service.getServiceName() + "-" + service.getImgVersion() + "-" + i++);
+							container.setServiceAddr(pod.getMetadata().getName());
+							container.setServiceid(service.getId());
+							if (kubernetesClientService.isRunning(pod)) {
+								container.setContainerStatus(0);
+							} else {
+								container.setContainerStatus(1);
+							}
 
-						containerList.add(container);
+							containerList.add(container);
+						}
 					}
 				}
 			}
@@ -2760,6 +2774,7 @@ public class ServiceController {
 
 		} catch (Exception e) {
 			LOG.error("服务查询错误：" + e);
+			e.printStackTrace();
 		}
 		map.put("service", service);
 		map.put("containerList", containerList);
@@ -2851,6 +2866,7 @@ public class ServiceController {
 		} catch (Exception e) {
 			map.put("status", "400");
 			LOG.error("日志读取错误：" + e);
+			e.printStackTrace();
 		}
 
 		return JSON.toJSONString(map);
@@ -2892,6 +2908,7 @@ public class ServiceController {
 		} catch (Exception e) {
 			datamap.put("status", "400");
 			LOG.error("日志读取错误：" + e);
+			e.printStackTrace();
 		}
 		return JSON.toJSONString(datamap);
 	}
@@ -2998,6 +3015,7 @@ public class ServiceController {
 		} catch (Exception e) {
 			datamap.put("status", "400");
 			LOG.error("日志读取错误：" + e);
+			e.printStackTrace();
 		}
 
 		return JSON.toJSONString(datamap);
@@ -3037,8 +3055,8 @@ public class ServiceController {
 		} catch (IOException e) {
 			LOG.error("FileController  downloadTemplate:" + e.getMessage());
 		} catch (Exception e) {
-			e.printStackTrace();
 			LOG.error("日志读取错误：" + e);
+			e.printStackTrace();
 		}
 	}
 

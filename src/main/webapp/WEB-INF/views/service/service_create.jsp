@@ -174,10 +174,10 @@
 													<input type="hidden" id="monitor" name="monitor" value="">
 											</span></li>
 											<!-- Pod互斥 -->
-											<li class="line-h-3"  id="pod_mutex_type"><span class="ve_top">Pod调度方式：</span>
+											<li class="line-h-3"  id="pod_mutex_type"><span class="ve_top">Pod是否互斥：</span>
 												<span><input type="checkbox"
 												id="podmutex"> <label for="podmutex"><font
-												         color="blue">Pod互斥</font></label>
+												         color="blue">互斥</font></label>
 												<input type="hidden" id="ispodmutex" name="ispodmutex" value="">
 												<label id="podmutexlabel" style="display: none;float:right" ><font color="red">注意：为了满足pod互斥，实例数量不应大于集群节点数量${nodecount }</font></label>
 											</span></li>
@@ -195,7 +195,7 @@
 												</c:forEach>
 											    <input type="hidden" value="" class="in_style" id="proxyZone" name="proxyZone">
                                             </li>
-											<li class="line-h-3"> <span class="ve_top">ClientIP黏连方式：</span>
+											<li class="line-h-3"> <span class="ve_top">会话黏连方式：</span>
 	                                            <select class="selectVolume form-control" id="sessionAffinity" name="sessionAffinity"
 	                                                style="height: 34px; width: 230px;">
 	                                                <option name="sessionAffinity" value="" >NONE</option>

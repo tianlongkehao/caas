@@ -254,82 +254,119 @@ $(document).ready(function () {
 	});
 
 	//添加认证按钮
+	var layerBtn = "";
 	$("#addCredentialsCon").hide();
 	$(document).on('click','#addCredentialsBtn',function(){
+		$(".sshInfoCred").hide();
 		delData();
+		layerBtn = [ '添加', '取消' ];
 		layer.open({
 			type : 1,
 			title : '添加认证',
 			content : $("#addCredentialsCon"),
 			area: ['500px'],
-			btn : [ '添加', '取消' ],
+			btn : layerBtn,
 			scrollbar:false,
 			yes:function(index, layero){
-				if (!judgeCredData()) {
-					return;
-				}
 				var type = $("#CredentialsType").val();
-				var codeType = $("#codeType").val();
-				var username = $("#userNameCred").val();
-				var password = $("#passwordCred").val();
-				var privateKey = $("#privateKey").val();
-				var remark = $("#keyRemark").val();
-				var code = type==1?"HTTP":"SSH";
-				$.ajax({
-					url : ctx + "/secret/addCredential.do",
-					data : {
-						"type" : type,
-						"codeType" : codeType,
-						"userName" : username,
-						"password" : password,
-						"privateKey" : privateKey,
-						"remark" : remark
-					},
-					success : function(data) {
-						data = eval("(" + data + ")");
-						if (data.status == "200") {
-							if(type == 2){
-								$("#sshPassword").val(data.sshKey);
-								layer.open({
-									type : 1,
-									title : 'ssh密钥',
-									content : $("#sshPwdInfo"),
-									area : ['500px'],
-									btn : ['确认'],
-									scrollbar : false,
-									yes : function(index, layero) {
-										var html = "<option value='"+data.id+"'>"+username +" ("+code+") ("+remark+")"+"</option>";
-										$("#codeCredentials").append(html);
-										layer.closeAll();
-									}
-								});
-							} else {
-								var html = "<option value='"+data.id+"'>"+username +" ("+code+") ("+remark+")"+"</option>";
-								$("#codeCredentials").append(html);
-								layer.closeAll();
-							}
-						} else {
-							layer.alert("代码认证导入失败");
-						}
+				if(type == 1){
+					if (!judgeCredData(type)) {
+						return;
 					}
-				});
+					var codeType = $("#codeType").val();
+					var username = $("#userNameCred").val();
+					var password = $("#passwordCred").val();
+					var privateKey = $("#privateKey").val();
+					var remark = $("#keyRemark").val();
+					var code = type==1?"HTTP":"SSH";
+					$.ajax({
+						url : ctx + "/secret/addCredential.do",
+						data : {
+							"type" : type,
+							"codeType" : codeType,
+							"userName" : username,
+							"password" : password,
+							"privateKey" : privateKey,
+							"remark" : remark
+						},
+						success : function(data) {
+							data = eval("(" + data + ")");
+							if (data.status == "200") {
+								if(type == 2){
+									$("#sshPassword").val(data.sshKey);
+									layer.open({
+										type : 1,
+										title : 'ssh密钥',
+										content : $("#sshPwdInfo"),
+										area : ['500px'],
+										btn : ['确认'],
+										scrollbar : false,
+										yes : function(index, layero) {
+											var html = "<option value='"+data.id+"'>"+username +" ("+code+") ("+remark+")"+"</option>";
+											$("#codeCredentials").append(html);
+											layer.closeAll();
+										}
+									});
+								} else {
+									var html = "<option value='"+data.id+"'>"+username +" ("+code+") ("+remark+")"+"</option>";
+									$("#codeCredentials").append(html);
+									layer.closeAll();
+								}
+							} else {
+								layer.alert("代码认证导入失败");
+							}
+						}
+					});
+				}else{
+					layer.closeAll();
+				}
 			}
 		});
 	});
 
-	//选择认证类型
+	//选择认证类型   2ssh
 	$(".ssh").hide();
+	$(".sshInfoCred").hide();
 	$(document).on('change','#CredentialsType',function(){
 		var credentialsType = $("#CredentialsType").val();
 		if(credentialsType == 1){
 			$(".normal").show();
-			$(".ssh").hide();
+			$(".sshInfoCred").hide();
 			$("#privateKey").val("");
+			$(".layui-layer-btn0").html("添加");
 		}else{
+			$(".layui-layer-btn0").html("关闭");
 			$(".normal").hide();
-			$(".ssh").show();
-			$("#passwordCred").val("");
+			$(".sshInfoCred").show();
+			$.ajax({
+				url:ctx+"/secret/getSshKeyList.do",
+				type:'get',
+				success : function(data){
+					var creList = eval("("+data+")");
+					var creListHtml = "";
+					for(var i=0; i<creList.length; i++){
+						var creId = creList[i].id;
+						var userName = creList[i].userName;
+						creListHtml+= '<option value="'+creId+'">'+userName+'</option>';
+					}
+					$("#sshKeyList").empty().append(creListHtml);
+					$("#sshPassword").val(creList[0].privateKey);
+				}
+			});
+			
 		}
+	});
+	//更改密钥生成对应公钥
+	$(document).on('change','#sshKeyList',function(){
+		var thisId = $(this).val();
+		$.ajax({
+			url:ctx+"/secret/detailCredential.do?id="+thisId,
+			type:'get',
+			success : function(data){
+				var privateKey = eval("("+data+")");
+				$("#sshPassword").val(privateKey.credential.privateKey);
+			}
+		});
 	});
 
 	//提交表单
@@ -393,6 +430,7 @@ $(document).ready(function () {
 		}
 		editor_one.setValue(allToolCode);
 	});
+	//显示和隐藏提示
 	$(document).on('click','.questionInfoBtn',function(){
 		$(this).parent().parent().parent().find("div.questionInfoCon").toggle();
 	});
@@ -546,17 +584,17 @@ function loadAnt(count){
 							'<input id="antProperties-'+count+'" name="antProperties" type="text" class="form-control c-project-con" value=""><i class="fa fa-question-circle fa-questionBtn"></i>'+
 						'</div>'+
 						'<div class="form-group col-md-12 fa-questionCon">'+
-						'<p>您可以在此处指定您的ant构建所需的属性（以标准属性文件格式）：</p>'+
-						'<p>＃comment</p>'+
-						'<p>name1 = value1</p>'+
-						'<p>name2 = $ VAR2</p>'+
-						'<p>这些被传递给Ant像“-Dname1 = value1 -Dname2 = value2”。 始终'+
-						'使用$ VAR样式（甚至在Windows上）引用Jenkins定义的环境变量。 '+
-						'在Windows上，％VAR％样式引用可用于存在于Jenkins之外的环境变量。 '+
-						'反斜杠用于转义，因此对于单个反斜杠使用\\。 应该避免双引号（“），因为ant on * nix将引号'+
-						'中的参数封装在引号中，并通过eval运行它们，而且Windows也有自己的转义问题，在任何一种情况下，'+
-						'使用引号都可能导致构建失败。 属性，只需写入varname =</p>'+
-					 '</div>'+
+							'<p>您可以在此处指定您的ant构建所需的属性（以标准属性文件格式）：</p>'+
+							'<p>＃comment</p>'+
+							'<p>name1 = value1</p>'+
+							'<p>name2 = $ VAR2</p>'+
+							'<p>这些被传递给Ant像“-Dname1 = value1 -Dname2 = value2”。 始终'+
+							'使用$ VAR样式（甚至在Windows上）引用Jenkins定义的环境变量。 '+
+							'在Windows上，％VAR％样式引用可用于存在于Jenkins之外的环境变量。 '+
+							'反斜杠用于转义，因此对于单个反斜杠使用\\。 应该避免双引号（“），因为ant on * nix将引号'+
+							'中的参数封装在引号中，并通过eval运行它们，而且Windows也有自己的转义问题，在任何一种情况下，'+
+							'使用引号都可能导致构建失败。 属性，只需写入varname =</p>'+
+						 '</div>'+
 						'<div class="form-group col-md-12">'+
 							'<label class="c-project-tit">java选项</label>'+
 							'<input id="antJavaOpts-'+count+'" name="antJavaOpts" type="text" class="form-control c-project-con" value=""><i class="fa fa-question-circle fa-questionBtn"></i>'+
@@ -1049,31 +1087,33 @@ function checkCodeCiAdd(editor_one){
 }
 
 //数据格式判断
-function judgeCredData(){
+function judgeCredData(type){
 	var type = $("#CredentialsType").val();
 	var username = $("#userNameCred").val();
 	var password = $("#passwordCred").val();
 	var remark = $("#keyRemark").val();
-	if (!username || username.length < 1) {
-		layer.tips('用户名不能为空','#userNameCred',{tips:[1,'#3595CC']});
-		$("#userNameCred").focus();
-		return;
-	}
-	var code = "";
-	if (type == 1 ) {
-		code = "HTTP";
-		if (!password || password.length < 1) {
-			layer.tips('密码不能为空','#passwordCred',{tips:[1,'#3595CC']});
-			$("#passwordCred").focus();
+	if(type == 1){
+		if (!username || username.length < 1) {
+			layer.tips('用户名不能为空','#userNameCred',{tips:[1,'#3595CC']});
+			$("#userNameCred").focus();
 			return;
 		}
+		var code = "";
+		if (type == 1 ) {
+			code = "HTTP";
+			if (!password || password.length < 1) {
+				layer.tips('密码不能为空','#passwordCred',{tips:[1,'#3595CC']});
+				$("#passwordCred").focus();
+				return;
+			}
+		}
+		if (!remark || remark.length < 1) {
+			layer.tips('描述信息不能为空','#keyRemark',{tips:[1,'#3595CC']});
+			$("#keyRemark").focus();
+			return;
+		}
+		return true;
 	}
-	if (!remark || remark.length < 1) {
-		layer.tips('描述信息不能为空','#keyRemark',{tips:[1,'#3595CC']});
-		$("#keyRemark").focus();
-		return;
-	}
-	return true;
 }
 
 function delData(){

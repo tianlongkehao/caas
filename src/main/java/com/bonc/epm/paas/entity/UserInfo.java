@@ -2,6 +2,8 @@ package com.bonc.epm.paas.entity;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.bonc.epm.paas.util.ConvertUtil;
+
 public class UserInfo {
 	UserResource userResource;
 	User user;
@@ -175,7 +177,7 @@ public class UserInfo {
 	}
 	public double getRestMemoryNum() {
 		try {
-			return Double.parseDouble(servMemoryNum) - usedMemoryNum;
+			return (double)(Math.round((ConvertUtil.convertMemory(servMemoryNum) - usedMemoryNum)*100))/100;
 		} catch (Exception e) {
 			return 0;
 		}

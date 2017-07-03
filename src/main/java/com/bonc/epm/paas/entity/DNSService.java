@@ -46,9 +46,14 @@ public class DNSService {
 	private String pingResult;
 
 	/**
-	 * 服务名
+	 * isMonitor
 	 */
-	private String serviceName;
+	private Integer isMonitor;
+
+	/**
+	 * sleepTime
+	 */
+	private Integer sleepTime;
 
 	public long getId() {
 		return id;
@@ -106,12 +111,20 @@ public class DNSService {
 		this.pingResult = pingResult;
 	}
 
-	public String getServiceName() {
-		return serviceName;
+	public Integer getIsMonitor() {
+		return isMonitor;
 	}
 
-	public void setServiceName(String serviceName) {
-		this.serviceName = serviceName;
+	public void setIsMonitor(Integer isMonitor) {
+		this.isMonitor = isMonitor;
+	}
+
+	public Integer getSleepTime() {
+		return sleepTime;
+	}
+
+	public void setSleepTime(Integer sleepTime) {
+		this.sleepTime = sleepTime;
 	}
 
 }

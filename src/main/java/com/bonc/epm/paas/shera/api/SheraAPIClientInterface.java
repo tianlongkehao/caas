@@ -147,6 +147,6 @@ public interface SheraAPIClientInterface {
 
 	public void deleteSshConfig(String userid) throws SheraClientException;
 
-	public SshConfig getSshConfig(String userid) throws SheraClientException;
+	public String getSshConfig(String userid) throws SheraClientException;
 
 }

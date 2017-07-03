@@ -62,6 +62,9 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle{
     @Autowired
     private CasClientConfigurationProperties configProps;
 
+    @Autowired
+    private CephController ceph;
+
     /**
      * kubernetesClientService
      */
@@ -92,86 +95,110 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle{
     private String resManUrl;
 
     /**
-	 * CEPH_KEY ${ceph.key}
-	 */
-	@Value("${ceph.key}")
-	private String CEPH_KEY;
+     * CEPH_KEY ${ceph.key}
+     */
+    @Value("${ceph.key}")
+    private String CEPH_KEY;
+
+    /*
+     * 预留的cpu资源
+     */
+    @Value("${rest.resource.cpu}")
+    private int REST_RESOURCE_CPU;
+
+    /*
+     * 预留的memory资源
+     */
+    @Value("${rest.resource.memory}")
+    private int REST_RESOURCE_MEMORY;
+
+    /*
+     * cpu系数
+     */
+    @Value("${ratio.limittorequestcpu}")
+    private int RATIO_LIMITTOREQUESTCPU;
+
+    /*
+     * memory系数
+     */
+    @Value("${ratio.limittorequestmemory}")
+    private int RATIO_LIMITTOREQUESTMEMORY;
 
     @Override
-	public boolean onSuccess(HttpServletRequest request, HttpServletResponse response, String loginId) {
-		// 添加访问日志
-		String hostIp = request.getRemoteAddr();
-		String headerData = request.getHeader("User-agent");
-		UserVisitingLog userVisitingLog = new UserVisitingLog();
-		boolean isLegal = false;
+    public boolean onSuccess(HttpServletRequest request, HttpServletResponse response, String loginId) {
+        // 添加访问日志
+        String hostIp = request.getRemoteAddr();
+        String headerData = request.getHeader("User-agent");
+        UserVisitingLog userVisitingLog = new UserVisitingLog();
+        boolean isLegal = false;
 
-		SpringApplicationContext.CONTEXT.getAutowireCapableBeanFactory().autowireBean(this);
-		if (configProps.getEnable()) {
-			if ((null != request) && (null != loginId) && (loginId.trim().length() > 0)) {
-				User currPaasUser = CurrentUserUtils.getInstance().getUser();
-				if (currPaasUser != null && loginId.equals(currPaasUser.getUserName())) { // 如果已经登录和并且是一个用户
-					return true;
-				}
+        SpringApplicationContext.CONTEXT.getAutowireCapableBeanFactory().autowireBean(this);
+        if (configProps.getEnable()) {
+            if ((null != request) && (null != loginId) && (loginId.trim().length() > 0)) {
+                User currPaasUser = CurrentUserUtils.getInstance().getUser();
+                if (currPaasUser != null && loginId.equals(currPaasUser.getUserName())) { // 如果已经登录和并且是一个用户
+                    return true;
+                }
 
-				// HttpServletRequest httpRequest = (HttpServletRequest)
-				// request;
-				// cas当前认证用户
-				Assertion assertion = (Assertion) request.getSession().getAttribute(CONST_CAS_ASSERTION);
-				Map<String, Object> attributes = assertion.getPrincipal().getAttributes();
-				LOG.info("能力平台USER:" + attributes.toString());
-				LOG.info("cas登陆Id" + assertion.getPrincipal().getName() + "||" + loginId);
+                // HttpServletRequest httpRequest = (HttpServletRequest)
+                // request;
+                // cas当前认证用户
+                Assertion assertion = (Assertion) request.getSession().getAttribute(CONST_CAS_ASSERTION);
+                Map<String, Object> attributes = assertion.getPrincipal().getAttributes();
+                LOG.info("能力平台USER:" + attributes.toString());
+                LOG.info("cas登陆Id" + assertion.getPrincipal().getName() + "||" + loginId);
 
-				String tenantId = "";
-				String namespace = "";
-				//获取所在租户的租户名（namespace）
+                String tenantId = "";
+                String namespace = "";
+                //获取所在租户的租户名（namespace）
 //				if (null == attributes.get("tenantId")) {
 //					attributes.put("tenantId", assertion.getPrincipal().getName());
 //				}
-				if (null != attributes.get("tenantId")) {//tenantId:租户信息唯一标识
-					tenantId = attributes.get("tenantId").toString();
-					namespace = tenantId;
-					// 把下划线替换为--
-					if (namespace.contains("_")) {
-						namespace = namespace.replace("_", "--");
-					}
-				}
-				User user = new User();
-				UserResource userResource = null;
-				try {
-					// 同步统一平台租户用户到本地
-					user = fillUserInfo(assertion, namespace);
-					user = userDao.save(user);
-					CurrentUserUtils.getInstance().setUser(user);
+                if (null != attributes.get("tenantId")) {//tenantId:租户信息唯一标识
+                    tenantId = attributes.get("tenantId").toString();
+                    namespace = tenantId;
+                    // 把下划线替换为--
+                    if (namespace.contains("_")) {
+                        namespace = namespace.replace("_", "--");
+                    }
+                }
+                User user = new User();
+                UserResource userResource = null;
+                try {
+                    // 同步统一平台租户用户到本地
+                    user = fillUserInfo(assertion, namespace);
+                    user = userDao.save(user);
+                    CurrentUserUtils.getInstance().setUser(user);
 
-					userResource = userResourceDao.findByUserId(user.getId());
-					if (null == userResource) {
-						userResource = new UserResource();
-					}
+                    userResource = userResourceDao.findByUserId(user.getId());
+                    if (null == userResource) {
+                        userResource = new UserResource();
+                    }
 
-					// 统一平台的userId
-					if (user.getUser_autority().equals(UserConstant.AUTORITY_TENANT)) {
-						if (createNamespace(namespace)) { // 创建命名空间
-							createQuota(userResource, tenantId, namespace); // 创建资源
-							createCeph(namespace); // 创建ceph
-						}
-					}
-					userResource.setImage_count(2000);
-					userResource.setUserId(user.getId());
-					userResourceDao.save(userResource);
-					CurrentUserUtils.getInstance().setCasEnable(configProps.getEnable());
-					isLegal = true;
-				} catch (Exception e) {
-					LOG.error(e.getMessage());
-					throw new ServiceException();
-				}
-				userVisitingLog = userVisitingLog.addUserVisitingLog(user, hostIp, headerData, isLegal);
-				userVisitingLogDao.save(userVisitingLog);
-				return true;
-			}
-			return false;
-		}
-		return true;
-	}
+                    // 统一平台的userId
+                    if (user.getUser_autority().equals(UserConstant.AUTORITY_TENANT)) {
+                        if (createNamespace(namespace)) { // 创建命名空间
+                            createQuota(userResource, tenantId, namespace); // 创建资源
+                            createCeph(namespace); // 创建ceph
+                        }
+                    }
+                    userResource.setImage_count(2000);
+                    userResource.setUserId(user.getId());
+                    userResourceDao.save(userResource);
+                    CurrentUserUtils.getInstance().setCasEnable(configProps.getEnable());
+                    isLegal = true;
+                } catch (Exception e) {
+                    LOG.error(e.getMessage());
+                    throw new ServiceException();
+                }
+                userVisitingLog = userVisitingLog.addUserVisitingLog(user, hostIp, headerData, isLegal);
+                userVisitingLogDao.save(userVisitingLog);
+                return true;
+            }
+            return false;
+        }
+        return true;
+    }
 
     /**
      *
@@ -182,7 +209,6 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle{
      */
     private void createCeph(String namespace) {
         try {
-            CephController ceph = new CephController();
             ceph.connectCephFS();
             ceph.createNamespaceCephFS(namespace);
         }
@@ -203,91 +229,91 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle{
      * @see Assertion
      */
     private User fillUserInfo(Assertion assertion, String namespace) {
-		/*
-		 * 用户初始化
-		 * Map中根据以下键值可获取登录用户如下信息
-		 * userId:用户信息唯一标识
-		 * loginId:登陆用户名
-		 * userName:登陆用户姓名
-		 * state:用户状态（1启用；0停用；）
-		 * sex:性别（1男；0女；）
-		 * email:电子邮箱
-		 * mobile:移动电话号码
-		 * tenantId:租户信息唯一标识
-		 * tenantAdmin:是否租户管理员（1是；0否；）
-		 * isSuperAdmin:是否平台管理员（1是；0否；）
-		 */
-		String loginId = assertion.getPrincipal().getName();
-		User user = userDao.findByUserName(loginId);
-		if (null == user) {
-			user = new User();
-			user.setPassword(UserConstant.INIT_PASSWORD);
-		}
-		user.setNamespace(namespace);
-		user.setUserName(loginId);
-		Map<String, Object> attributes = assertion.getPrincipal().getAttributes();
-		if (null != attributes.get("userId")) { // 统一平台的userId
-			user.setOpen_user_id(attributes.get("userId").toString());
-		}
-		if (null != attributes.get("userName")) { // 用户的名称
-			user.setUser_realname(attributes.get("userName").toString());
-		}
-		if (null != attributes.get("email")) { // email
-			user.setEmail(attributes.get("email").toString());
-		}
-		if (null != attributes.get("telephone")) { // 电话
-			user.setUser_phone(attributes.get("telephone").toString());
-		}
-		if (null != attributes.get("mobile")) { // 手机
-			user.setUser_cellphone(attributes.get("mobile").toString());
-		}
-		if (null != attributes.get("isSuperAdmin")) {
-			String isSuperAdmin = attributes.get("isSuperAdmin").toString();
-			if ("1".equals(isSuperAdmin)) {
-				user.setUser_autority(UserConstant.AUTORITY_MANAGER);
-			} else {
-				if (null != attributes.get("tenantAdmin")) {
-					String tenantAdmin = attributes.get("tenantAdmin").toString();
-					if ("1".equals(tenantAdmin)) { // 是租户
-						user.setUser_autority(UserConstant.AUTORITY_TENANT);
-					} else if ("0".equals(tenantAdmin)) {
-						// 获取租户管理员id
-						try {
-							List<User> tenant = userDao.findTenant(namespace);
-							if (!CollectionUtils.isEmpty(tenant)) {
-								user.setParent_id(tenant.get(0).getId());
-							}
-						} catch (Exception e) {
-							LOG.error("get parent error:" + e.getMessage());
-						}
-						user.setUser_autority(UserConstant.AUTORITY_USER);
-					}
-				}
-			}
-		} else if(user.getUserName().equals("admin")) {
-			//兼容旧版能力平台
-			user.setUser_autority(UserConstant.AUTORITY_MANAGER);
-		} else {
-			if (null != attributes.get("tenantAdmin")) {
-				String tenantAdmin = attributes.get("tenantAdmin").toString();
-				if ("1".equals(tenantAdmin)) { // 是租户
-					user.setUser_autority(UserConstant.AUTORITY_TENANT);
-				} else if ("0".equals(tenantAdmin)) {
-					// 获取租户管理员id
-					try {
-						List<User> tenant = userDao.findTenant(namespace);
-						if (!CollectionUtils.isEmpty(tenant)) {
-							user.setParent_id(tenant.get(0).getId());
-						}
-					} catch (Exception e) {
-						LOG.error("get parent error:" + e.getMessage());
-					}
-					user.setUser_autority(UserConstant.AUTORITY_USER);
-				}
-			}
-		}
-		return user;
-	}
+        /*
+         * 用户初始化
+         * Map中根据以下键值可获取登录用户如下信息
+         * userId:用户信息唯一标识
+         * loginId:登陆用户名
+         * userName:登陆用户姓名
+         * state:用户状态（1启用；0停用；）
+         * sex:性别（1男；0女；）
+         * email:电子邮箱
+         * mobile:移动电话号码
+         * tenantId:租户信息唯一标识
+         * tenantAdmin:是否租户管理员（1是；0否；）
+         * isSuperAdmin:是否平台管理员（1是；0否；）
+         */
+        String loginId = assertion.getPrincipal().getName();
+        User user = userDao.findByUserName(loginId);
+        if (null == user) {
+            user = new User();
+            user.setPassword(UserConstant.INIT_PASSWORD);
+        }
+        user.setNamespace(namespace);
+        user.setUserName(loginId);
+        Map<String, Object> attributes = assertion.getPrincipal().getAttributes();
+        if (null != attributes.get("userId")) { // 统一平台的userId
+            user.setOpen_user_id(attributes.get("userId").toString());
+        }
+        if (null != attributes.get("userName")) { // 用户的名称
+            user.setUser_realname(attributes.get("userName").toString());
+        }
+        if (null != attributes.get("email")) { // email
+            user.setEmail(attributes.get("email").toString());
+        }
+        if (null != attributes.get("telephone")) { // 电话
+            user.setUser_phone(attributes.get("telephone").toString());
+        }
+        if (null != attributes.get("mobile")) { // 手机
+            user.setUser_cellphone(attributes.get("mobile").toString());
+        }
+        if (null != attributes.get("isSuperAdmin")) {
+            String isSuperAdmin = attributes.get("isSuperAdmin").toString();
+            if ("1".equals(isSuperAdmin)) {
+                user.setUser_autority(UserConstant.AUTORITY_MANAGER);
+            } else {
+                if (null != attributes.get("tenantAdmin")) {
+                    String tenantAdmin = attributes.get("tenantAdmin").toString();
+                    if ("1".equals(tenantAdmin)) { // 是租户
+                        user.setUser_autority(UserConstant.AUTORITY_TENANT);
+                    } else if ("0".equals(tenantAdmin)) {
+                        // 获取租户管理员id
+                        try {
+                            List<User> tenant = userDao.findTenant(namespace);
+                            if (!CollectionUtils.isEmpty(tenant)) {
+                                user.setParent_id(tenant.get(0).getId());
+                            }
+                        } catch (Exception e) {
+                            LOG.error("get parent error:" + e.getMessage());
+                        }
+                        user.setUser_autority(UserConstant.AUTORITY_USER);
+                    }
+                }
+            }
+        } else if(user.getUserName().equals("admin")) {
+            //兼容旧版能力平台
+            user.setUser_autority(UserConstant.AUTORITY_MANAGER);
+        } else {
+            if (null != attributes.get("tenantAdmin")) {
+                String tenantAdmin = attributes.get("tenantAdmin").toString();
+                if ("1".equals(tenantAdmin)) { // 是租户
+                    user.setUser_autority(UserConstant.AUTORITY_TENANT);
+                } else if ("0".equals(tenantAdmin)) {
+                    // 获取租户管理员id
+                    try {
+                        List<User> tenant = userDao.findTenant(namespace);
+                        if (!CollectionUtils.isEmpty(tenant)) {
+                            user.setParent_id(tenant.get(0).getId());
+                        }
+                    } catch (Exception e) {
+                        LOG.error("get parent error:" + e.getMessage());
+                    }
+                    user.setUser_autority(UserConstant.AUTORITY_USER);
+                }
+            }
+        }
+        return user;
+    }
 
     /**
      *
@@ -297,39 +323,39 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle{
      * @return boolean
      * @throws ServiceException
      */
-	private boolean createNamespace(String namespace) throws ServiceException {
-		// 以用户名(登陆帐号)为name，创建client ??
-		KubernetesAPIClientInterface client = kubernetesClientService.getClient("");
-		// 是否创建nameSpace
-		try {
-			client.getNamespace(namespace);
-		} catch (KubernetesClientException e) {
-			// 以用户名(登陆帐号)为name，为client创建nameSpace
-			Namespace nSpace = kubernetesClientService.generateSimpleNamespace(namespace);
-			nSpace = client.createNamespace(nSpace);
-			if (nSpace == null) {
-				// client.deleteNamespace(namespace);
-				LOG.error("Create a new Namespace:namespace[" + nSpace + "]");
-				return false;
-			} else {
-				LOG.info("create namespace:" + JSON.toJSONString(nSpace));
-			}
+    private boolean createNamespace(String namespace) throws ServiceException {
+        // 以用户名(登陆帐号)为name，创建client ??
+        KubernetesAPIClientInterface client = kubernetesClientService.getClient(namespace);
+        // 是否创建nameSpace
+        try {
+            client.getNamespace(namespace);
+        } catch (KubernetesClientException e) {
+            // 以用户名(登陆帐号)为name，为client创建nameSpace
+            Namespace nSpace = kubernetesClientService.generateSimpleNamespace(namespace);
+            nSpace = client.createNamespace(nSpace);
+            if (nSpace == null) {
+                // client.deleteNamespace(namespace);
+                LOG.error("Create a new Namespace:namespace[" + nSpace + "]");
+                return false;
+            } else {
+                LOG.info("create namespace:" + JSON.toJSONString(nSpace));
+            }
 
-		} catch (RuntimeException e) {
-			LOG.error("连接kubernetesAPI超时！" + e);
-			throw new ServiceException();
-		}
+        } catch (RuntimeException e) {
+            LOG.error("连接kubernetesAPI超时！" + e);
+            throw new ServiceException();
+        }
 
-		Secret secret = kubernetesClientService.generateSecret("ceph-secret", namespace, CEPH_KEY);
-		try {
-			secret = client.createSecret(secret);
-			LOG.info("create secret:" + JSON.toJSONString(secret));
-		} catch (KubernetesClientException e) {
-			LOG.info("secret exists" + JSON.toJSONString(secret));
-		}
+        Secret secret = kubernetesClientService.generateSecret("ceph-secret", namespace, CEPH_KEY);
+        try {
+            secret = client.createSecret(secret);
+            LOG.info("create secret:" + JSON.toJSONString(secret));
+        } catch (KubernetesClientException e) {
+            LOG.info("secret exists" + JSON.toJSONString(secret));
+        }
 
-		return true;
-	}
+        return true;
+    }
 
     /**
      *
@@ -355,36 +381,36 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle{
             if (StringUtils.isNotBlank(rtnStr)) {
                 JSONObject jsStr = JSONObject.parseObject(rtnStr);
                 if ((boolean)jsStr.get("success")) {
-                	if (jsStr.get("data") != null) {
-                		JSONArray jsArrData = (JSONArray) jsStr.get("data");
-                		JSONObject jsObj = (JSONObject) jsArrData.get(0);
-                		JSONArray jsArrData2 = (JSONArray) jsObj.get("data");
-                		for (Object dataRow : jsArrData2){
-                			JSONObject jsObj2 = (JSONObject) dataRow;
-                			JSONArray jsPro = (JSONArray) jsObj2.get("property");
-                			if (jsPro != null && jsPro.size() > 0) { // 获取CPU、MEM和Volume的值
-                				for (Object oneRow : jsPro) {
-                					JSONObject tmp = (JSONObject) oneRow;
-                					if (((String)tmp.get("property_code")).trim().equals("CPU")) {
-                						openCpu += Double.parseDouble((String)tmp.get("prop_value"));
-                					}
-                					else if (((String)tmp.get("property_code")).trim().equals("Memory")) {
-                						openMem += Long.parseLong((String)tmp.get("prop_value"));
-                					}
-                					else if (((String)tmp.get("property_code")).trim().equals("Storage")){
-                						volSize += Long.parseLong((String)tmp.get("prop_value"));
-                					}
-                				}
-                			}
-                		}
-                		userResource.setVol_size(volSize);
-                		if (userResource.getUserId() <= 0) {
-                			userResource.setVol_surplus_size(userResource.getVol_size());
-                		}
-                		LOG.info("能力平台租户已分配资源:{" + "cpu:" + openCpu + ",mem:" + openMem +",volume:"+userResource.getVol_size()+"}");
-                		createResourceQuota(namespace, openCpu, openMem,userResource);
-                	}
-				}
+                    if (jsStr.get("data") != null) {
+                        JSONArray jsArrData = (JSONArray) jsStr.get("data");
+                        JSONObject jsObj = (JSONObject) jsArrData.get(0);
+                        JSONArray jsArrData2 = (JSONArray) jsObj.get("data");
+                        for (Object dataRow : jsArrData2){
+                            JSONObject jsObj2 = (JSONObject) dataRow;
+                            JSONArray jsPro = (JSONArray) jsObj2.get("property");
+                            if (jsPro != null && jsPro.size() > 0) { // 获取CPU、MEM和Volume的值
+                                for (Object oneRow : jsPro) {
+                                    JSONObject tmp = (JSONObject) oneRow;
+                                    if (((String)tmp.get("property_code")).trim().equals("CPU")) {
+                                        openCpu += Double.parseDouble((String)tmp.get("prop_value"));
+                                    }
+                                    else if (((String)tmp.get("property_code")).trim().equals("Memory")) {
+                                        openMem += Long.parseLong((String)tmp.get("prop_value"));
+                                    }
+                                    else if (((String)tmp.get("property_code")).trim().equals("Storage")){
+                                        volSize += Long.parseLong((String)tmp.get("prop_value"));
+                                    }
+                                }
+                            }
+                        }
+                        userResource.setVol_size(volSize);
+                        if (userResource.getUserId() <= 0) {
+                            userResource.setVol_surplus_size(userResource.getVol_size());
+                        }
+                        LOG.info("能力平台租户已分配资源:{" + "cpu:" + openCpu + ",mem:" + openMem +",volume:"+userResource.getVol_size()+"}");
+                        createResourceQuota(namespace, openCpu, openMem,userResource);
+                    }
+                }
             }
         }
         catch (Exception e) {
@@ -425,12 +451,15 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle{
         if (isConnect) {
             // 为client创建资源配额
             Map<String, String> openMap = new HashMap<String, String>();
-            openMap.put("memory", openMem + "G");// 内存（G）
+            /*openMap.put("memory", openMem + "G");// 内存（G）
             openMap.put("cpu", Double.valueOf(openCpu) + "");// CPU数量(个)
+            */
+            openMap.put("memory", (openMem +REST_RESOURCE_MEMORY)/RATIO_LIMITTOREQUESTMEMORY + "G");// 按比例缩小资源的分配
+            openMap.put("cpu", (Double.valueOf(openCpu)+REST_RESOURCE_CPU)/RATIO_LIMITTOREQUESTCPU + "");// CPU数量(个)
             openMap.put("persistentvolumeclaims", userResource.getVol_size() + "");// 卷组数量
 
-            userResource.setCpu(openCpu);
-            userResource.setMemory(openMem);
+            /*userResource.setCpu(openCpu);
+            userResource.setMemory(openMem);*/
             ResourceQuota openQuota = kubernetesClientService.generateSimpleResourceQuota(namespace, openMap);
             if (isCreate) { // 是否新建quota
                 openQuota = client.createResourceQuota(openQuota); // 创建quota
@@ -442,13 +471,19 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle{
                     LOG.info("for namespace:-"+namespace+" create quota failed: namespace=" + namespace + "hard=" + openMap.toString());
                 }
             }
-            else { // 直接更新租户的quota 不用判断资源是否更新过
-                currentQuota = client.updateResourceQuota(namespace, openQuota);
-                userResource.setUpdateDate(new Date());
-                if (null != currentQuota) {
-                    LOG.info("for namespace:-"+namespace+" update quota:"+JSON.toJSONString(currentQuota));
+            else { // 如果申请了更多的cpu或者mem则更新quota，否则不更新
+                boolean isCpuUpdated =Math.abs(openCpu-userResource.getCpu())<=0.001;
+                boolean isMemUpdated = openMem == userResource.getMemory();
+                if(!isCpuUpdated||!isMemUpdated){
+                    currentQuota = client.updateResourceQuota(namespace, openQuota);
+                    userResource.setUpdateDate(new Date());
+                    if (null != currentQuota) {
+                        LOG.info("for namespace:-"+namespace+" update quota:"+JSON.toJSONString(currentQuota));
+                    }
                 }
             }
+            userResource.setCpu(openCpu);
+            userResource.setMemory(openMem);
         }
     }
 }

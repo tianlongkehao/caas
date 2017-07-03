@@ -50,6 +50,8 @@ public class SheraAPIClient implements SheraAPIClientInterface {
 
 	private static final Log LOG = LogFactory.getLog(SheraAPIClient.class);
 
+	private static final String CONSTANT_IDENTIFY = "IDENTIFY";
+
 	private String sRURI;
 	private SheraAPI api;
 	private String namespace;
@@ -505,6 +507,7 @@ public class SheraAPIClient implements SheraAPIClientInterface {
 	public SshConfig createSshConfig(SshConfig sshConfig) throws SheraClientException {
 		try {
 			LOG.info("调用shera创建SshConfig");
+			sshConfig.setIdentify(CONSTANT_IDENTIFY);
 			return api.createSshConfig(sshConfig);
 		} catch (NotFoundException e) {
 			return null;
@@ -520,7 +523,7 @@ public class SheraAPIClient implements SheraAPIClientInterface {
 	public void deleteSshConfig(String userid) throws SheraClientException {
 		try {
 			LOG.info("调用shera删除SshConfig");
-			api.deleteSshConfig(userid);
+			api.deleteSshConfig(userid, CONSTANT_IDENTIFY);
 		} catch (WebApplicationException e) {
 			throw new SheraClientException(e.getMessage());
 		}
@@ -530,10 +533,10 @@ public class SheraAPIClient implements SheraAPIClientInterface {
 	 * @see com.bonc.epm.paas.shera.api.SheraAPIClientInterface#getSshConfig(java.lang.String)
 	 */
 	@Override
-	public SshConfig getSshConfig(String userid) throws SheraClientException {
+	public String getSshConfig(String userid) throws SheraClientException {
 		try {
 			LOG.info("调用shera获取SshConfig");
-			return api.getSshConfig(userid);
+			return api.getSshConfig(userid, CONSTANT_IDENTIFY);
 		} catch (NotFoundException e) {
 			return null;
 		} catch (WebApplicationException e) {
