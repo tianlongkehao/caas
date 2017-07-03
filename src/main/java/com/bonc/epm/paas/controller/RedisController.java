@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -73,6 +75,11 @@ import com.bonc.epm.paas.util.FileUtils;
 @RequestMapping(value = "/RedisController")
 public class RedisController {
 
+	/**
+	 * LOG
+	 */
+	private static final Logger LOG = LoggerFactory.getLogger(RedisController.class);
+
 	private static final String REDIS_CONF = "redis.conf";
 	private static final String REDIS_CONF_FILE = "REDISCONF";
 	private static final String BOOTSTRAP_POD = "bootstrap-pod.sh";
@@ -97,6 +104,18 @@ public class RedisController {
 	 */
 	@Value("${redis.explorer.memory.size}")
 	private String REDIS_EXPLORER_MEMORY_SIZE;
+
+	/**
+	 * redis镜像名
+	 */
+	@Value("${redis.image}")
+	private String REDIS_IMAGE;
+
+	/**
+	 * redis-explorer镜像名
+	 */
+	@Value("${redis.explorer.image}")
+	private String REDIS_EXPLORER_IMAGE;
 
 	/**
 	 * entry地址
@@ -246,7 +265,8 @@ public class RedisController {
 
 		if (redis.getStatus().equals(RedisConstant.REDIS_STATUS_STOP)) {
 			String ram = (redis.getRam() * 2 / redis.getNodeNum()) + "Gi";
-			String storage = (redis.getRam() * 2 / redis.getNodeNum()) + "Gi";
+			String storage = (redis.getStorage() * 2 / redis.getNodeNum()) + "Gi";
+
 			String databaseNum = redis.getDatabaseNum() + "";
 			Integer replicas = redis.getNodeNum();
 			String maxmemorypolicy = redis.getMemoryPolicy();
@@ -525,11 +545,12 @@ public class RedisController {
 			StatefulSet statefulSet = apisClient.getStatefulSet(name);
 			statefulSet.getSpec().setReplicas(0);
 			apisClient.replaceStatefulSet(name, statefulSet);
-			while(CollectionUtils.isNotEmpty(client.getLabelSelectorPods(statefulSet.getSpec().getSelector().getMatchLabels()).getItems())){
+			List<Pod> pods = client.getLabelSelectorPods(statefulSet.getSpec().getSelector().getMatchLabels()).getItems();
+			for (Pod pod : pods) {
 				try {
-					Thread.sleep(3000);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
+					client.deletePod(pod.getMetadata().getName());
+				} catch (KubernetesClientException e) {
+					LOG.info("redis服务停止时，删除pod[" + pod.getMetadata().getName() + "]异常：" + e.getStatus().getReason());
 				}
 			}
 			client.deleteConfigMap(name);
@@ -738,7 +759,7 @@ public class RedisController {
 
 		resources.setLimits(limits );
 
-		Container container1 = kubernetesClientService.generateContainer(name, "dipperroy/redis:" + version, ports1,
+		Container container1 = kubernetesClientService.generateContainer(name, REDIS_IMAGE + ":" + version, ports1,
 				command, args, readinessProbe, livenessProbe, env, volumeMounts, resources);
 
 		containers.add(container1);
@@ -755,7 +776,7 @@ public class RedisController {
 		limits2.put("cpu", REDIS_EXPLORER_CPU_SIZE);
 		limits2.put("memory", REDIS_EXPLORER_MEMORY_SIZE);
 		resources2.setLimits(limits2 );
-		Container container2 = kubernetesClientService.generateContainer("redis-exporter",
+		Container container2 = kubernetesClientService.generateContainer(REDIS_EXPLORER_IMAGE,
 				"docker.io/oliver006/redis_exporter", ports2, null, null, null, null, null, null, resources2);
 		containers.add(container2);
 
