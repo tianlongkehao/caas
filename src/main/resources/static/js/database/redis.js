@@ -111,7 +111,7 @@ function clusterDetail(id) {
 							+		'<td style="width:10%;">' + pod.status.podIP + '</td>'
 							+		'<td style="width:10%;">' + data.redis.port + '</td>'
 							+		'<td style="width:10%;">'
-							+			'<a class="link" onclick="oneNodeLogs(' + id +', \'' + pod.metadata.name + '\')"><i>日志</i></a>'
+							+			'<a class="link" onclick="oneNodeLogs(' + id +', \'' + pod.metadata.name + '\')"><i>日志</i></a>&nbsp;&nbsp;&nbsp;'
 							+			'<a class="link" href="' + ctx + '/RedisController/cmd/' + id + '/' + pod.metadata.name + '" target="_blank"><i>终端</i></a>'
 							+		'</td>'
 							+	'</tr>';
