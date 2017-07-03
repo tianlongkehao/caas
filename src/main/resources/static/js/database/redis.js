@@ -112,7 +112,7 @@ function clusterDetail(id) {
 							+		'<td style="width:10%;">' + data.redis.port + '</td>'
 							+		'<td style="width:10%;">'
 							+			'<a class="link"><i>重启</i></a>'
-							+			'<a class="link" onclick="oneNodeLogs()"><i>日志</i></a>'
+							+			'<a class="link" onclick="oneNodeLogs(' + id +', \'' + pod.metadata.name + '\')"><i>日志</i></a>'
 							+			'<a class="link" href="' + ctx + '/RedisController/cmd/' + id + '/' + pod.metadata.name + '" target="_blank"><i>终端</i></a>'
 							+		'</td>'
 							+	'</tr>';
@@ -138,15 +138,33 @@ function cfgCluster() {
 }
 
 //一个节点的日志
-function oneNodeLogs() {
+function oneNodeLogs(id, podName) {
+	$("#reidsLogText").html("日志获取中...");
 	layer.open({
 		type : 1,
-		title : "节点cluster-NO.日志",
+		title : "节点"+ podName +"日志",
 		content : $(".oneNodeLogsInfo"),
 		area : ['700px', '600'],
-		btn : ['关闭'],
+		btn : ['下载','关闭'],
 		yes : function(index, layero) {
-			layer.close(index);
+			location.href = ctx + '/RedisController/downloadRedisLog.do?id=' + id + '&podName=' + podName;
+			return false;
+		}
+	});
+	$.ajax({
+		url : ctx + '/RedisController/getRedisLogs.do?id=' + id + '&podName=' + podName,
+		type : 'get',
+		success : function(data){
+			data = eval("(" + data + ")");
+			if(data.status == "200"){
+				if(data.logStr.length == 0){
+					$("#reidsLogText").html("该实例没有产生日志。");
+				} else {
+					$("#reidsLogText").html(data.logStr);
+				}
+			} else {
+				$("#reidsLogText").html("未获取到日志。");
+			}
 		}
 	});
 }

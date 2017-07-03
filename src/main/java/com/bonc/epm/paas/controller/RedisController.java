@@ -9,11 +9,17 @@
 package com.bonc.epm.paas.controller;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
@@ -30,6 +36,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.alibaba.fastjson.JSON;
 import com.bonc.epm.paas.constant.RedisConstant;
 import com.bonc.epm.paas.dao.RedisDao;
+import com.bonc.epm.paas.docker.model.LogStreamContainerResultCallback;
+import com.bonc.epm.paas.docker.model.LogStringContainerResultCallback;
+import com.bonc.epm.paas.docker.util.DockerClientService;
 import com.bonc.epm.paas.entity.Redis;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
@@ -46,7 +55,6 @@ import com.bonc.epm.paas.kubernetes.model.EnvVar;
 import com.bonc.epm.paas.kubernetes.model.EnvVarSource;
 import com.bonc.epm.paas.kubernetes.model.ExecAction;
 import com.bonc.epm.paas.kubernetes.model.KeyToPath;
-import com.bonc.epm.paas.kubernetes.model.Kind;
 import com.bonc.epm.paas.kubernetes.model.ObjectFieldSelector;
 import com.bonc.epm.paas.kubernetes.model.PersistentVolumeClaim;
 import com.bonc.epm.paas.kubernetes.model.PersistentVolumeClaimVolumeSource;
@@ -63,6 +71,7 @@ import com.bonc.epm.paas.kubernetes.model.VolumeMount;
 import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
 import com.bonc.epm.paas.util.CurrentUserUtils;
 import com.bonc.epm.paas.util.FileUtils;
+import com.github.dockerjava.api.DockerClient;
 
 /**
  * ClassName:RedisController <br/>
@@ -130,8 +139,35 @@ public class RedisController {
 	@Value("${docker.io.port}")
 	private Integer DOCKER_IO_PORT;
 
+	/**
+	 * 服务日志显示的最大行数
+	 */
+	@Value("${docker.log.tail}")
+	private Integer DOCKER_LOG_TAIL = 1000;
+
+	/**
+	 * 服务日志显示的文字最大值
+	 */
+	@Value("${docker.log.size}")
+	private Integer DOCKER_LOG_SIZE = 524288;
+
+	/**
+	 * 服务日志显示等候时长
+	 */
+	@Value("${docker.log.await}")
+	private Integer DOCKER_LOG_AWAIT = 3;
+
+	/**
+	 * 服务日志下载等候时长
+	 */
+	@Value("${docker.log.download}")
+	private Integer DOCKER_LOG_DOWNLOAD = 30;
+
 	@Autowired
 	KubernetesClientService kubernetesClientService;
+
+	@Autowired
+	private DockerClientService dockerClientService;
 
 	@Autowired
 	RedisDao redisDao;
@@ -381,6 +417,108 @@ public class RedisController {
 		return JSON.toJSONString(map);
 	}
 
+	/**
+	 * getRedisLogs:获取redis pod的日志. <br/>
+	 *
+	 * @param id
+	 * @param podName
+	 * @return String
+	 */
+	@RequestMapping(value = { "getRedisLogs.do" }, method = RequestMethod.GET)
+	@ResponseBody
+	public String getRedisLogs(long id, String podName){
+		Redis redis = redisDao.findOne(id);
+		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
+		String logStr = "";
+		Map<String, Object> datamap = new HashMap<String, Object>();
+
+		try {
+			Pod pod = client.getPod(podName);
+			String containerId = null;
+			for (ContainerStatus containerStatus : pod.getStatus().getContainerStatuses()){
+				if (containerStatus.getName().equals(redis.getName())) {
+					containerId = containerStatus.getContainerID().replace("docker://", "");
+					break;
+				}
+			}
+			DockerClient dockerClient = dockerClientService
+					.getSpecifiedDockerClientInstance(pod.getStatus().getHostIP());
+			LogStringContainerResultCallback callback = new LogStringContainerResultCallback();
+			dockerClient.logContainerCmd(containerId).withTail(DOCKER_LOG_TAIL).withStdOut(true).withStdErr(true)
+					.exec(callback).awaitCompletion(DOCKER_LOG_AWAIT, TimeUnit.SECONDS);
+			logStr = callback.toString();
+			if (logStr.length() > DOCKER_LOG_SIZE) {
+				logStr = logStr.substring(logStr.length() - DOCKER_LOG_SIZE);
+			}
+
+			logStr = logStr.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+
+			datamap.put("logStr", logStr);
+			datamap.put("status", "200");
+		} catch (Exception e) {
+			datamap.put("status", "400");
+			LOG.error("日志读取错误：" + e);
+			e.printStackTrace();
+		}
+		return JSON.toJSONString(datamap);
+	}
+
+	/**
+	 * downloadRedisLog:下载redis服务的日志. <br/>
+	 *
+	 * @param id
+	 * @param podName
+	 * @param request
+	 * @param response void
+	 */
+	@RequestMapping(value = "downloadRedisLog.do", method = RequestMethod.GET)
+	public void downloadRedisLog(long id, String podName, HttpServletRequest request, HttpServletResponse response) {
+		System.out.println("===============redislog=download=start==[id:" + id + ",podName:" + podName + "]=============");
+		Redis redis = redisDao.findOne(id);
+		try {
+			try {
+				response.setHeader("Content-Disposition",
+						"attachment;fileName=" + new String((podName + ".log").getBytes("GBK"), "ISO8859-1"));
+			} catch (UnsupportedEncodingException e1) {
+				e1.printStackTrace();
+			}
+			response.setContentType(request.getServletContext().getMimeType(podName + ".log"));
+
+			ServletOutputStream outputStream = response.getOutputStream();
+
+			KubernetesAPIClientInterface k8sClient = kubernetesClientService.getClient();
+
+			Pod pod = k8sClient.getPod(podName);
+			String containerId = null;
+			for(ContainerStatus containerStatus : pod.getStatus().getContainerStatuses()){
+				if (containerStatus.getName().equals(redis.getName())) {
+					containerId = containerStatus.getContainerID().replace("docker://", "");
+					break;
+				}
+			}
+			DockerClient dockerClient = dockerClientService
+					.getSpecifiedDockerClientInstance(pod.getStatus().getHostIP());
+			LogStreamContainerResultCallback callback = new LogStreamContainerResultCallback(outputStream);
+			dockerClient.logContainerCmd(containerId).withStdOut(true).withStdErr(true).exec(callback)
+					.awaitCompletion(DOCKER_LOG_DOWNLOAD, TimeUnit.SECONDS);
+			System.out.println("===============redislog=download=end==[id:" + id + ",podName:" + podName + "]=============");
+
+		} catch (IOException e) {
+			LOG.error("FileController  downloadTemplate:" + e.getMessage());
+		} catch (Exception e) {
+			LOG.error("日志读取错误：" + e);
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * serviceCmd:获取命令行页面. <br/>
+	 *
+	 * @param model
+	 * @param id
+	 * @param podName
+	 * @return String
+	 */
 	@RequestMapping(value = { "cmd/{id}/{podName}" }, method = RequestMethod.GET)
 	public String serviceCmd(Model model, @PathVariable long id, @PathVariable String podName) {
 		Redis redis = redisDao.findOne(id);

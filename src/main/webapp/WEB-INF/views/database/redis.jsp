@@ -69,7 +69,7 @@
 														<input type="checkbox" class="chkItem" name="chkItem"
 															value="" />
 													</td>
-													<td style=""><a class="link" onclick="clusterDetail(${redis.id})">${redis.name}</a></td>
+													<td style=""><a class="link" onclick="javascript:clusterDetail(${redis.id})">${redis.name}</a></td>
 													<td style="">${redis.user }</td>
 													<td style="">${redis.nodeNum }</td>
 													<c:if test="${redis.nodeNum > 1}">
@@ -148,7 +148,7 @@
 	</div>
 	<!-- 日志 -->
 	<div class="oneNodeLogsInfo" style="display: none">
-		<textarea></textarea>
+		<textarea id="reidsLogText" disabled></textarea>
 	</div>
 	<!-- 修改集群配置 内存 cpu port 内存消除策略 -->
 	<div class="changeCfgInfo" style="display: none">
