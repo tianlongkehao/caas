@@ -42,6 +42,7 @@ import com.bonc.epm.paas.dao.TensorflowDao;
 import com.bonc.epm.paas.dao.UserResourceDao;
 import com.bonc.epm.paas.entity.CommonOperationLog;
 import com.bonc.epm.paas.entity.CommonOprationLogUtils;
+import com.bonc.epm.paas.entity.Tensorflow;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.entity.UserResource;
 import com.bonc.epm.paas.entity.ceph.CephRbdInfo;
@@ -1284,8 +1285,18 @@ public class CephController {
 		}
 
 		List<ServiceCephRbd> serviceCephRbds = serviceRbdDao.findByCephrbdId(imgId);
+		Tensorflow tensorflow = tensorflowDao.findByRbdId(imgId);
+
 		if (CollectionUtils.isEmpty(serviceCephRbds)) {
-			return JSON.toJSONString(map);
+			if(tensorflow==null){
+				return JSON.toJSONString(map);
+			}else{
+				msg = "Tensorflow: " + tensorflow.getName() + "正在使用磁盘: " + cephRbdInfo.getName() + ","
+						+ "请先停止tensorflow再进行操作，重启服务生效！";
+				map.put("msg", msg);
+				map.put("status", "500");
+				return JSON.toJSONString(map);
+			}
 		}else{
 			msg = "服务: " + serviceCephRbds.get(0).getServicename() + "正在使用磁盘: " + cephRbdInfo.getName() + ","
 					+ "请先停止服务再进行操作，重启服务生效！";
@@ -1802,6 +1813,17 @@ public class CephController {
 			 */
 		}
 
+		//获取块设备被使用的tensorflow的信息
+		List<Tensorflow> tensorflows = new ArrayList<Tensorflow>();
+		if(CollectionUtils.isNotEmpty(cephRbdInfos)){
+			for(CephRbdInfo cephRbdInfo:cephRbdInfos){
+				Tensorflow tensorflow = tensorflowDao.findByRbdId(cephRbdInfo.getId());
+				if(tensorflow!=null){
+					tensorflows.add(tensorflow);
+				}
+			}
+		}
+
 		//获取块设备被使用的服务信息
 		List<ServiceCephRbd> serviceCephRbds = new ArrayList<ServiceCephRbd>();
 		if(CollectionUtils.isNotEmpty(cephRbdInfos)){
@@ -1823,6 +1845,7 @@ public class CephController {
 			}
 		}
 
+		map.put("tensorflows", tensorflows);
         map.put("cephSnaps", cephSnaps);
 		map.put("serviceCephRbds", serviceCephRbds);
 		map.put("cephRbdInfos", cephRbdInfos);
@@ -2042,7 +2065,7 @@ public class CephController {
 		if (CollectionUtils.isNotEmpty(temp)) {
 			for (CephRbdInfo cephRbdInfo : temp) {
 				if (CollectionUtils.isEmpty(serviceRbdDao.findByCephrbdId(cephRbdInfo.getId()))&&
-						null!=tensorflowDao.findByRbdId(cephRbdInfo.getId())) {
+						null==tensorflowDao.findByRbdId(cephRbdInfo.getId())) {
 					result.add(cephRbdInfo);
 				}
 			}

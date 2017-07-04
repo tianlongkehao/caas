@@ -82,7 +82,7 @@
                                                          ${tensorflow.rbd }
                                                 	</td>
                                                 	<td style="width: 15%;">
-                                                         ${tensorflow.url }
+                                                		<a href="${tensorflow.url }" target="_blank">${tensorflow.url }</a>
                                                 	</td>
                                                 	<td style="width: 15%;">
                                                          ${tensorflow.createDate }

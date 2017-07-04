@@ -114,6 +114,7 @@ function loadStorageList(){
         	var len = data.cephRbdInfos.length;
         	var len2 = data.serviceCephRbds.length;
         	var len3 = data.cephSnaps.length;
+        	var len4 = data.tensorflows.length;
 
         	for(var i=0; i<len; i++){
         			var rbd = data.cephRbdInfos[i];
@@ -144,6 +145,16 @@ function loadStorageList(){
 
         			snapHtml += '</ul></li></ul>';
 
+        			var tensorflowId = 0;
+        			var tensorflowname = '';
+                    for(var j=0;j<len4;j++){
+                    	var tensorflow = data.tensorflows[j];
+                    	if(rbd.id == tensorflow.rbdId){
+                    		tensorflowId = tensorflow.id;
+                    	    tensorflowname = tensorflow.name;
+                    		break;
+                    	}
+                    }
 
         			itemsHtml += '<tr>'
         						+'<td style="width: 5%; text-indent:30px">'
@@ -153,6 +164,7 @@ function loadStorageList(){
         						+'<td>'+rbd.size+'</td>'
         						//+'<td>'+(rbd.used==true?'已挂载':'未挂载')+'</td>'
         						+'<td serviceId='+serviceId+'><a href="'+ctx+'/service">'+serviceName+'</a></td>'
+        						+'<td tensorflowId='+tensorflowId+'><a href="'+ctx+'/tensorflow/list/'+tensorflowId+'">'+tensorflowname+'</a></td>'
         						+'<td>'+rbd.detail+'</td>'
         						+ '<td class="item-operation" rbdId='+rbd.id+' rbd="'+rbd.name+'" size="'+rbd.size +'" detail="'+rbd.detail +'" release="'+rbd.releaseWhenServiceDown+'">'
                             	+'<a onclick="createSnapshoot(this)"><i class="fa fa-camera fa-opr" title="创建快照" style="margin-left:0px"></i></a>'
@@ -179,7 +191,7 @@ function loadStorageList(){
 		$('.dataTables-example').dataTable({
 			"aoColumnDefs" : [ {
 				"bSortable" : false,
-				"aTargets" : [ 0, 1,2,3,4,5 ]
+				"aTargets" : [ 0, 1,2,3,4,5,6]
 			} ]
 		});
 		$("#checkallbox").parent().removeClass("sorting_asc");

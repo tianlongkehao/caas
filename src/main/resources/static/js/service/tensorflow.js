@@ -51,7 +51,7 @@ function start(id){
          		window.location.reload();
          	}
          	else {
-         		layer.alert("新增失败！请检查服务器连接");
+         		layer.alert("启动失败！");
          	}
  		}
  	});
@@ -139,7 +139,7 @@ function add(){
 	layer.open({
 		type:1,
 		title: '创建TensorFlow',
-		area: ['500px', '500px'],
+		area: ['600px', '500px'],
 		content: $("#tensorflowAdd"),
 		btn: ['确定', '取消'],
 		yes: function(index, layero){
