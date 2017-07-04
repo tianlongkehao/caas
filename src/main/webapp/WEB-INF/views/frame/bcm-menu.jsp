@@ -181,7 +181,7 @@
 						<li id="li_cluster"><a class="J_menuItem" href="<%=path %>/cluster/resource"><i class="fa fa_circle"></i>集群监控</a></li></c:if>
 						<li id="li_container"><a class="J_menuItem" href="<%=path %>/cluster/containers"><i class="fa fa_circle"></i>容器监控</a></li>
 						<c:if test="${cur_user.user_autority == 1}">
-						<li id="li_management"><a class="J_menuItem" href="<%=path %>/cluster/management"><i class="fa fa_circle"></i>集群管理</a></li>
+						<li id="li_management"><a class="J_menuItem" href="<%=path %>/cluster/add"><i class="fa fa_circle"></i>集群管理</a></li>
 						<li id="li_node"><a class="J_menuItem" href="<%=path %>/cluster/node"><i class="fa fa_circle"></i>节点管理</a></li>
 						<li id="li_test"><a class="J_menuItem" href="<%=path %>/cluster/test"><i class="fa fa_circle"></i>集群测试</a></li>
 						<li id="li_dns"><a class="J_menuItem" href="<%=path %>/cluster/dns"><i class="fa fa_circle"></i>集群DNS</a></li>
