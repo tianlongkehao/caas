@@ -463,6 +463,16 @@ public class KubernetesClientService {
 			}
 		}
 		meta.setLabels(labels);
+
+		/*
+		 * 兼容k8s 1.6 增加
+		 * annotations:
+		 *   service.beta.kubernetes.io/external-traffic:OnlyLocal
+		 */
+		Map<String, String> annotations = new HashMap<>();
+		annotations.put("service.beta.kubernetes.io/external-traffic", "OnlyLocal");
+		meta.setAnnotations(annotations);
+
 		service.setMetadata(meta);
 		ServiceSpec spec = new ServiceSpec();
 		spec.setType("NodePort");

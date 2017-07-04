@@ -196,7 +196,7 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
         }
     }
 
-    public Status deleteReplicationController(String name) throws KubernetesClientException {
+    public ReplicationController deleteReplicationController(String name) throws KubernetesClientException {
         try {
             return api.deleteReplicationController(namespace,name);
         } catch (WebApplicationException e) {
