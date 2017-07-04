@@ -1542,6 +1542,22 @@ public class ServiceController {
 					e.printStackTrace();
 				}
 			}
+
+			//删除临时rc
+			try {
+				controller = client.getReplicationController(service.getTempName());
+			} catch (Exception e1) {
+				controller = null;
+			}
+			if (controller != null) {
+				controller = client.updateReplicationController(service.getTempName(), 0);
+				try {
+					client.deleteReplicationController(service.getTempName());
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+
 			map.put("status", "200");
 			// 保存服务信息
 			Date currentDate = new Date();
@@ -1720,10 +1736,12 @@ public class ServiceController {
 			map.put("status", "400");
 			map.put("msg", e.getStatus().getMessage());
 			LOG.error("modify imageVersion error:" + e.getStatus().getMessage());
+			e.printStackTrace();
 		} catch (Exception ex) {
 			map.put("status", 400);
 			map.put("msg", ex.getMessage());
 			LOG.error(ex.getMessage());
+			ex.printStackTrace();
 		}
 		return JSON.toJSONString(map);
 	}
@@ -2565,6 +2583,9 @@ public class ServiceController {
 		}
 		Map<String, Object> maps = new HashMap<String, Object>();
 		try {
+			if (ids.size() == 1) {
+				return stopContainer(ids.get(0));
+			}
 			for (long id : ids) {
 				stopContainer(id);
 			}
