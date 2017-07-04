@@ -597,8 +597,12 @@ public class IndexController {
             userDao.save(user);
         }
         LOG.info("User init success:"+user.toString());
-        dnsController.startMonitor();
-        dnsController.createDNSMonitor();
+        try {
+			dnsController.startMonitor();
+			dnsController.createDNSMonitor();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
         LOG.info("DNSController init success");
     }
 
