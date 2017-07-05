@@ -2500,13 +2500,15 @@ public class ServiceController {
 				if (controller != null) {
 					controller = client.updateReplicationController(service.getServiceName(), 0);
 					if (controller != null && controller.getSpec().getReplicas() == 0) {
-						Status status = client.deleteReplicationController(service.getServiceName());
-						if (!status.getStatus().equals("Success")) {
+						try {
+							client.deleteReplicationController(service.getServiceName());
+						} catch (Exception e) {
 							map.put("status", "400");
 							map.put("msg", "Delete a Replication Controller failed:ServiceName["
 									+ service.getServiceName() + "]");
 							LOG.error("Delete a Replication Controller failed:ServiceName[" + service.getServiceName()
-									+ "]");
+							+ "]");
+							e.printStackTrace();
 							return JSON.toJSONString(map);
 						}
 					} else {
@@ -2528,13 +2530,15 @@ public class ServiceController {
 					if (controller != null) {
 						controller = client.updateReplicationController(service.getTempName(), 0);
 						if (controller != null && controller.getSpec().getReplicas() == 0) {
-							Status status = client.deleteReplicationController(service.getTempName());
-							if (!status.getStatus().equals("Success")) {
+							try {
+								client.deleteReplicationController(service.getTempName());
+							} catch (Exception e) {
 								map.put("status", "400");
 								map.put("msg", "Delete a Replication Controller failed:ServiceName["
 										+ service.getTempName() + "]");
 								LOG.error("Delete a Replication Controller failed:ServiceName[" + service.getTempName()
-										+ "]");
+								+ "]");
+								e.printStackTrace();
 								return JSON.toJSONString(map);
 							}
 						} else {
@@ -3174,7 +3178,13 @@ public class ServiceController {
 		Map<String, Object> datamap = new HashMap<String, Object>();
 
 		try {
-			Pod pod = client.getPod(podName);
+			Pod pod = null;
+			try {
+				pod = client.getPod(podName);
+			} catch (Exception e) {
+				datamap.put("logStr", "未找到该实例的日志：[" + podName + "]");
+				datamap.put("status", "200");
+			}
 			String containerId = pod.getStatus().getContainerStatuses().get(0).getContainerID().replace("docker://",
 					"");
 			DockerClient dockerClient = dockerClientService

@@ -6,6 +6,8 @@ import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
 import com.bonc.epm.paas.kubernetes.exceptions.Status;
 import com.bonc.epm.paas.kubernetes.model.HorizontalPodAutoscaler;
 import com.bonc.epm.paas.kubernetes.model.HorizontalPodAutoscalerList;
+import com.bonc.epm.paas.kubernetes.model.StatefulSet;
+import com.bonc.epm.paas.kubernetes.model.StatefulSetList;
 import com.bonc.epm.paas.rest.util.RestFactory;
 
 public class KubernetesApisClient implements KubernetesAPISClientInterface {
@@ -139,6 +141,109 @@ public class KubernetesApisClient implements KubernetesAPISClientInterface {
 	public HorizontalPodAutoscalerList listAllHorizontalPodAutoscalers() throws KubernetesClientException{
 		try {
 			return apis.listAllHorizontalPodAutoscalers();
+		} catch (KubernetesClientException e) {
+			if (e.getStatus().getReason().equals(NOTFOUND)) {
+				return null;
+			} else {
+				throw new KubernetesClientException(e);
+			}
+		} catch (WebApplicationException e) {
+			throw new KubernetesClientException(e);
+		}
+	}
+	/**
+	 * @see com.bonc.epm.paas.kubernetes.apis.KubernetesAPISClientInterface#createStatefulSet(com.bonc.epm.paas.kubernetes.model.StatefulSet)
+	 */
+	@Override
+	public StatefulSet createStatefulSet(StatefulSet statefulSet) throws KubernetesClientException {
+		try {
+			return apis.createStatefulSet(namespace, statefulSet);
+		} catch (KubernetesClientException e) {
+			throw new KubernetesClientException(e);
+		} catch (WebApplicationException e) {
+			throw new KubernetesClientException(e);
+		}
+	}
+	/**
+	 * @see com.bonc.epm.paas.kubernetes.apis.KubernetesAPISClientInterface#replaceStatefulSet(java.lang.String, com.bonc.epm.paas.kubernetes.model.StatefulSet)
+	 */
+	@Override
+	public StatefulSet replaceStatefulSet(String name, StatefulSet statefulSet) throws KubernetesClientException {
+		try {
+			return apis.replaceStatefulSet(namespace, name, statefulSet);
+		} catch (KubernetesClientException e) {
+			throw new KubernetesClientException(e);
+		} catch (WebApplicationException e) {
+			throw new KubernetesClientException(e);
+		}
+	}
+	/**
+	 * @see com.bonc.epm.paas.kubernetes.apis.KubernetesAPISClientInterface#deleteStatefulSet(java.lang.String)
+	 */
+	@Override
+	public StatefulSet deleteStatefulSet(String name) throws KubernetesClientException {
+		try {
+			return apis.deleteStatefulSet(namespace, name);
+		} catch (KubernetesClientException e) {
+			throw new KubernetesClientException(e);
+		} catch (WebApplicationException e) {
+			throw new KubernetesClientException(e);
+		}
+	}
+	/**
+	 * @see com.bonc.epm.paas.kubernetes.apis.KubernetesAPISClientInterface#deleteStatefulSets()
+	 */
+	@Override
+	public Status deleteStatefulSets() throws KubernetesClientException {
+		try {
+			return apis.deleteStatefulSets(namespace);
+		} catch (KubernetesClientException e) {
+			throw new KubernetesClientException(e);
+		} catch (WebApplicationException e) {
+			throw new KubernetesClientException(e);
+		}
+	}
+	/**
+	 * @see com.bonc.epm.paas.kubernetes.apis.KubernetesAPISClientInterface#getStatefulSet(java.lang.String)
+	 */
+	@Override
+	public StatefulSet getStatefulSet(String name) throws KubernetesClientException {
+		try {
+			return apis.getStatefulSet(namespace, name);
+		} catch (KubernetesClientException e) {
+			if (e.getStatus().getReason().equals(NOTFOUND)) {
+				return null;
+			} else {
+				throw new KubernetesClientException(e);
+			}
+		} catch (WebApplicationException e) {
+			throw new KubernetesClientException(e);
+		}
+	}
+	/**
+	 * @see com.bonc.epm.paas.kubernetes.apis.KubernetesAPISClientInterface#getStatefulSets()
+	 */
+	@Override
+	public StatefulSetList getStatefulSets() throws KubernetesClientException {
+		try {
+			return apis.getStatefulSets(namespace);
+		} catch (KubernetesClientException e) {
+			if (e.getStatus().getReason().equals(NOTFOUND)) {
+				return null;
+			} else {
+				throw new KubernetesClientException(e);
+			}
+		} catch (WebApplicationException e) {
+			throw new KubernetesClientException(e);
+		}
+	}
+	/**
+	 * @see com.bonc.epm.paas.kubernetes.apis.KubernetesAPISClientInterface#getAllStatefulSets()
+	 */
+	@Override
+	public StatefulSetList getAllStatefulSets() throws KubernetesClientException {
+		try {
+			return apis.getStatefulSets();
 		} catch (KubernetesClientException e) {
 			if (e.getStatus().getReason().equals(NOTFOUND)) {
 				return null;

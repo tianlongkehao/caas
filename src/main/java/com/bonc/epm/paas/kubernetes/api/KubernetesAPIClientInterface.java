@@ -35,6 +35,8 @@ import com.bonc.epm.paas.kubernetes.model.Namespace;
 import com.bonc.epm.paas.kubernetes.model.NamespaceList;
 import com.bonc.epm.paas.kubernetes.model.Node;
 import com.bonc.epm.paas.kubernetes.model.NodeList;
+import com.bonc.epm.paas.kubernetes.model.PersistentVolume;
+import com.bonc.epm.paas.kubernetes.model.PersistentVolumeClaim;
 import com.bonc.epm.paas.kubernetes.model.Pod;
 import com.bonc.epm.paas.kubernetes.model.PodList;
 import com.bonc.epm.paas.kubernetes.model.ReplicationController;
@@ -419,7 +421,7 @@ public interface KubernetesAPIClientInterface {
      *            controller id controller id to be deleted.
      * @throws KubernetesClientException
      */
-    public Status deleteReplicationController(String name) throws KubernetesClientException;
+    public ReplicationController deleteReplicationController(String name) throws KubernetesClientException;
 
     /* Services API */
 
@@ -593,4 +595,33 @@ public interface KubernetesAPIClientInterface {
 	 * @throws KubernetesClientException EventList
 	 */
 	public EventList getPodEvents(String name) throws KubernetesClientException;
+
+	/**
+	 * getPersistentVolumeClaim:read the specified PersistentVolumeClaim. <br/>
+	 *
+	 * @param namespaces
+	 * @param name
+	 * @return
+	 * @throws KubernetesClientException PersistentVolumeClaim
+	 */
+	public PersistentVolumeClaim getPersistentVolumeClaim(String name) throws KubernetesClientException;
+
+	/**
+	 * getPersistentVolumeClaim:delete a PersistentVolumeClaim. <br/>
+	 *
+	 * @param namespaces
+	 * @param name
+	 * @return
+	 * @throws KubernetesClientException PersistentVolumeClaim
+	 */
+	public PersistentVolumeClaim deletePersistentVolumeClaim(String name) throws KubernetesClientException;
+
+	/**
+	 * getPersistentVolumeClaim:delete a PersistentVolume. <br/>
+	 *
+	 * @param name
+	 * @return
+	 * @throws KubernetesClientException PersistentVolumeClaim
+	 */
+	public PersistentVolume deletePersistentVolume(String name) throws KubernetesClientException;
 }

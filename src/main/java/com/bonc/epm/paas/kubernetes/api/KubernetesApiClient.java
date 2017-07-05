@@ -19,6 +19,8 @@ import com.bonc.epm.paas.kubernetes.model.Namespace;
 import com.bonc.epm.paas.kubernetes.model.NamespaceList;
 import com.bonc.epm.paas.kubernetes.model.Node;
 import com.bonc.epm.paas.kubernetes.model.NodeList;
+import com.bonc.epm.paas.kubernetes.model.PersistentVolume;
+import com.bonc.epm.paas.kubernetes.model.PersistentVolumeClaim;
 import com.bonc.epm.paas.kubernetes.model.Pod;
 import com.bonc.epm.paas.kubernetes.model.PodList;
 import com.bonc.epm.paas.kubernetes.model.ReplicationController;
@@ -196,7 +198,7 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
         }
     }
 
-    public Status deleteReplicationController(String name) throws KubernetesClientException {
+    public ReplicationController deleteReplicationController(String name) throws KubernetesClientException {
         try {
             return api.deleteReplicationController(namespace,name);
         } catch (WebApplicationException e) {
@@ -580,6 +582,49 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 		String fieldSelector = "involvedObject.kind=" + Kind.POD + ",involvedObject.name=" + name;
 		try {
 			return api.getFieldSelectorEvents(namespace, fieldSelector);
+		} catch (NotFoundException e) {
+			return null;
+		} catch (WebApplicationException e) {
+			throw new KubernetesClientException(e);
+		}
+	}
+
+	/**
+	 * @see com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface#getPersistentVolumeClaim(java.lang.String)
+	 */
+	@Override
+	public PersistentVolumeClaim getPersistentVolumeClaim(String name)
+			throws KubernetesClientException {
+		try {
+			return api.getPersistentVolumeClaim(namespace, name);
+		} catch (NotFoundException e) {
+			return null;
+		} catch (WebApplicationException e) {
+			throw new KubernetesClientException(e);
+		}
+	}
+
+	/**
+	 * @see com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface#deletePersistentVolumeClaim(java.lang.String)
+	 */
+	@Override
+	public PersistentVolumeClaim deletePersistentVolumeClaim(String name) throws KubernetesClientException {
+		try {
+			return api.deletePersistentVolumeClaim(namespace, name);
+		} catch (NotFoundException e) {
+			return null;
+		} catch (WebApplicationException e) {
+			throw new KubernetesClientException(e);
+		}
+	}
+
+	/**
+	 * @see com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface#deletePersistentVolume(java.lang.String)
+	 */
+	@Override
+	public PersistentVolume deletePersistentVolume(String name) throws KubernetesClientException {
+		try {
+			return api.deletePersistentVolume(name);
 		} catch (NotFoundException e) {
 			return null;
 		} catch (WebApplicationException e) {

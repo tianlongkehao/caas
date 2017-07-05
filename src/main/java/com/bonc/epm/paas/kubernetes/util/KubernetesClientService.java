@@ -22,7 +22,7 @@ import com.bonc.epm.paas.kubernetes.api.KubernetesApiClient;
 import com.bonc.epm.paas.kubernetes.apis.KubernetesAPISClientInterface;
 import com.bonc.epm.paas.kubernetes.apis.KubernetesApisClient;
 import com.bonc.epm.paas.kubernetes.model.ConfigMap;
-import com.bonc.epm.paas.kubernetes.model.ConfigMapTemplate;
+import com.bonc.epm.paas.kubernetes.model.ConfigMapVolumeSource;
 import com.bonc.epm.paas.kubernetes.model.Container;
 import com.bonc.epm.paas.kubernetes.model.ContainerPort;
 import com.bonc.epm.paas.kubernetes.model.ContainerStatus;
@@ -41,6 +41,8 @@ import com.bonc.epm.paas.kubernetes.model.LimitRangeItem;
 import com.bonc.epm.paas.kubernetes.model.LimitRangeSpec;
 import com.bonc.epm.paas.kubernetes.model.Namespace;
 import com.bonc.epm.paas.kubernetes.model.ObjectMeta;
+import com.bonc.epm.paas.kubernetes.model.PersistentVolumeClaim;
+import com.bonc.epm.paas.kubernetes.model.PersistentVolumeClaimSpec;
 import com.bonc.epm.paas.kubernetes.model.Pod;
 import com.bonc.epm.paas.kubernetes.model.PodCondition;
 import com.bonc.epm.paas.kubernetes.model.PodSpec;
@@ -55,6 +57,8 @@ import com.bonc.epm.paas.kubernetes.model.Secret;
 import com.bonc.epm.paas.kubernetes.model.Service;
 import com.bonc.epm.paas.kubernetes.model.ServicePort;
 import com.bonc.epm.paas.kubernetes.model.ServiceSpec;
+import com.bonc.epm.paas.kubernetes.model.StatefulSet;
+import com.bonc.epm.paas.kubernetes.model.StatefulSetSpec;
 import com.bonc.epm.paas.kubernetes.model.Volume;
 import com.bonc.epm.paas.kubernetes.model.VolumeMount;
 import com.bonc.epm.paas.rest.util.RestFactory;
@@ -340,7 +344,7 @@ public class KubernetesClientService {
 
 			List<Volume> volumes = new ArrayList<Volume>();
 			Volume volume = new Volume();
-			ConfigMapTemplate configMapTemplate = new ConfigMapTemplate();
+			ConfigMapVolumeSource configMapTemplate = new ConfigMapVolumeSource();
 			configMapTemplate.setName(serviceConfigmap.getName());
 			volume.setName(name);
 			volume.setConfigMap(configMapTemplate);
@@ -368,6 +372,19 @@ public class KubernetesClientService {
 		ObjectMeta metadata = new ObjectMeta();
 		metadata.setName(configMapName);
 		configmap.setMetadata(metadata);
+		configmap.setData(data);
+
+		return configmap;
+	}
+
+	public ConfigMap generateConfigMap(String name, String namespace, Map<String, String> data) {
+		ConfigMap configmap = new ConfigMap();
+
+		ObjectMeta metadata = new ObjectMeta();
+		metadata.setName(name);
+		metadata.setNamespace(namespace);
+		configmap.setMetadata(metadata );
+
 		configmap.setData(data);
 
 		return configmap;
@@ -463,6 +480,16 @@ public class KubernetesClientService {
 			}
 		}
 		meta.setLabels(labels);
+
+		/*
+		 * 兼容k8s 1.6 增加
+		 * annotations:
+		 *   service.beta.kubernetes.io/external-traffic:OnlyLocal
+		 */
+		Map<String, String> annotations = new HashMap<>();
+		annotations.put("service.beta.kubernetes.io/external-traffic", "OnlyLocal");
+		meta.setAnnotations(annotations);
+
 		service.setMetadata(meta);
 		ServiceSpec spec = new ServiceSpec();
 		spec.setType("NodePort");
@@ -487,6 +514,27 @@ public class KubernetesClientService {
 			spec.setPorts(ports);
 		}
 		service.setSpec(spec);
+		return service;
+	}
+
+	public Service generateService(Map<String, String> annotations, String name, String namespace,
+			Map<String, String> labels, List<ServicePort> ports, String clusterIP, Map<String, String> selector) {
+		Service service = new Service();
+		// metadata
+		ObjectMeta metadata = new ObjectMeta();
+		metadata.setAnnotations(annotations);
+		metadata.setName(name);
+		metadata.setNamespace(namespace);
+		metadata.setLabels(labels);
+		service.setMetadata(metadata);
+
+		//spec
+		ServiceSpec spec = new ServiceSpec();
+		spec.setPorts(ports);
+		spec.setClusterIP(clusterIP);
+		spec.setSelector(selector);
+		service.setSpec(spec);
+
 		return service;
 	}
 
@@ -624,6 +672,91 @@ public class KubernetesClientService {
 		spec.setTargetCPUUtilizationPercentage(targetCPUUtilizationPercentage);
 		hpa.setSpec(spec);
 		return hpa;
+	}
+
+	public StatefulSet generateStatefulSet(String name, String namespace, Integer replicas, PodTemplateSpec template,
+			List<PersistentVolumeClaim> volumeClaimTemplates) {
+		StatefulSet statefulSet = new StatefulSet();
+
+		// 添加meta
+		ObjectMeta metadata = new ObjectMeta();
+		metadata.setName(name);
+		metadata.setNamespace(namespace);
+		statefulSet.setMetadata(metadata);
+
+		// 添加spec
+		StatefulSetSpec spec = new StatefulSetSpec();
+		spec.setServiceName(name);
+		spec.setReplicas(replicas);
+		spec.setTemplate(template);
+		spec.setVolumeClaimTemplates(volumeClaimTemplates);
+		statefulSet.setSpec(spec);
+
+		return statefulSet;
+	}
+
+	public PodTemplateSpec generatePodTemplateSpec(Map<String, String> labels, Integer terminationGracePeriodSeconds,
+			List<Container> containers, List<Volume> volumes) {
+		PodTemplateSpec template = new PodTemplateSpec();
+		// metadata
+		ObjectMeta metadata = new ObjectMeta();
+		metadata.setLabels(labels);
+		template.setMetadata(metadata);
+		// spec
+		PodSpec spec = new PodSpec();
+		spec.setTerminationGracePeriodSeconds(terminationGracePeriodSeconds);
+		spec.setContainers(containers);
+		spec.setVolumes(volumes);
+		template.setSpec(spec);
+		return template;
+	}
+
+	public Container generateContainer(String name, String image, List<ContainerPort> ports, List<String> command,
+			List<String> args, Probe readinessProbe, Probe livenessProbe, List<EnvVar> env, List<VolumeMount> volumeMounts, ResourceRequirements resources) {
+		Container container = new Container();
+		container.setName(name);
+		container.setImage(image);
+		container.setPorts(ports);
+		if (null != command) {
+			container.setCommand(command);
+		}
+		if (null != args) {
+			container.setArgs(args);
+		}
+		if (null != readinessProbe) {
+			container.setReadinessProbe(readinessProbe);
+		}
+		if (null != livenessProbe) {
+			container.setLivenessProbe(livenessProbe);
+		}
+		if (null != env) {
+			container.setEnv(env);
+		}
+		if (null != volumeMounts) {
+			container.setVolumeMounts(volumeMounts);
+		}
+		if (null != resources) {
+			container.setResources(resources);
+		}
+		return container;
+	}
+
+	public PersistentVolumeClaim generatePersistentVolumeClaim(String name, String namespace, List<String> accessModes,
+			ResourceRequirements resources, String storageClassName) {
+		PersistentVolumeClaim persistentVolumeClaim = new PersistentVolumeClaim();
+
+		ObjectMeta metadata = new ObjectMeta();
+		metadata.setName(name);
+		metadata.setNamespace(namespace);
+		persistentVolumeClaim.setMetadata(metadata);
+
+		PersistentVolumeClaimSpec spec = new PersistentVolumeClaimSpec();
+		spec.setAccessModes(accessModes);
+		spec.setResources(resources);
+		spec.setStorageClassName(storageClassName);
+		persistentVolumeClaim.setSpec(spec);
+
+		return persistentVolumeClaim;
 	}
 
 	/**
