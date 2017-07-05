@@ -1534,7 +1534,18 @@ public class ServiceController {
 				controller = null;
 			}
 			if (controller != null) {
+				//删除所有pod
 				controller = client.updateReplicationController(service.getServiceName(), 0);
+				try {
+					com.bonc.epm.paas.kubernetes.model.Service service2 = client.getService(service.getServiceName());
+					PodList pods = client.getLabelSelectorPods(service2.getSpec().getSelector());
+					for (Pod pod : pods.getItems()){
+						client.deletePod(pod.getMetadata().getName());
+					}
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
+				//删除rc和svc
 				try {
 					client.deleteReplicationController(service.getServiceName());
 					client.deleteService(service.getServiceName());
@@ -1551,6 +1562,15 @@ public class ServiceController {
 			}
 			if (controller != null) {
 				controller = client.updateReplicationController(service.getTempName(), 0);
+				try {
+					com.bonc.epm.paas.kubernetes.model.Service service2 = client.getService(service.getTempName());
+					PodList pods = client.getLabelSelectorPods(service2.getSpec().getSelector());
+					for (Pod pod : pods.getItems()){
+						client.deletePod(pod.getMetadata().getName());
+					}
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
 				try {
 					client.deleteReplicationController(service.getTempName());
 				} catch (Exception e) {
