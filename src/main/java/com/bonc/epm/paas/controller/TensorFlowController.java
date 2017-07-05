@@ -404,7 +404,7 @@ public class TensorFlowController {
 			// 创建rc
 			ReplicationController controller = kubernetesClientService.generateSimpleReplicationController(
 					tensorflow.getName(), 1, null, null, null, image, portConfigs, (double) (tensorflow.getCpu()),
-					String.valueOf(tensorflow.getMemory()), tensorflow.getProxyZone(), "", "", null, commands, args,
+					String.valueOf(tensorflow.getMemory()*1024l), tensorflow.getProxyZone(), "", "", null, commands, args,
 					null, false);
 			controller = mountCephRbd(controller, tensorflow);
 			controller = client.createReplicationController(controller);
