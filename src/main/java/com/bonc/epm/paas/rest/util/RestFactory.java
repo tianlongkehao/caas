@@ -7,6 +7,7 @@ import java.util.HashMap;
 import com.bonc.epm.paas.cluster.api.ClusterHealthyAPI;
 import com.bonc.epm.paas.cluster.api.LocalHealthyAPI;
 import com.bonc.epm.paas.docker.api.DockerRegistryAPI;
+import com.bonc.epm.paas.kubeinstall.api.KubeinstallAPI;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPI;
 import com.bonc.epm.paas.kubernetes.apis.KubernetesAPIS;
 import com.bonc.epm.paas.net.api.NetAPI;
@@ -105,15 +106,26 @@ public class RestFactory {
     public ClusterHealthyAPI createClusterHealthyAPI(String url){
     	Class<ClusterHealthyAPI> clazz = ClusterHealthyAPI.class;
     	Class<?>[] intfs =
-		{
-			clazz
-		};
+    		{
+    				clazz
+    		};
     	HashMap<Method, MethodInvoker> methodMap = new HashMap<Method, MethodInvoker>();
     	for (Method method : clazz.getMethods())
-		{
-	         MethodInvoker invoker = new MethodInvoker(url, "", "", method);
-	         methodMap.put(method, invoker);
-		}
+    	{
+    		MethodInvoker invoker = new MethodInvoker(url, "", "", method);
+    		methodMap.put(method, invoker);
+    	}
     	return (ClusterHealthyAPI)Proxy.newProxyInstance(clazz.getClassLoader(),intfs,new ClientProxy(methodMap));
     }
+
+	public KubeinstallAPI createKubeinstallAPI(String url) {
+		Class<KubeinstallAPI> clazz = KubeinstallAPI.class;
+		Class<?>[] intfs = { clazz };
+		HashMap<Method, MethodInvoker> methodMap = new HashMap<Method, MethodInvoker>();
+		for (Method method : clazz.getMethods()) {
+			MethodInvoker invoker = new MethodInvoker(url, "", "", method);
+			methodMap.put(method, invoker);
+		}
+		return (KubeinstallAPI) Proxy.newProxyInstance(clazz.getClassLoader(), intfs, new ClientProxy(methodMap));
+	}
 }
