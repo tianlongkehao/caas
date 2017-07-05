@@ -45,7 +45,7 @@ public class MethodInvoker {
 
 	private Method method;
 
-	public MethodInvoker(String url, String userName, String password,Method method) {
+	public MethodInvoker(String url, String userName, String password, Method method) {
 		super();
 		this.url = url;
 		this.userName = userName;
@@ -53,90 +53,94 @@ public class MethodInvoker {
 		this.method = method;
 	}
 
-	public Object invoke(Object[] args){
-		Client client = ClientBuilder.newClient(new ClientConfig()).register(JacksonJaxbJsonProvider.class).register(JacksonConfig.class);
-    	WebTarget webTarget = client.target(url);
-    	HttpAuthenticationFeature.basicBuilder()
-    		    .nonPreemptive().credentials(userName, password).build();
-    	Path path = method.getAnnotation(Path.class);
-    	String pathValue = path.value();
+	public Object invoke(Object[] args) {
+		log.info("调用方法：" + method.getDeclaringClass() + "." + method.getName());
+		Client client = ClientBuilder.newClient(new ClientConfig()).register(JacksonJaxbJsonProvider.class)
+				.register(JacksonConfig.class);
+		WebTarget webTarget = client.target(url);
+		HttpAuthenticationFeature.basicBuilder().nonPreemptive().credentials(userName, password).build();
+		Path path = method.getAnnotation(Path.class);
+		String pathValue = path.value();
 
-    	Entity<?> entity = null;
-    	Map<String,String> queryParamMap = new HashMap<String,String>();
-    	Parameter[] parameters = method.getParameters();
-    	if(parameters!=null&&parameters.length>0){
-    		for(int i=0;i<parameters.length;i++){
-    			Parameter parameter = parameters[i];
-    			PathParam pathParam = parameter.getAnnotation(PathParam.class);
-    			if(pathParam!=null){
-    				pathValue = pathValue.replace("{"+pathParam.value()+"}", String.valueOf(args[i]));
-    			}else{
-    				entity = Entity.entity(args[i], MediaType.APPLICATION_JSON_TYPE);
-    			}
-    			QueryParam queryParam = parameter.getAnnotation(QueryParam.class);
-    			if(queryParam!=null){
-    				queryParamMap.put(queryParam.value(), String.valueOf(args[i]));
-    			}
-    		}
-    	} else {
-    		entity = Entity.entity("", MediaType.APPLICATION_JSON_TYPE);
-    	}
+		Entity<?> entity = null;
+		Map<String, String> queryParamMap = new HashMap<String, String>();
+		Parameter[] parameters = method.getParameters();
+		if (parameters != null && parameters.length > 0) {
+			for (int i = 0; i < parameters.length; i++) {
+				Parameter parameter = parameters[i];
+				PathParam pathParam = parameter.getAnnotation(PathParam.class);
+				if (pathParam != null) {
+					pathValue = pathValue.replace("{" + pathParam.value() + "}", String.valueOf(args[i]));
+				} else {
+					entity = Entity.entity(args[i], MediaType.APPLICATION_JSON_TYPE);
+				}
+				QueryParam queryParam = parameter.getAnnotation(QueryParam.class);
+				if (queryParam != null) {
+					queryParamMap.put(queryParam.value(), String.valueOf(args[i]));
+				}
+			}
+		} else {
+			entity = Entity.entity("", MediaType.APPLICATION_JSON_TYPE);
+		}
 
-    	WebTarget pathWebTarget = webTarget.path(pathValue);
-    	if(queryParamMap.size()>0){
-    		for(Entry<String,String> queryParam:queryParamMap.entrySet()){
-    			pathWebTarget = pathWebTarget.queryParam(queryParam.getKey(), queryParam.getValue());
-    		}
-    	}
-    	Invocation.Builder invocationBuilder =
-    			pathWebTarget.request(MediaType.APPLICATION_JSON_TYPE);
+		WebTarget pathWebTarget = webTarget.path(pathValue);
+		if (queryParamMap.size() > 0) {
+			for (Entry<String, String> queryParam : queryParamMap.entrySet()) {
+				pathWebTarget = pathWebTarget.queryParam(queryParam.getKey(), queryParam.getValue());
+			}
+		}
+		Invocation.Builder invocationBuilder = pathWebTarget.request(MediaType.APPLICATION_JSON_TYPE);
 
-    	GET get = method.getAnnotation(GET.class);
-    	POST post = method.getAnnotation(POST.class);
-    	DELETE delete = method.getAnnotation(DELETE.class);
-    	PUT put = method.getAnnotation(PUT.class);
-    	Response response = null;
-    	if(get!=null){
-    		response = invocationBuilder.get();
-    	}else if(post!=null){
-    		response = invocationBuilder.post(entity);
-    	}else if(delete!=null){
-    		response = invocationBuilder.delete();
-    	}else if(put!=null){
-    		response = invocationBuilder.put(entity);
-    	}
-    	response.bufferEntity();
-    	if (response.readEntity(String.class).length() < 400) {
-    	    log.info(url+pathValue+" -X"+get+":"+post+":"+delete+":"+put+"========response:"+response.readEntity(String.class));
-    	}
-    	try{
-    	    if (!response.getHeaders().isEmpty() && response.getHeaders().containsKey("Etag")) {
-    	        return response.getHeaders();
-    	    } else {
-    	    	if (StringUtils.isBlank(response.readEntity(String.class))) { // 调用接口无返回信息，如：删除镜像清单成功后
-    	    		return null;
-    	    	} else {
-    	    		return response.readEntity(method.getReturnType());
-    	    	}
-    	    }
-    	}
-    	catch(ProcessingException | IllegalStateException k8s) {
-    	    try {
-                Status status = response.readEntity(Status.class);
-                if (status.getCode() < 0 || StringUtils.isBlank(status.getMessage())) {
-                    throw new ProcessingException("is not a k8s exception");
-                }
-                throw new KubernetesClientException("unexpect k8s response",status);
-            }
-            catch (ProcessingException | IllegalStateException dockerReg) {
-                try {
-                    ErrorList errors = response.readEntity(ErrorList.class);
-                    throw new DokcerRegistryClientException("unexpect docker registry api response", errors);
-                }
-                catch (ProcessingException | IllegalStateException shera) {
-                    throw new SheraClientException("unexpect shera response");
-                }
-            }
-        }
+		GET get = method.getAnnotation(GET.class);
+		POST post = method.getAnnotation(POST.class);
+		DELETE delete = method.getAnnotation(DELETE.class);
+		PUT put = method.getAnnotation(PUT.class);
+		Response response = null;
+		String requestType = null;
+		if (get != null) {
+			response = invocationBuilder.get();
+			requestType = get.toString();
+		} else if (post != null) {
+			response = invocationBuilder.post(entity);
+			requestType = post.toString();
+		} else if (delete != null) {
+			response = invocationBuilder.delete();
+			requestType = delete.toString();
+		} else if (put != null) {
+			response = invocationBuilder.put(entity);
+			requestType = put.toString();
+		}
+		response.bufferEntity();
+		String responseString = response.readEntity(String.class);
+		if (responseString.length() > 400) {
+			responseString = responseString.substring(0, 400) + "...";
+		}
+		log.info(url + pathValue + " -X" + requestType + "========response:" + responseString);
+		try {
+			if (!response.getHeaders().isEmpty() && response.getHeaders().containsKey("Etag")) {
+				return response.getHeaders();
+			} else {
+				if (StringUtils.isBlank(response.readEntity(String.class))) { // 调用接口无返回信息，如：删除镜像清单成功后
+					return null;
+				} else {
+					return response.readEntity(method.getReturnType());
+				}
+			}
+		} catch (ProcessingException | IllegalStateException k8s) {
+			try {
+				Status status = response.readEntity(Status.class);
+				if (status.getCode() < 0 || StringUtils.isBlank(status.getMessage())) {
+					throw new ProcessingException("is not a k8s exception");
+				}
+				throw new KubernetesClientException("unexpect k8s response", status);
+			} catch (ProcessingException | IllegalStateException dockerReg) {
+				try {
+					ErrorList errors = response.readEntity(ErrorList.class);
+					throw new DokcerRegistryClientException("unexpect docker registry api response", errors);
+				} catch (ProcessingException | IllegalStateException shera) {
+					throw new SheraClientException("unexpect shera response");
+				}
+			}
+		}
 	}
 }
