@@ -1590,7 +1590,18 @@ public class ServiceController {
 				controller = null;
 			}
 			if (controller != null) {
+				//删除所有pod
 				controller = client.updateReplicationController(service.getServiceName(), 0);
+				try {
+					com.bonc.epm.paas.kubernetes.model.Service service2 = client.getService(service.getServiceName());
+					PodList pods = client.getLabelSelectorPods(service2.getSpec().getSelector());
+					for (Pod pod : pods.getItems()){
+						client.deletePod(pod.getMetadata().getName());
+					}
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
+				//删除rc和svc
 				try {
 					client.deleteReplicationController(service.getServiceName());
 					client.deleteService(service.getServiceName());
@@ -1598,6 +1609,31 @@ public class ServiceController {
 					e.printStackTrace();
 				}
 			}
+
+			//删除临时rc
+			try {
+				controller = client.getReplicationController(service.getTempName());
+			} catch (Exception e1) {
+				controller = null;
+			}
+			if (controller != null) {
+				controller = client.updateReplicationController(service.getTempName(), 0);
+				try {
+					com.bonc.epm.paas.kubernetes.model.Service service2 = client.getService(service.getTempName());
+					PodList pods = client.getLabelSelectorPods(service2.getSpec().getSelector());
+					for (Pod pod : pods.getItems()){
+						client.deletePod(pod.getMetadata().getName());
+					}
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
+				try {
+					client.deleteReplicationController(service.getTempName());
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+
 			map.put("status", "200");
 			// 保存服务信息
 			Date currentDate = new Date();
@@ -1787,10 +1823,12 @@ public class ServiceController {
 			map.put("status", "400");
 			map.put("msg", e.getStatus().getMessage());
 			LOG.error("modify imageVersion error:" + e.getStatus().getMessage());
+			e.printStackTrace();
 		} catch (Exception ex) {
 			map.put("status", 400);
 			map.put("msg", ex.getMessage());
 			LOG.error(ex.getMessage());
+			ex.printStackTrace();
 		}
 		return JSON.toJSONString(map);
 	}
@@ -2644,6 +2682,9 @@ public class ServiceController {
 		}
 		Map<String, Object> maps = new HashMap<String, Object>();
 		try {
+			if (ids.size() == 1) {
+				return stopContainer(ids.get(0));
+			}
 			for (long id : ids) {
 				stopContainer(id);
 			}

@@ -431,58 +431,6 @@ function changeContainerConf() {
 	});
 }
 
-function versionUpgrade() {
-	$('input[name="chkItem"]:checked').each(function(index, el) {
-		var id = $(el).val();
-		var serviceName = $(el).attr('serviceName');
-		$('#upgradeVersionServiceName').val(serviceName);
-		var imgName = $(el).attr('imagename');
-		// 查询镜像版本
-		findImageVersion(imgName);
-		// var imgVersion = $("#imgVersionName").val();
-		var imgVersion = $(el).attr('imageversion');
-		$('#upgradeimgName').val(imgName);
-		// $('#imgVersionName').val(imgVersion);
-		layer.open({
-			type : 1,
-			title : '升级镜像版本',
-			content : $("#versionUpgrade"),
-			btn : ['确定', '取消'],
-			yes : function(index, layero) {
-				layer.close(index);
-				$('#myModal').modal('show');
-				var imgVersion1 = $('#imgVersionName').val();
-				$.ajax({
-					url : ctx + "/service/modifyimgVersion.do?id=" + id + "&serviceName=" + serviceName + "&imgVersion=" + imgVersion1 + "&imgName=" + imgName,
-					async : true,
-					success : function(data) {
-						data = eval("(" + data + ")");
-						if (data.status == "200") {
-							$('#myModal').modal('hide');
-							layer.msg("升级完成", {
-								icon : 6
-							});
-							setTimeout('window.location.reload()', 1500);
-						} else if (data.status == "500") {
-							$('#myModal').modal('hide');
-							layer.alert("请选择需要升级的版本号！");
-						} else if (data.status == "201") {
-
-						} else {
-							$('#myModal').modal('hide');
-							layer.alert("请检查配置服务！");
-						}
-
-					}
-				});
-			},
-			cancel : function(index) {// 或者使用btn2
-				// 按钮【按钮二】的回调
-			}
-		});
-
-	});
-}
 
 //导出excel
 function exportExcel() {
@@ -544,6 +492,9 @@ function oneStartContainer(id, status) {
 // 响应每一行上的停止按钮
 function oneStopContainer(id, status) {
 	if (4 == status) {
+		return;
+	}
+	if ($("#" + id + "_cancelUpgrade").length > 0){
 		return;
 	}
 	var serviceIDs = [];
@@ -707,7 +658,7 @@ function oneVersionUpgrade(id, serviceName, imgName,imgVersion, obj) {
 			layer.close(index);
 			var imgVersion1 = $('#imgVersionName').val();
 			if(imgVersion != imgVersion1){
-				var cStatusHtml = "<a class='link' onclick='serviceEvent(" + id + ",7)'><i class='fa_success'></i>" + "升级中" + "<img src='" + ctx + "/images/loading4.gif' alt=''/></a><a href=\"javascript:oneStopContainerUpdate(" + id + ",&apos;" + serviceName + "&apos;)\"><i class='fa fa-times fa-stopUpdate'></i></a>";
+				var cStatusHtml = "<a class='link' onclick='serviceEvent(" + id + ",7)'><i class='fa_success'></i>" + "升级中" + "<img src='" + ctx + "/images/loading4.gif' alt=''/></a><a href=\"javascript:oneStopContainerUpdate(" + id + ",&apos;" + serviceName + "&apos;)\"><i id='" + id + "_cancelUpgrade' class='fa fa-times fa-stopUpdate'></i></a>";
 				$("#" + id + "_upgradeCluster").parent().parent().parent().parent().parent().parent().find(".cStatusColumn").html(cStatusHtml);
 				$("#" + id + "_moreFun").removeClass('a-live').addClass('no-drop');
 				$("#" + id + "_moreFun").find('.fa-gears').addClass('self_a');
@@ -2483,9 +2434,11 @@ function serviceEvent(serviceId,serviceStatus){
 		url : "" + ctx + "/service/getServiceEvents.do?id="+serviceId,
 		type : 'get',
 		success : function(data) {
+			layer.closeAll();
 			layer.open({
 				type : 1,
 				title : '服务事件',
+				id : 'serviceEvent',
 				content : $("#serviceEventInfo"),
 				area : ['800px','550px'],
 				btn : ['关闭'],
@@ -2615,9 +2568,11 @@ function onePodEvent(obj){
 					}
 				}
 				$("#onepodItemsInfo").empty().append(onepodHtml);
+				layer.closeAll();
 				layer.open({
 					type : 1,
 					title : 'pod事件',
+					id : 'onePodEvent',
 					content : $("#podEventInfo"),
 					area : ['800px','550px'],
 					btn : ['关闭'],
