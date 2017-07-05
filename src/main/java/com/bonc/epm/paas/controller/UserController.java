@@ -9,6 +9,7 @@ import java.util.Map;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.jdt.internal.compiler.codegen.DoubleCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -752,45 +753,16 @@ public class UserController {
 				if (null != quota) {
 					// 用户真实的资源*资源系数 = 页面显示资源
 					Map<String, String> map = quota.getSpec().getHard();
-					double leftCpu = ConvertUtil.convertCpu(map.get("cpu"));
-					resource.setCpu_account(
-							String.valueOf(leftCpu * RATIO_LIMITTOREQUESTCPU - REST_RESOURCE_CPU));// CPU数量
-					resource.setRam(String.valueOf(
-							ConvertUtil.convertMemory(map.get("memory")) * RATIO_LIMITTOREQUESTMEMORY - REST_RESOURCE_MEMORY));// 内存
-					LOG.info("+++++++++++++" + leftCpu + "------" + map.get("memory"));
-					/*
-					 * resource.setImage_control(map.get(
-					 * "replicationcontrollers"));//副本控制器
-					 * resource.setPod_count(map.get("pods"));//POD数量
-					 * resource.setServer_count(map.get("services"));//服务
-					 */
-				}
+					double totalCpu = ConvertUtil.convertCpu(map.get("cpu"))*RATIO_LIMITTOREQUESTCPU - REST_RESOURCE_CPU;
+					double totalMem = ConvertUtil.convertMemory(map.get("memory"))*RATIO_LIMITTOREQUESTMEMORY - REST_RESOURCE_MEMORY;
+					totalCpu = Math.floor(totalCpu);
+					totalMem = Math.floor(totalMem);
 
-				/*
-				 * LimitRange lr = client.getLimitRange(user.getNamespace());
-				 *
-				 * if (lr != null && lr.getSpec().getLimits().size() > 0) { for
-				 * (LimitRangeItem limit : lr.getSpec().getLimits()) { String
-				 * type = limit.getType(); Map<String, String> def =
-				 * limit.getDefaultVal(); Map<String, String> max =
-				 * limit.getMax(); Map<String, String> min = limit.getMin();
-				 *
-				 * if (type.trim().equals("pod")) {
-				 * restriction.setPod_cpu_default(computeCpuOut(def));
-				 * restriction.setPod_memory_default(computeMemoryOut(def));
-				 * restriction.setPod_cpu_max(computeCpuOut(max));
-				 * restriction.setPod_memory_max(computeMemoryOut(max));
-				 * restriction.setPod_cpu_min(computeCpuOut(min));
-				 * restriction.setPod_memory_min(computeMemoryOut(min)); } if
-				 * (type.trim().equals("Container")) {
-				 * restriction.setContainer_cpu_default(computeCpuOut(def));
-				 * restriction.setContainer_memory_default(computeMemoryOut(def)
-				 * ); restriction.setContainer_cpu_max(computeCpuOut(max));
-				 * restriction.setContainer_memory_max(computeMemoryOut(max));
-				 * restriction.setContainer_cpu_min(computeCpuOut(min));
-				 * restriction.setContainer_memory_min(computeMemoryOut(min)); }
-				 * } }
-				 */
+					resource.setCpu_account(String.valueOf(totalCpu));// CPU数量
+				    resource.setRam(String.valueOf(totalMem));// 内存
+
+					LOG.info("+++++++++++++" + totalCpu + "------" + totalMem);
+				}
 			} else {
 				LOG.info("用户 " + user.getUserName() + " 没有定义名称为 " + user.getNamespace() + " 的Namespace ");
 			}
