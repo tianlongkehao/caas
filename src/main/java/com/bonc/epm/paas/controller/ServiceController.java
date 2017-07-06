@@ -861,10 +861,10 @@ public class ServiceController {
 				double leftmemory = hard - used;
 
 				leftCpu = leftCpu * RATIO_LIMITTOREQUESTCPU;
-				long tempCpu = (long)Math.ceil(leftCpu)-REST_RESOURCE_CPU;
+				long tempCpu = (long)Math.round(leftCpu)-REST_RESOURCE_CPU;
 
 				leftmemory = leftmemory * RATIO_LIMITTOREQUESTMEMORY;
-				long tempMem = (long)Math.ceil(leftmemory) -REST_RESOURCE_MEMORY;
+				long tempMem = (long)Math.round(leftmemory) -REST_RESOURCE_MEMORY;
 
 				model.addAttribute("leftcpu", tempCpu);
 				model.addAttribute("leftmemory", tempMem);
