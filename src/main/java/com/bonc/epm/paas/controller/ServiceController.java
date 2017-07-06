@@ -3041,7 +3041,13 @@ public class ServiceController {
 		Map<String, Object> datamap = new HashMap<String, Object>();
 
 		try {
-			Pod pod = client.getPod(podName);
+			Pod pod = null;
+			try {
+				pod = client.getPod(podName);
+			} catch (Exception e) {
+				datamap.put("logStr", "未找到该实例的日志：[" + podName + "]");
+				datamap.put("status", "200");
+			}
 			String containerId = pod.getStatus().getContainerStatuses().get(0).getContainerID().replace("docker://",
 					"");
 			DockerClient dockerClient = dockerClientService

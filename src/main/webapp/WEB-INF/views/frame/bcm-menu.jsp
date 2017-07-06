@@ -211,6 +211,13 @@
 						<li id="li_logCommon"><a class="J_menuItem" href="<%=path %>/logCommon"><i class="fa fa_circle"></i>通用操作日志</a></li>
 					</ul></li>
 				</c:if>
+				<li id="menu_database"><a href="#" class="first-a">
+					<i class="fa-nav fa-nav-log"></i>
+					<span class="nav-label">数据库服务</span>
+				</a>
+					<ul class="nav nav-second-level">
+						<li id="li_redis"><a class="J_menuItem" href="<%=path %>/RedisController/redis"><i class="fa fa_circle"></i>redis</a></li>
+					</ul></li>
 				<%-- <li id="menu_storage"><a href="#" class="first-a">
 					<i class="fa-nav fa-nav-storage"></i>
 					<span class="nav-label">云存储</span>

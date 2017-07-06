@@ -17,7 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 
+ *
  * 附件处理工具类
  * @author yangjian@bonc.com.cn
  * @version 2016年8月31日
@@ -29,16 +29,16 @@ public class FileUtils {
      * LOG
      */
     private static final Logger LOG = LoggerFactory.getLogger(FileUtils.class);
-	
+
     /**
-     * 
+     *
      * Description:
-     * 存储文件 
+     * 存储文件
      * 内存1024byte，以流的形式循环读取上传,防止内存溢出
      * @param in InputStream
      * @param fileName String
-     * @return boolean 
-     * @throws IOException 
+     * @return boolean
+     * @throws IOException
      * @see InputStream
      */
     public static boolean storeFile(InputStream in,String fileName) throws IOException{
@@ -52,25 +52,25 @@ public class FileUtils {
             }
             bos.flush();
             return true;
-        } 
+        }
         catch (IOException e) {
             LOG.error("FileUtils storeFile error:"+e.getMessage());
             return false;
         }
         finally {
             bos.close();
-            in.close(); 
+            in.close();
         }
     }
-	
+
     /**
-     * 
+     *
      * Description:
      * 写文件
      * @param fileTemplate 模板文件
      * @param data 模板中需要替换的值
-     * @param toFile  
-     * @throws IOException 
+     * @param toFile
+     * @throws IOException
      * @see
      */
     public static void writeFileByLines(String fileTemplate,Map<String,String> data,String toFile) throws IOException {
@@ -93,7 +93,7 @@ public class FileUtils {
             }
             writer=new BufferedWriter(new FileWriter(new File(toFile)));
             writer.write(bufferstr);
-        } 
+        }
         catch (IOException e) {
             e.printStackTrace();
         }
@@ -102,14 +102,14 @@ public class FileUtils {
             writer.close();
         }
     }
-	
+
     /**
-     * 
+     *
      * Description:
      * 读取dockerFile文件中的文本数据；
      * @param fileTemplate ： dockerfile文件路径
      * @return dockerFile String
-     * @throws IOException 
+     * @throws IOException
      * @see
      */
     public static String readFileByLines(String fileTemplate) throws IOException{
@@ -130,6 +130,40 @@ public class FileUtils {
         }
         return dockerFile;
     }
+
+    /**
+     * readFileByLines:读文件并替换${}值. <br/>
+     *
+     * @param fileTemplate
+     * @param data void
+     * @throws IOException
+     */
+	public static String readFileByLines(String fileTemplate, Map<String, String> data) throws IOException {
+		StringBuffer bufferstr = new StringBuffer();
+		BufferedReader reader = null;
+		try {
+			reader = new BufferedReader(new FileReader(new File(fileTemplate)));
+			String tempString = "";
+			while (null != (tempString = reader.readLine())) {
+				Pattern pattern = Pattern.compile("\\$\\{(.+?)\\}");
+				Matcher matcher = pattern.matcher(tempString);
+				if (matcher.find()) {
+					for (String key : data.keySet()) {
+						tempString = tempString.replace(key, data.get(key));
+					}
+					bufferstr.append(tempString + "\n");
+				} else {
+					bufferstr.append(tempString + "\n");
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			reader.close();
+		}
+		return bufferstr.toString();
+	}
+
     /**
      *  删除文件夹下的所有文件
      * @param path 文件夹路径
@@ -165,9 +199,9 @@ public class FileUtils {
         return flag;
       }
     /**
-         * 
+         *
          * 删除空文件夹
-         * 
+         *
      * @param folderPath 文件夹路径
      * @see
      */
@@ -179,7 +213,7 @@ public class FileUtils {
            java.io.File myFilePath = new java.io.File(filePath);
            myFilePath.delete(); //删除空文件夹
         } catch (Exception e) {
-          e.printStackTrace(); 
+          e.printStackTrace();
         }
    }
 }

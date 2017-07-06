@@ -1,0 +1,15 @@
+#!/bin/bash
+set -e
+
+PORT=${port}
+CLUSTER_IPS=""
+
+
+redis-server /conf/redis.conf &
+chmod u+x /bin/peer-finder
+chmod u+x /usr/local/bin/redis-trib.rb
+chmod u+x /conf/meet-cluster.sh
+peer-finder -on-start '/conf/meet-cluster.sh' -service ${serviceName} -ns $POD_NAMESPACE
+
+sleep 1
+wait

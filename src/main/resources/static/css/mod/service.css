@@ -282,6 +282,8 @@
     display: inline-block;
     letter-spacing: 1px;
     float: left;
+    text-align: right;
+    padding-right: 15px;
 }
 
 .imageName {

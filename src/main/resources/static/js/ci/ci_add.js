@@ -353,7 +353,7 @@ $(document).ready(function () {
 					$("#sshPassword").val(creList[0].privateKey);
 				}
 			});
-			
+
 		}
 	});
 	//更改密钥生成对应公钥
