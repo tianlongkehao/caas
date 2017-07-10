@@ -391,15 +391,17 @@ public class SSOAuthHandleImpl implements com.bonc.sso.client.IAuthHandle{
                             if (jsPro != null && jsPro.size() > 0) { // 获取CPU、MEM和Volume的值
                                 for (Object oneRow : jsPro) {
                                     JSONObject tmp = (JSONObject) oneRow;
-                                    if (((String)tmp.get("property_code")).trim().equals("CPU")) {
-                                        openCpu += Double.parseDouble((String)tmp.get("prop_value"));
-                                    }
-                                    else if (((String)tmp.get("property_code")).trim().equals("Memory")) {
-                                        openMem += Long.parseLong((String)tmp.get("prop_value"));
-                                    }
-                                    else if (((String)tmp.get("property_code")).trim().equals("Storage")){
-                                        volSize += Long.parseLong((String)tmp.get("prop_value"));
-                                    }
+                                    if (tmp.containsKey("property_code")) {
+                                    	if (((String)tmp.get("property_code")).trim().equals("CPU")) {
+                                    		openCpu += Double.parseDouble((String)tmp.get("prop_value"));
+                                    	}
+                                    	else if (((String)tmp.get("property_code")).trim().equals("Memory")) {
+                                    		openMem += Long.parseLong((String)tmp.get("prop_value"));
+                                    	}
+                                    	else if (((String)tmp.get("property_code")).trim().equals("Storage")){
+                                    		volSize += Long.parseLong((String)tmp.get("prop_value"));
+                                    	}
+									}
                                 }
                             }
                         }
