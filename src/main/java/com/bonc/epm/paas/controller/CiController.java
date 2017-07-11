@@ -1699,7 +1699,7 @@ public class CiController {
         String imageVersion = ci.getImgNameVersion();
         Image imageId = new Image();
 
-        DockerClient dockerClient = dockerClientService.getNormalDockerClientInstance();
+        DockerClient dockerClient = dockerClientService.getSpecialDockerClientInstance();
         boolean flag = dockerClientService.buildImage(dockerfilePath,imageName, imageVersion,ciRecord,ciRecordDao,imageId, dockerClient);
         if(flag){
 		    //上传镜像
