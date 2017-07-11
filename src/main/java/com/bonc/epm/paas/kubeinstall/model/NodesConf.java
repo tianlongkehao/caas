@@ -18,7 +18,7 @@ import java.util.Map;
  * @author longkaixiang
  * @version
  */
-public class NodesConf extends KubeinstallAbstractModel {
+public class NodesConf {
 	private Map<String, LoginInfo> nodesIPSet;
 
 	public Map<String, LoginInfo> getNodesIPSet() {

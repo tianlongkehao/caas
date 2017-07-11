@@ -18,7 +18,7 @@ package com.bonc.epm.paas.kubeinstall.model;
  */
 import java.util.Map;
 
-public class InstallPlan extends KubeinstallAbstractModel {
+public class InstallPlan {
 	private Map<String, LoginInfo> machineSSHSet;
 	private EtcdConf etcdCfg;
 	private MasterConf masterCfg;

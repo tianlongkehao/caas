@@ -17,15 +17,16 @@ package com.bonc.epm.paas.kubeinstall.model;
  * @see
  */
 import java.util.List;
+import java.util.Map;
 
-public class MasterConf extends KubeinstallAbstractModel {
+public class MasterConf {
 
 	private List<String> k8sMasterIPSet;
 	private String virtualIP;
 	private String port;
 	private String networkCNI;
 	private String podNetworkCIDR;
-	private String accessIPList;
+	private Map<String, LoginInfo> accessIPList;
 	private String k8sVersion;
 
 	public List<String> getK8sMasterIPSet() {
@@ -68,11 +69,11 @@ public class MasterConf extends KubeinstallAbstractModel {
 		this.podNetworkCIDR = podNetworkCIDR;
 	}
 
-	public String getAccessIPList() {
+	public Map<String, LoginInfo> getAccessIPList() {
 		return accessIPList;
 	}
 
-	public void setAccessIPList(String accessIPList) {
+	public void setAccessIPList(Map<String, LoginInfo> accessIPList) {
 		this.accessIPList = accessIPList;
 	}
 

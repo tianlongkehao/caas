@@ -15,7 +15,7 @@ package com.bonc.epm.paas.kubeinstall.model;
  * @author longkaixiang
  * @version
  */
-public class LoginInfo extends KubeinstallAbstractModel {
+public class LoginInfo {
 	private String userName;
 	private String password;
 	private String hostAddr;

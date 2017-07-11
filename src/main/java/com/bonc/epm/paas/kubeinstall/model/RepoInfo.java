@@ -16,7 +16,7 @@ package com.bonc.epm.paas.kubeinstall.model;
  * @author longkaixiang
  * @version
  */
-public class RepoInfo extends KubeinstallAbstractModel {
+public class RepoInfo {
 	private String name;
 	private String baseurl;
 	private Boolean enabled;

@@ -20,7 +20,7 @@ public class Response {
 	private Boolean result;
 	private String errorMsg;
 	private String output;
-	private KubeinstallAbstractModel content;
+	private InstallPlan content;
 
 	public Boolean getResult() {
 		return result;
@@ -46,11 +46,11 @@ public class Response {
 		this.output = output;
 	}
 
-	public KubeinstallAbstractModel getContent() {
+	public InstallPlan getContent() {
 		return content;
 	}
 
-	public void setContent(KubeinstallAbstractModel content) {
+	public void setContent(InstallPlan content) {
 		this.content = content;
 	}
 }

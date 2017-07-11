@@ -19,7 +19,7 @@ import java.util.Map;
  * @author longkaixiang
  * @version
  */
-public class EtcdConf extends KubeinstallAbstractModel {
+public class EtcdConf {
 	private List<String> hosts;
 	private Map<String, LoginInfo> sshHosts;
 

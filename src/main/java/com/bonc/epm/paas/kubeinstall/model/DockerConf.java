@@ -17,7 +17,7 @@ package com.bonc.epm.paas.kubeinstall.model;
  * @version
  * @see
  */
-public class DockerConf extends KubeinstallAbstractModel {
+public class DockerConf {
 	private String registryIP;
 	private String registryPort;
 	private String userDockerRegistryURL;
