@@ -1028,7 +1028,7 @@ public class RedisController {
 		List<PersistentVolumeClaim> volumeClaimTemplates = new ArrayList<>();
 		List<String> accessModes = new ArrayList<>();
 		accessModes.add("ReadWriteOnce");
-		accessModes.add("ReadWriteMany");
+//		accessModes.add("ReadWriteMany");
 		ResourceRequirements resources3 = new ResourceRequirements();
 		Map<String, Object> requests = new HashMap<>();
 		requests.put("storage", storage);
