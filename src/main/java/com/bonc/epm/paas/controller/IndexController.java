@@ -598,8 +598,8 @@ public class IndexController {
         }
         LOG.info("User init success:"+user.toString());
         try {
-//			dnsController.startMonitor();
-//			dnsController.createDNSMonitor();
+			dnsController.startMonitor();
+			dnsController.createDNSMonitor();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
