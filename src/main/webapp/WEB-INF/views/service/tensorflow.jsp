@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head lang="en">
-<title>模板</title>
+<title>tensorflow</title>
 <%@include file="../frame/header.jsp"%>
 <link rel="stylesheet" type="text/css"
 	href="<%=path%>/css/mod/tensorflow.css" />
