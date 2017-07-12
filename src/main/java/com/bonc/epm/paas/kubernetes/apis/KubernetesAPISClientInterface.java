@@ -2,12 +2,15 @@ package com.bonc.epm.paas.kubernetes.apis;
 
 import javax.ws.rs.PathParam;
 
+import com.bonc.epm.paas.entity.Storage;
 import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
 import com.bonc.epm.paas.kubernetes.exceptions.Status;
 import com.bonc.epm.paas.kubernetes.model.HorizontalPodAutoscaler;
 import com.bonc.epm.paas.kubernetes.model.HorizontalPodAutoscalerList;
 import com.bonc.epm.paas.kubernetes.model.StatefulSet;
 import com.bonc.epm.paas.kubernetes.model.StatefulSetList;
+import com.bonc.epm.paas.kubernetes.model.StorageClass;
+import com.bonc.epm.paas.kubernetes.model.StorageClassList;
 
 public interface KubernetesAPISClientInterface {
 
@@ -137,4 +140,15 @@ public interface KubernetesAPISClientInterface {
 	 */
 	public StatefulSetList getAllStatefulSets() throws KubernetesClientException;
 
+    public StorageClass createStorageClass(StorageClass storageClass) throws KubernetesClientException;
+
+    public StorageClass replaceStorageClass(String name, StorageClass storageClass) throws KubernetesClientException;
+
+    public Status deleteStorageClass(@PathParam("name")String name) throws KubernetesClientException;
+
+    public Status deleteStorageClasses()throws KubernetesClientException;
+
+    public StorageClass getStorageClass(@PathParam("name")String name)throws KubernetesClientException;
+
+    public StorageClassList getStorageClasses()throws KubernetesClientException;
 }

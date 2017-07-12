@@ -388,7 +388,7 @@ public class TensorFlowController {
 		String image = REGISTRY_ADDR + "/" + tensorflow.getImage();
 
 		List<String> commands = new ArrayList<String>();
-		commands.add("start-notebook.sh");
+		commands.add("/usr/local/bin/start-notebook.sh");//原本为start-notebook.sh
 
 		List<String> args = new ArrayList<String>();
 		args.add("--NotebookApp.password=sha1:111111111111:"

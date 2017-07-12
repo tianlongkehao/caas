@@ -47,16 +47,20 @@ import com.bonc.epm.paas.entity.UserAndShera;
 import com.bonc.epm.paas.entity.UserFavor;
 import com.bonc.epm.paas.entity.UserResource;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
+import com.bonc.epm.paas.kubernetes.apis.KubernetesAPISClientInterface;
+import com.bonc.epm.paas.kubernetes.apis.KubernetesApisClient;
 import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
 import com.bonc.epm.paas.kubernetes.model.LimitRange;
 import com.bonc.epm.paas.kubernetes.model.LimitRangeItem;
 import com.bonc.epm.paas.kubernetes.model.LimitRangeSpec;
 import com.bonc.epm.paas.kubernetes.model.Namespace;
+import com.bonc.epm.paas.kubernetes.model.ObjectMeta;
 import com.bonc.epm.paas.kubernetes.model.PodList;
 import com.bonc.epm.paas.kubernetes.model.ReplicationControllerList;
 import com.bonc.epm.paas.kubernetes.model.ResourceQuota;
 import com.bonc.epm.paas.kubernetes.model.ResourceQuotaSpec;
 import com.bonc.epm.paas.kubernetes.model.Secret;
+import com.bonc.epm.paas.kubernetes.model.StorageClass;
 import com.bonc.epm.paas.kubernetes.util.KubernetesClientService;
 import com.bonc.epm.paas.shera.api.SheraAPIClientInterface;
 import com.bonc.epm.paas.shera.exceptions.SheraClientException;
@@ -191,6 +195,9 @@ public class UserController {
 	 */
 	@Value("${rest.resource.memory}")
 	private int REST_RESOURCE_MEMORY;
+
+	@Value("${ceph.monitor}")
+	private String CEPH_MONITORS;
 
 	/**
 	 *
@@ -336,6 +343,16 @@ public class UserController {
 				client.deleteResourceQuota(user.getNamespace());
 				ceph.deleteNamespaceCephFS(user.getNamespace());
 				map.put("message", "创建ceph pool失败");
+				map.put("creatFlag", "400");
+				return JSON.toJSONString(map);
+			}
+
+			if(!createStorageClass(user)){
+				client.deleteNamespace(user.getNamespace());
+				client.deleteResourceQuota(user.getNamespace());
+				ceph.deleteNamespaceCephFS(user.getNamespace());
+				ceph.deletePool(user.getNamespace());
+				map.put("message", "创建Storage class失败");
 				map.put("creatFlag", "400");
 				return JSON.toJSONString(map);
 			}
@@ -1242,6 +1259,38 @@ public class UserController {
 			return false;
 		}
 	}
+
+	/**
+	 * 创建StorageClass
+	 * @param user
+	 * @return
+	 */
+	private boolean createStorageClass(User user){
+		try {
+            KubernetesAPISClientInterface apisClient = kubernetesClientService.getApisClient();
+
+            StorageClass storageClass = new StorageClass();
+    		ObjectMeta objectMeta = new ObjectMeta();
+    		objectMeta.setName(user.getNamespace());
+    		storageClass.setMetadata(objectMeta);
+    		Map<String, String> parameters = new HashMap<String,String>();
+    		parameters.put("monitors", CEPH_MONITORS);
+    		parameters.put("adminId", "admin");
+    		parameters.put("adminSecretName", "ceph-secret");
+    		parameters.put("adminSecretNamespace", "kube-system");
+    		parameters.put("pool", user.getNamespace());
+    		parameters.put("userId", "admin");
+    		parameters.put("userSecretName", "ceph-secret");
+    		storageClass.setParameters(parameters);
+    		storageClass.setProvisioner("kubernetes.io/rbd");
+
+    		apisClient.createStorageClass(storageClass);
+            return true;
+		} catch (KubernetesClientException e) {
+			LOG.error(e.getMessage());
+			return false;
+		}
+	}
 	/**
 	 *
 	 * Description: 为client创建资源配额
@@ -1258,20 +1307,11 @@ public class UserController {
 	public boolean createQuota(User user, Resource resource, KubernetesAPIClientInterface client) {
 		try {
 			Map<String, String> map = new HashMap<String, String>();
-			// map.put("memory", resource.getRam() + "G"); // 内存
-			// map.put("cpu", Double.valueOf(resource.getCpu_account()) + "");//
-			// CPU数量(个)
-			// 实际分配资源=页面分配资源/分配系数
 			map.put("memory",
 					(Double.parseDouble(resource.getRam()) + REST_RESOURCE_MEMORY) / RATIO_LIMITTOREQUESTMEMORY + "G"); // 内存
 			map.put("cpu",
 					(Double.parseDouble(resource.getCpu_account()) + REST_RESOURCE_CPU) / RATIO_LIMITTOREQUESTCPU + "");// CPU数量(个)
 			map.put("persistentvolumeclaims", resource.getVol() + "");// 卷组数量
-			// map.put("pods", resource.getPod_count() + "");//POD数量
-			// map.put("services", resource.getServer_count() + "");//服务
-			// map.put("replicationcontrollers", resource.getImage_control()
-			// +"");//副本控制器
-			// map.put("resourcequotas", "1");//资源配额数量
 			ResourceQuota quota = kubernetesClientService.generateSimpleResourceQuota(user.getNamespace(), map);
 			quota = client.createResourceQuota(quota);
 			if (quota != null) {

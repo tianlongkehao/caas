@@ -359,6 +359,28 @@ public class CephController {
 	}
 
 	/**
+	 * 删除pool
+	 */
+	public void deletePool(String namespace) throws RadosException {
+		try {
+			cluster = new Rados(CEPH_NAME);
+			File f = new File(CEPH_DIR + CEPH_CONF);
+			cluster.confReadFile(f);
+			cluster.connect();
+
+			cluster.poolDelete(namespace);
+
+		} catch (RadosException e) {
+			throw e;
+		} finally {
+			if (cluster != null) {
+				cluster.shutDown();
+			}
+		}
+
+	}
+
+	/**
 	 * 删除pool，清空数据库中的相关记录
 	 *
 	 * @param namespace

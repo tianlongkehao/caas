@@ -2,8 +2,6 @@ package com.bonc.epm.paas.kubernetes.model;
 
 import java.util.List;
 
-import javax.ws.rs.core.SecurityContext;
-
 public class Container {
 	private String name;
 	private String image;
@@ -23,7 +21,7 @@ public class Container {
 	private Boolean stdin;
 	private Boolean stdinOnce;
 	private Boolean tty;
-	
+
 	public String getName() {
 		return name;
 	}
@@ -132,5 +130,5 @@ public class Container {
 	public void setTty(Boolean tty) {
 		this.tty = tty;
 	}
-	
+
 }

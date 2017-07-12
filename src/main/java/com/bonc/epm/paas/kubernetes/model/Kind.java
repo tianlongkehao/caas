@@ -18,6 +18,7 @@ public enum Kind {
 	CONFIGMAP("ConfigMap"),CONFIGMAPLIST("ConfigMapList"),
 	EVENT("Event"),EVENTLIST("EventList"),
 	STATEFULSET("StatefulSet"),STATEFULSETLIST("StatefulSetList"),
+	STORAGECLASS("StorageClass"),STORAGECLASSLIST("StorageClassList"),
 	PERSISTENTVOLUME("PersistentVolume"),PERSISTENTVOLUMELIST("PersistentVolumeList"),
 	PERSISTENTVOLUMECLAIM("PersistentVolumeClaim"),PERSISTENTVOLUMECLAIMLIST("PersistentVolumeClaimList");
 

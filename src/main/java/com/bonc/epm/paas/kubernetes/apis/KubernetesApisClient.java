@@ -8,6 +8,8 @@ import com.bonc.epm.paas.kubernetes.model.HorizontalPodAutoscaler;
 import com.bonc.epm.paas.kubernetes.model.HorizontalPodAutoscalerList;
 import com.bonc.epm.paas.kubernetes.model.StatefulSet;
 import com.bonc.epm.paas.kubernetes.model.StatefulSetList;
+import com.bonc.epm.paas.kubernetes.model.StorageClass;
+import com.bonc.epm.paas.kubernetes.model.StorageClassList;
 import com.bonc.epm.paas.rest.util.RestFactory;
 
 public class KubernetesApisClient implements KubernetesAPISClientInterface {
@@ -244,6 +246,80 @@ public class KubernetesApisClient implements KubernetesAPISClientInterface {
 	public StatefulSetList getAllStatefulSets() throws KubernetesClientException {
 		try {
 			return apis.getStatefulSets();
+		} catch (KubernetesClientException e) {
+			if (e.getStatus().getReason().equals(NOTFOUND)) {
+				return null;
+			} else {
+				throw new KubernetesClientException(e);
+			}
+		} catch (WebApplicationException e) {
+			throw new KubernetesClientException(e);
+		}
+	}
+
+	@Override
+	public StorageClass createStorageClass(StorageClass storageClass) throws KubernetesClientException {
+		try {
+			return apis.createStorageClass(storageClass);
+		} catch (KubernetesClientException e) {
+			throw new KubernetesClientException(e);
+		} catch (WebApplicationException e) {
+			throw new KubernetesClientException(e);
+		}
+	}
+
+	@Override
+	public StorageClass replaceStorageClass(String name, StorageClass storageClass) throws KubernetesClientException {
+		try {
+			return apis.replaceStorageClass(name, storageClass);
+		} catch (KubernetesClientException e) {
+			throw new KubernetesClientException(e);
+		} catch (WebApplicationException e) {
+			throw new KubernetesClientException(e);
+		}
+	}
+
+	@Override
+	public Status deleteStorageClass(String name) throws KubernetesClientException {
+		try {
+			return apis.deleteStorageClass(name);
+		} catch (KubernetesClientException e) {
+			throw new KubernetesClientException(e);
+		} catch (WebApplicationException e) {
+			throw new KubernetesClientException(e);
+		}
+	}
+
+	@Override
+	public Status deleteStorageClasses() throws KubernetesClientException {
+		try {
+			return apis.deleteStorageClasses();
+		} catch (KubernetesClientException e) {
+			throw new KubernetesClientException(e);
+		} catch (WebApplicationException e) {
+			throw new KubernetesClientException(e);
+		}
+	}
+
+	@Override
+	public StorageClass getStorageClass(String name) throws KubernetesClientException {
+		try {
+			return apis.getStorageClass(name);
+		} catch (KubernetesClientException e) {
+			if (e.getStatus().getReason().equals(NOTFOUND)) {
+				return null;
+			} else {
+				throw new KubernetesClientException(e);
+			}
+		} catch (WebApplicationException e) {
+			throw new KubernetesClientException(e);
+		}
+	}
+
+	@Override
+	public StorageClassList getStorageClasses() throws KubernetesClientException {
+		try {
+			return apis.getStorageClasses();
 		} catch (KubernetesClientException e) {
 			if (e.getStatus().getReason().equals(NOTFOUND)) {
 				return null;

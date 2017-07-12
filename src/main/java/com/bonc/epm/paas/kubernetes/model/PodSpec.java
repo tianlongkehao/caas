@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 public class PodSpec {
+	private Affinity affinity;
 	private List<Volume> volumes;
 	private List<Container> containers;
 	private String restartPolicy;
@@ -18,6 +19,29 @@ public class PodSpec {
 	private Boolean hostPID;
 	private Boolean hostIPC;
 	private List<LocalObjectReference> imagePullSecrets;
+	private PodSecurityContext securityContext;
+
+	public PodSecurityContext getSecurityContext() {
+		return securityContext;
+	}
+	public void setSecurityContext(PodSecurityContext securityContext) {
+		this.securityContext = securityContext;
+	}
+	public Affinity getAffinity() {
+		return affinity;
+	}
+	public void setAffinity(Affinity affinity) {
+		this.affinity = affinity;
+	}
+	public Boolean getHostNetwork() {
+		return hostNetwork;
+	}
+	public Boolean getHostPID() {
+		return hostPID;
+	}
+	public Boolean getHostIPC() {
+		return hostIPC;
+	}
 	public List<Volume> getVolumes() {
 		return volumes;
 	}
@@ -102,5 +126,5 @@ public class PodSpec {
 	public void setImagePullSecrets(List<LocalObjectReference> imagePullSecrets) {
 		this.imagePullSecrets = imagePullSecrets;
 	}
-	
+
 }
