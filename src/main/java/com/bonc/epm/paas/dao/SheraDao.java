@@ -43,7 +43,7 @@ public interface SheraDao extends CrudRepository<Shera, Long> {
 //	@Query("select sh from Shera sh where sh.createBy = ?1")
 //	List<Shera> findByCreateBy(long userId);
 //
-//	@Query("select sh from Shera sh where sh.sheraUrl = ?1 and sh.port = ?2")
-//	List<Shera> findByUrlAndPort(String sheraUrl, String port);
+	@Query("select sh from Shera sh where sh.sheraUrl = ?1 and sh.port = ?2")
+	List<Shera> findByUrlAndPort(String sheraUrl, String port);
 
 }
