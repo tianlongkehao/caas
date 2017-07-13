@@ -857,16 +857,17 @@ public class CiController {
     @ResponseBody
     public String judgeShera(){
         Map<String,Object> map = new HashMap<>();
-        User user = CurrentUserUtils.getInstance().getUser();
-        Shera shera = new Shera();
+//        User user = CurrentUserUtils.getInstance().getUser();
+        Iterable<Shera> shera;
         //用户使用租户的shera环境
-        if (user.getUser_autority().equals(UserConstant.AUTORITY_USER)) {
-            shera = sheraDao.findByUserId(user.getParent_id());
-        }
-        else {
-            shera = sheraDao.findByUserId(user.getId());
-        }
-        if (StringUtils.isEmpty(shera)) {
+//        if (user.getUser_autority().equals(UserConstant.AUTORITY_USER)) {
+//            shera = sheraDao.findByUserId(user.getParent_id());
+//        }
+//        else {
+//            shera = sheraDao.findByUserId(user.getId());
+//        }
+        shera = sheraDao.findAll();
+        if (!shera.iterator().hasNext()) {
             map.put("status", "400");
         }
         else {
