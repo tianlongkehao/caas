@@ -8,7 +8,7 @@ $(document).ready(function() {
 		var windowHeight = window.innerHeight-108;
 		$(".ibox-content div.tableBody").css("height",windowHeight);
 	}
-})
+});
 function dropdownFile() {
 	//$(".contentMain>div:not('.baseInfo')").addClass("hide");
 	//$(".containerFile").removeClass("hide");
@@ -64,13 +64,14 @@ function dropdownFile() {
 					//处理发送获取目录列表的msg后返回的msg
 					//展示目录内容
 					if (resultString.endsWith(endString)) {
-						resultString = resultString.replace(endString, "").replace("ls -F", "").trim();
+						resultString = resultString.replace(endString, "").replace("ls -F --color=never", "").trim();
 						showFileList(resultString);
 					}
 				} else if (msgnum < 30) {
 					//处理发送切换目录的msg后返回的msg
 					//切换目录后发送显示路径的请求
-					if (resultString.endsWith(endString)) {
+					if (resultString.endsWith(endString.substr(endString.length - 4))) {
+						endString = resultString.split('\n')[resultString.split('\n').length - 1];
 						sendPwdMsg();
 					}
 				} else if (msgnum < 40) {
@@ -168,7 +169,7 @@ function sendListFileMsg() {
 	//清空列表
 	$("#fileBody").empty();
 
-	var data = "ls -F\n";
+	var data = "ls -F --color=never\n";
 	var stdinMsg = {
 		"MsgType" : 2,
 		"Content" : stringToByte(data),
