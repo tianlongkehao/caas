@@ -844,6 +844,12 @@ public class CiController {
         } else {
             map.put("overwhelm", false);
         }
+
+        if (sheraDao.findAll().iterator().hasNext()) {
+			map.put("shera", true);
+		} else {
+			map.put("shera", false);
+		}
         return JSON.toJSONString(map);
     }
 

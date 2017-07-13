@@ -75,7 +75,12 @@ function addCiInfo(type) {
 			        	window.location.href = ctx + "/registry/1";
 			        }
 				});
-			}else{
+			} else if(data.shera != true){
+				layer.open({
+			        title: '提示',
+			        content: '当前环境没有shera，请联系管理员添加'
+				});
+			} else {
 				if (type == 0) {
 //					$.ajax({
 //						url:ctx + "/ci/judgeShera.do",
