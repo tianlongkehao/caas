@@ -73,7 +73,193 @@ public class KubeinstallController {
 			map.put("response", response);
 		} catch (KubeinstallClientException e) {
 			map.put("status", "300");
-			map.put("message", e.getResponse().getErrorMsg());
+			map.put("response", e.getResponse());
+			e.printStackTrace();
+		}
+		return JSON.toJSONString(map);
+	}
+
+	/**
+	 * step2CreateYUMStorage:第二步. <br/>
+	 *
+	 * @param machineSSHSetString
+	 * @param etcdCfgString
+	 * @param masterCfgString
+	 * @param dockerCfgString
+	 * @param yumCfgString
+	 * @param nodesCfgString
+	 * @return String
+	 */
+	@RequestMapping(value="/step2CreateYUMStorage", method=RequestMethod.POST)
+	@ResponseBody
+	public String step2CreateYUMStorage(String machineSSHSetString, String etcdCfgString,
+			String masterCfgString, String dockerCfgString, String yumCfgString, String nodesCfgString) {
+		Map<String, Object> map = new HashMap<>();
+		KubeinstallApiClient client = kubeinstallClientService.getClient();
+		InstallPlan installPlan = generateParameter(machineSSHSetString, etcdCfgString, masterCfgString,
+				dockerCfgString, yumCfgString, nodesCfgString);
+		try {
+			Response response = client.step2CreateYUMStorage(installPlan);
+			map.put("status", "200");
+			map.put("response", response);
+		} catch (KubeinstallClientException e) {
+			map.put("status", "300");
+			map.put("response", e.getResponse());
+			e.printStackTrace();
+		}
+		return JSON.toJSONString(map);
+	}
+
+	/**
+	 * step3InstallRPMs:第三步. <br/>
+	 *
+	 * @param machineSSHSetString
+	 * @param etcdCfgString
+	 * @param masterCfgString
+	 * @param dockerCfgString
+	 * @param yumCfgString
+	 * @param nodesCfgString
+	 * @return String
+	 */
+	@RequestMapping(value="/step3InstallRPMs", method=RequestMethod.POST)
+	@ResponseBody
+	public String step3InstallRPMs(String machineSSHSetString, String etcdCfgString,
+			String masterCfgString, String dockerCfgString, String yumCfgString, String nodesCfgString) {
+		Map<String, Object> map = new HashMap<>();
+		KubeinstallApiClient client = kubeinstallClientService.getClient();
+		InstallPlan installPlan = generateParameter(machineSSHSetString, etcdCfgString, masterCfgString,
+				dockerCfgString, yumCfgString, nodesCfgString);
+		try {
+			Response response = client.step3InstallRPMs(installPlan);
+			map.put("status", "200");
+			map.put("response", response);
+		} catch (KubeinstallClientException e) {
+			map.put("status", "300");
+			map.put("response", e.getResponse());
+			e.printStackTrace();
+		}
+		return JSON.toJSONString(map);
+	}
+
+	/**
+	 * step4CreateDockerRegistry:第四步. <br/>
+	 *
+	 * @param machineSSHSetString
+	 * @param etcdCfgString
+	 * @param masterCfgString
+	 * @param dockerCfgString
+	 * @param yumCfgString
+	 * @param nodesCfgString
+	 * @return String
+	 */
+	@RequestMapping(value="/step4CreateDockerRegistry", method=RequestMethod.POST)
+	@ResponseBody
+	public String step4CreateDockerRegistry(String machineSSHSetString, String etcdCfgString,
+			String masterCfgString, String dockerCfgString, String yumCfgString, String nodesCfgString) {
+		Map<String, Object> map = new HashMap<>();
+		KubeinstallApiClient client = kubeinstallClientService.getClient();
+		InstallPlan installPlan = generateParameter(machineSSHSetString, etcdCfgString, masterCfgString,
+				dockerCfgString, yumCfgString, nodesCfgString);
+		try {
+			Response response = client.step4CreateDockerRegistry(installPlan);
+			map.put("status", "200");
+			map.put("response", response);
+		} catch (KubeinstallClientException e) {
+			map.put("status", "300");
+			map.put("response", e.getResponse());
+			e.printStackTrace();
+		}
+		return JSON.toJSONString(map);
+	}
+
+	/**
+	 * step5InstallEtcd:第五步. <br/>
+	 *
+	 * @param machineSSHSetString
+	 * @param etcdCfgString
+	 * @param masterCfgString
+	 * @param dockerCfgString
+	 * @param yumCfgString
+	 * @param nodesCfgString
+	 * @return String
+	 */
+	@RequestMapping(value="/step5InstallEtcd", method=RequestMethod.POST)
+	@ResponseBody
+	public String step5InstallEtcd(String machineSSHSetString, String etcdCfgString,
+			String masterCfgString, String dockerCfgString, String yumCfgString, String nodesCfgString) {
+		Map<String, Object> map = new HashMap<>();
+		KubeinstallApiClient client = kubeinstallClientService.getClient();
+		InstallPlan installPlan = generateParameter(machineSSHSetString, etcdCfgString, masterCfgString,
+				dockerCfgString, yumCfgString, nodesCfgString);
+		try {
+			Response response = client.step5InstallEtcd(installPlan);
+			map.put("status", "200");
+			map.put("response", response);
+		} catch (KubeinstallClientException e) {
+			map.put("status", "300");
+			map.put("response", e.getResponse());
+			e.printStackTrace();
+		}
+		return JSON.toJSONString(map);
+	}
+
+	/**
+	 * step6MasterInit:第六步. <br/>
+	 *
+	 * @param machineSSHSetString
+	 * @param etcdCfgString
+	 * @param masterCfgString
+	 * @param dockerCfgString
+	 * @param yumCfgString
+	 * @param nodesCfgString
+	 * @return String
+	 */
+	@RequestMapping(value="/step6MasterInit", method=RequestMethod.POST)
+	@ResponseBody
+	public String step6MasterInit(String machineSSHSetString, String etcdCfgString,
+			String masterCfgString, String dockerCfgString, String yumCfgString, String nodesCfgString) {
+		Map<String, Object> map = new HashMap<>();
+		KubeinstallApiClient client = kubeinstallClientService.getClient();
+		InstallPlan installPlan = generateParameter(machineSSHSetString, etcdCfgString, masterCfgString,
+				dockerCfgString, yumCfgString, nodesCfgString);
+		try {
+			Response response = client.step6MasterInit(installPlan);
+			map.put("status", "200");
+			map.put("response", response);
+		} catch (KubeinstallClientException e) {
+			map.put("status", "300");
+			map.put("response", e.getResponse());
+			e.printStackTrace();
+		}
+		return JSON.toJSONString(map);
+	}
+
+	/**
+	 * step7NodesJoin:第 七步. <br/>
+	 *
+	 * @param machineSSHSetString
+	 * @param etcdCfgString
+	 * @param masterCfgString
+	 * @param dockerCfgString
+	 * @param yumCfgString
+	 * @param nodesCfgString
+	 * @return String
+	 */
+	@RequestMapping(value="/step7NodesJoin", method=RequestMethod.POST)
+	@ResponseBody
+	public String step7NodesJoin(String machineSSHSetString, String etcdCfgString,
+			String masterCfgString, String dockerCfgString, String yumCfgString, String nodesCfgString) {
+		Map<String, Object> map = new HashMap<>();
+		KubeinstallApiClient client = kubeinstallClientService.getClient();
+		InstallPlan installPlan = generateParameter(machineSSHSetString, etcdCfgString, masterCfgString,
+				dockerCfgString, yumCfgString, nodesCfgString);
+		try {
+			Response response = client.step7NodesJoin(installPlan);
+			map.put("status", "200");
+			map.put("response", response);
+		} catch (KubeinstallClientException e) {
+			map.put("status", "300");
+			map.put("response", e.getResponse());
 			e.printStackTrace();
 		}
 		return JSON.toJSONString(map);
