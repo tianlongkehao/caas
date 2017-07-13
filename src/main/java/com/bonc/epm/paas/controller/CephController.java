@@ -1803,7 +1803,7 @@ public class CephController {
 				}
 			}
 		} else {
-			cephRbdInfos = cephRbdInfoDao.findByPool("longlong");
+			cephRbdInfos = cephRbdInfoDao.findByPool(user.getNamespace());
 			// cephRbdInfos = cephRbdInfoDao.findByCreator(user.getId());
 			/*
 			 * long parentId = user.getParent_id(); List<CephRbdInfo> parentCeph

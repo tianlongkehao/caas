@@ -214,10 +214,11 @@
 
 				<li id="menu_database"><a href="#" class="first-a">
 					<i class="fa-nav fa-nav-log"></i>
-					<span class="nav-label">数据库服务</span>
+					<span class="nav-label">云市场</span>
 				</a>
 					<ul class="nav nav-second-level">
 						<li id="li_redis"><a class="J_menuItem" href="<%=path %>/RedisController/redis"><i class="fa fa_circle"></i>redis</a></li>
+						<li id="li_zookeeper"><a class="J_menuItem" href="<%=path %>/zookeeper/list"><i class="fa fa_circle"></i>zookeeper</a></li>
 					</ul>
 					</li>
 				<li id="menu_storage"><a href="#" class="first-a">
