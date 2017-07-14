@@ -157,7 +157,6 @@ function add(){
                             	   var timeout_start = $("#timeout_start").val();
                             	   var timeout_syn = $("#timeout_syn").val();
                             	   var max_node = $("#max_node").val();
-                            	   var max_request = $("#max_request").val();
 
                             	$.ajax({
                 	         		url : ctx + "/zookeeper/add.do",
@@ -165,7 +164,7 @@ function add(){
                 	         		data: {"name":zookeeperName,"imageId":imageId,"image":image,
                 	         			"cpu":cpu,"memory":mem,"detail":detail,"storage":storage,
                 	         			"timeoutdeadline":timeout_end,"starttimeout":timeout_start,
-                	         			"syntimeout":timeout_syn,"maxnode":max_node,"maxrequest":max_request
+                	         			"syntimeout":timeout_syn,"maxnode":max_node
                 	         		    },
                 	         		success: function(data) {
                 	         			var data = eval("("+data+")");
@@ -317,8 +316,6 @@ function update(id){
                $("#timeout_start2").val(zookeeper.starttimeout);
                $("#timeout_syn2").val(zookeeper.syntimeout);
                $("#max_node2").val(zookeeper.maxnode);
-               $("#max_request2").val(zookeeper.maxrequest);
-
 
                layer.open({
             	   type: 1,
@@ -349,7 +346,6 @@ function update(id){
                  	   var timeout_start = $("#timeout_start2").val();
                  	   var timeout_syn = $("#timeout_syn2").val();
                  	   var max_node = $("#max_node2").val();
-                 	   var max_request = $("#max_request2").val();
 
            				$.ajax({
         	         		url : ctx + "/zookeeper/update.do",
@@ -357,7 +353,7 @@ function update(id){
         	         		data: {"id":id,
         	         			"cpu":cpu,"memory":mem,"detail":detail,
         	         			"timeoutdeadline":timeout_end,"starttimeout":timeout_start,
-        	         			"syntimeout":timeout_syn,"maxnode":max_node,"maxrequest":max_request
+        	         			"syntimeout":timeout_syn,"maxnode":max_node
         	         		    },
         	         		success: function(data) {
         	         			var data = eval("("+data+")");
@@ -409,13 +405,6 @@ function verify2(){
 	   if(max_node==''){
 		   layer.tips('节点最大并发数不能为空!','#max_node2',{tips: [1, '#3595CC']});
 			$('#max_node2').focus();
-			return false;
-	   }
-
-	   var max_request = $("#max_request2").val().trim();
-	   if(max_request==''){
-		   layer.tips('待处理请求最大值不能为空!','#max_request2',{tips: [1, '#3595CC']});
-			$('#max_request2').focus();
 			return false;
 	   }
 

@@ -7,7 +7,7 @@ package com.bonc.epm.paas.kubernetes.model;
 public class PreferredSchedulingTerm {
 
 	private NodeSelectorTerm preference;
-	private int weight;
+	private Integer weight;
 
 	public NodeSelectorTerm getPreference() {
 		return preference;
@@ -17,11 +17,11 @@ public class PreferredSchedulingTerm {
 		this.preference = preference;
 	}
 
-	public int getWeight() {
+	public Integer getWeight() {
 		return weight;
 	}
 
-	public void setWeight(int weight) {
+	public void setWeight(Integer weight) {
 		this.weight = weight;
 	}
 

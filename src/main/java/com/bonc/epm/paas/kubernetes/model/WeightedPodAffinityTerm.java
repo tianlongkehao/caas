@@ -7,7 +7,7 @@ package com.bonc.epm.paas.kubernetes.model;
 public class WeightedPodAffinityTerm {
 
 	private PodAffinityTerm podAffinityTerm;
-	private int weight;
+	private Integer weight;
 
 	public PodAffinityTerm getPodAffinityTerm() {
 		return podAffinityTerm;
@@ -17,11 +17,11 @@ public class WeightedPodAffinityTerm {
 		this.podAffinityTerm = podAffinityTerm;
 	}
 
-	public int getWeight() {
+	public Integer getWeight() {
 		return weight;
 	}
 
-	public void setWeight(int weight) {
+	public void setWeight(Integer weight) {
 		this.weight = weight;
 	}
 

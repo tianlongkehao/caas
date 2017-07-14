@@ -57,9 +57,6 @@ public class Zookeeper {
 
 	private int maxnode;
 
-	private int maxrequest;
-
-
 	public long getStorage() {
 		return storage;
 	}
@@ -186,14 +183,6 @@ public class Zookeeper {
 
 	public void setMaxnode(int maxnode) {
 		this.maxnode = maxnode;
-	}
-
-	public int getMaxrequest() {
-		return maxrequest;
-	}
-
-	public void setMaxrequest(int maxrequest) {
-		this.maxrequest = maxrequest;
 	}
 
 }

@@ -19,6 +19,7 @@ public enum Kind {
 	EVENT("Event"),EVENTLIST("EventList"),
 	STATEFULSET("StatefulSet"),STATEFULSETLIST("StatefulSetList"),
 	STORAGECLASS("StorageClass"),STORAGECLASSLIST("StorageClassList"),
+	PODDISRUPTIONBUDGET("PodDisruptionBudget"),PODDISRUPTIONBUDGETLIST("PodDisruptionBudgetList"),
 	PERSISTENTVOLUME("PersistentVolume"),PERSISTENTVOLUMELIST("PersistentVolumeList"),
 	PERSISTENTVOLUMECLAIM("PersistentVolumeClaim"),PERSISTENTVOLUMECLAIMLIST("PersistentVolumeClaimList");
 

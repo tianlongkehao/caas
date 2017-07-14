@@ -8,37 +8,37 @@ import java.util.List;
  */
 public class PodSecurityContext {
 
-	private int fsGroup;
+	private Integer fsGroup;
 
-	private boolean runAsNonRoot;
+	private Boolean runAsNonRoot;
 
-	private int runAsUser;
+	private Integer runAsUser;
 
 	private SELinuxOptions seLinuxOptions;
 
 	private List<Integer> supplementalGroups;
 
-	public int getFsGroup() {
+	public Integer getFsGroup() {
 		return fsGroup;
 	}
 
-	public void setFsGroup(int fsGroup) {
+	public void setFsGroup(Integer fsGroup) {
 		this.fsGroup = fsGroup;
 	}
 
-	public boolean isRunAsNonRoot() {
+	public Boolean getRunAsNonRoot() {
 		return runAsNonRoot;
 	}
 
-	public void setRunAsNonRoot(boolean runAsNonRoot) {
+	public void setRunAsNonRoot(Boolean runAsNonRoot) {
 		this.runAsNonRoot = runAsNonRoot;
 	}
 
-	public int getRunAsUser() {
+	public Integer getRunAsUser() {
 		return runAsUser;
 	}
 
-	public void setRunAsUser(int runAsUser) {
+	public void setRunAsUser(Integer runAsUser) {
 		this.runAsUser = runAsUser;
 	}
 

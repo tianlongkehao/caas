@@ -25,6 +25,7 @@ import com.bonc.epm.paas.dao.ServiceDao;
 import com.bonc.epm.paas.dao.UserResourceDao;
 import com.bonc.epm.paas.dao.ZookeeperDao;
 import com.bonc.epm.paas.dao.ZookeeperImageDao;
+import com.bonc.epm.paas.entity.Pod;
 import com.bonc.epm.paas.entity.Service;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.entity.UserResource;
@@ -45,6 +46,8 @@ import com.bonc.epm.paas.kubernetes.model.PersistentVolumeClaim;
 import com.bonc.epm.paas.kubernetes.model.PersistentVolumeClaimSpec;
 import com.bonc.epm.paas.kubernetes.model.PodAffinityTerm;
 import com.bonc.epm.paas.kubernetes.model.PodAntiAffinity;
+import com.bonc.epm.paas.kubernetes.model.PodDisruptionBudget;
+import com.bonc.epm.paas.kubernetes.model.PodDisruptionBudgetSpec;
 import com.bonc.epm.paas.kubernetes.model.PodSecurityContext;
 import com.bonc.epm.paas.kubernetes.model.PodSpec;
 import com.bonc.epm.paas.kubernetes.model.PodTemplateSpec;
@@ -190,7 +193,6 @@ public class ZookeeperController {
 		originalzookeeper.setTimeoutdeadline(zookeeper.getTimeoutdeadline());
 		originalzookeeper.setSyntimeout(zookeeper.getSyntimeout());
 		originalzookeeper.setMaxnode(zookeeper.getMaxnode());
-		originalzookeeper.setMaxrequest(zookeeper.getMaxrequest());
 		zookeeperDao.save(originalzookeeper);
 
 		map.put("status", "200");
@@ -207,11 +209,9 @@ public class ZookeeperController {
 	@ResponseBody
 	public String deleteZookeeper(long id) {
 		Map<String, Object> map = new HashMap<String, Object>();
-        Zookeeper zookeeper = zookeeperDao.findOne(id);
+		Zookeeper zookeeper = zookeeperDao.findOne(id);
 
-        removeZkResource(zookeeper);
-
-        zookeeperDao.delete(zookeeper);
+		zookeeperDao.delete(zookeeper);
 
 		map.put("status", "200");
 		return JSON.toJSONString(map);
@@ -285,6 +285,7 @@ public class ZookeeperController {
 
 		createService(apiClient, zookeeper.getName());
 		createService2(apiClient, zookeeper.getName());
+		//createPodDisruptionBudget(apisClient, zookeeper);
 		createStatefulset(apisClient, zookeeper);
 
 		zookeeper.setStatus(1);
@@ -304,10 +305,16 @@ public class ZookeeperController {
 	public String stop(long id) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("status", "200");
+		KubernetesAPIClientInterface apiClient = kubernetesClientService.getClient();
+		KubernetesAPISClientInterface apisClient = kubernetesClientService.getApisClient();
 
 		Zookeeper zookeeper = zookeeperDao.findOne(id);
 
-		removeZkResource(zookeeper);
+		deleteService(apiClient, zookeeper.getName());
+		deleteService(apiClient, zookeeper.getName() + "-headless");
+		//deletePodDisruptionBudget(apisClient, zookeeper.getName() + "-budget");
+		deleteStatefulSet(apisClient, zookeeper.getName());
+		deletePods(apiClient, zookeeper.getName());
 
 		zookeeper.setStatus(0);
 		zookeeperDao.save(zookeeper);
@@ -315,45 +322,60 @@ public class ZookeeperController {
 		return JSON.toJSONString(map);
 	}
 
+	private void deletePods(KubernetesAPIClientInterface apiClient, String name) {
+		com.bonc.epm.paas.kubernetes.model.Pod pod1 = null;
+		com.bonc.epm.paas.kubernetes.model.Pod pod2 = null;
+		com.bonc.epm.paas.kubernetes.model.Pod pod3 = null;
+		try {
+			pod1 = apiClient.getPod(name + "-0");
+		} catch (KubernetesClientException e) {
+			pod1 = null;
+		}
+		if (null != pod1) {
+			apiClient.deletePod(name + "-0");
+		}
 
-	private void removeZkResource(Zookeeper zookeeper){
-		KubernetesAPIClientInterface apiClient = kubernetesClientService.getClient();
-		KubernetesAPISClientInterface apisClient = kubernetesClientService.getApisClient();
+		try {
+			pod2= apiClient.getPod(name + "-1");
+		} catch (KubernetesClientException e) {
+			pod2 = null;
+		}
+		if (null != pod2) {
+			apiClient.deletePod(name + "-1");
+		}
 
-		//delete first svc
+		try {
+			pod3 = apiClient.getPod(name + "-2");
+		} catch (KubernetesClientException e) {
+			pod3 = null;
+		}
+		if (null != pod3) {
+			apiClient.deletePod(name + "-2");
+		}
+	}
+
+	private void deleteService(KubernetesAPIClientInterface apiClient, String name) {
 		com.bonc.epm.paas.kubernetes.model.Service service = null;
 		try {
-			service = apiClient.getServiceOfNamespace(zookeeper.getNamespace(), zookeeper.getName());
+			service = apiClient.getService(name);
 		} catch (KubernetesClientException e) {
 			service = null;
 		}
 
-		if(service != null){
-			apiClient.deleteServiceOfNamespace(zookeeper.getNamespace(), zookeeper.getName());
+		if (service != null) {
+			apiClient.deleteService(name);
 		}
+	}
 
-		//delete second svc
-		com.bonc.epm.paas.kubernetes.model.Service service2 = null;
-		try {
-			service2 = apiClient.getServiceOfNamespace(zookeeper.getNamespace(), zookeeper.getName()+"-headless");
-		} catch (Exception e) {
-			service2 = null;
+	private void deleteStatefulSet(KubernetesAPISClientInterface apisClient, String name) {
+		if (null != apisClient.getStatefulSet(name)) {
+			apisClient.deleteStatefulSet(name);
 		}
+	}
 
-		if(service2 != null){
-			apiClient.deleteServiceOfNamespace(zookeeper.getNamespace(), zookeeper.getName()+"-headless");
-		}
-
-		//delete statefulset
-		StatefulSet statefulSet = null;
-		try {
-			statefulSet = apisClient.getStatefulSet(zookeeper.getName());
-		} catch (KubernetesClientException e) {
-			statefulSet = null;
-		}
-
-		if(null!=statefulSet){
-			apisClient.deleteStatefulSet(zookeeper.getName());
+	private void deletePodDisruptionBudget(KubernetesAPISClientInterface apisClient, String name) {
+		if (null != apisClient.getPodDisruptionBudget(name)) {
+			apisClient.deletePodDisruptionBudget(name);
 		}
 	}
 
@@ -432,6 +454,30 @@ public class ZookeeperController {
 		return true;
 	}
 
+	private boolean createPodDisruptionBudget(KubernetesAPISClientInterface apisClient, Zookeeper zookeeper) {
+		PodDisruptionBudget podDisruptionBudget = new PodDisruptionBudget();
+		ObjectMeta metadata = new ObjectMeta();
+		metadata.setName(zookeeper.getName() + "-budget");
+		metadata.setNamespace(zookeeper.getNamespace());
+		PodDisruptionBudgetSpec spec = new PodDisruptionBudgetSpec();
+		LabelSelector selector = new LabelSelector();
+		Map<String, String> matchLabels = new HashMap<String, String>();
+		matchLabels.put("app", zookeeper.getName());
+		selector.setMatchLabels(matchLabels);
+		spec.setSelector(selector);
+		spec.setMinAvailable(2);
+		podDisruptionBudget.setMetadata(metadata);
+		podDisruptionBudget.setSpec(spec);
+
+		try {
+			apisClient.createPodDisruptionBudget(podDisruptionBudget);
+		} catch (KubernetesClientException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+
 	private boolean createStatefulset(KubernetesAPISClientInterface apisClient, Zookeeper zookeeper) {
 		User user = CurrentUserUtils.getInstance().getUser();
 
@@ -495,9 +541,21 @@ public class ZookeeperController {
 		requests.put("storage", zookeeper.getStorage() + "Gi");
 		resourceRequirements.setRequests(requests);
 
+		LabelSelector labelSelector = new LabelSelector();
+		List<LabelSelectorRequirement> labelSelectorRequirements = new ArrayList<LabelSelectorRequirement>();
+		LabelSelectorRequirement labelSelectorRequirement = new LabelSelectorRequirement();
+		labelSelectorRequirement.setKey("app");
+		labelSelectorRequirement.setOperator("In");
+		List<String> values = new ArrayList<>();
+		values.add("zook");
+		labelSelectorRequirement.setValues(values);
+		labelSelectorRequirements.add(labelSelectorRequirement);
+		labelSelector.setMatchExpressions(labelSelectorRequirements);
+
+		persistentVolumeClaimSpec.setSelector(labelSelector);
 		persistentVolumeClaimSpec.setAccessModes(accessModes);
 		persistentVolumeClaimSpec.setResources(resourceRequirements);
-		persistentVolumeClaimSpec.setStorageClassName(zookeeper.getNamespace());
+		//persistentVolumeClaimSpec.setStorageClassName(zookeeper.getNamespace());
 		persistentVolumeClaim.setMetadata(pvcMeta);
 		persistentVolumeClaim.setSpec(persistentVolumeClaimSpec);
 
@@ -587,7 +645,7 @@ public class ZookeeperController {
 		envVar6.setValue(String.valueOf(zookeeper.getMaxnode()));
 		EnvVar envVar7 = new EnvVar();
 		envVar7.setName("ZK_SNAP_RETAIN_COUNT");
-		envVar7.setValue(String.valueOf(zookeeper.getMaxrequest()));
+		envVar7.setValue("3");
 		EnvVar envVar8 = new EnvVar();
 		envVar8.setName("ZK_PURGE_INTERVAL");
 		envVar8.setValue("1");

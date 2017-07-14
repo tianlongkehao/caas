@@ -7,6 +7,8 @@ import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
 import com.bonc.epm.paas.kubernetes.exceptions.Status;
 import com.bonc.epm.paas.kubernetes.model.HorizontalPodAutoscaler;
 import com.bonc.epm.paas.kubernetes.model.HorizontalPodAutoscalerList;
+import com.bonc.epm.paas.kubernetes.model.PodDisruptionBudget;
+import com.bonc.epm.paas.kubernetes.model.PodDisruptionBudgetList;
 import com.bonc.epm.paas.kubernetes.model.StatefulSet;
 import com.bonc.epm.paas.kubernetes.model.StatefulSetList;
 import com.bonc.epm.paas.kubernetes.model.StorageClass;
@@ -151,4 +153,16 @@ public interface KubernetesAPISClientInterface {
     public StorageClass getStorageClass(@PathParam("name")String name)throws KubernetesClientException;
 
     public StorageClassList getStorageClasses()throws KubernetesClientException;
+
+    public PodDisruptionBudget createPodDisruptionBudget(PodDisruptionBudget podDisruptionBudget)throws KubernetesClientException;
+
+    public PodDisruptionBudget replacePodDisruptionBudget(String name,PodDisruptionBudget podDisruptionBudget)throws KubernetesClientException;
+
+    public Status deletePodDisruptionBudget(@PathParam("name")String name)throws KubernetesClientException;
+
+    public Status deletePodDisruptionBudgets()throws KubernetesClientException;
+
+    public PodDisruptionBudget getPodDisruptionBudget(@PathParam("name")String name)throws KubernetesClientException;
+
+    public PodDisruptionBudgetList getPodDisruptionBudgets()throws KubernetesClientException;
 }

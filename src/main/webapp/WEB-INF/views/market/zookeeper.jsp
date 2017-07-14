@@ -211,14 +211,6 @@
 											value="60" placeholder="60" min="0">
 		                            </div>
 	                            </div>
-	                            <div class="row">
-		                            <div class="form-group col-md-12">
-	                                    <span class="s-edit-name">待处理请求最大值：</span>
-		                           <input type="number"
-											class="form-control q-storage" id="max_request" name="databaseNum"
-											value="1000" placeholder="1000" min="0">
-		                            </div>
-	                            </div>
                        </section>
     </ul>
 </div>
@@ -302,14 +294,6 @@
 		                           <input type="number"
 											class="form-control q-storage" id="max_node2"
 											value="60" placeholder="60" min="0">
-		                            </div>
-	                            </div>
-	                            <div class="row">
-		                            <div class="form-group col-md-12">
-	                                    <span class="s-edit-name">待处理请求最大值：</span>
-		                           <input type="number"
-											class="form-control q-storage" id="max_request2"
-											value="1000" placeholder="1000" min="0">
 		                            </div>
 	                            </div>
                        </section>

@@ -1,5 +1,7 @@
 package com.bonc.epm.paas.kubernetes.model;
 
+import io.swagger.models.auth.In;
+
 /**
  * @author daien
  * @date 2017年7月12日
@@ -8,13 +10,13 @@ public class SecurityContext {
 
 	private Capabilities capabilities;
 
-	private boolean privileged;
+	private Boolean privileged;
 
-	private boolean readOnlyRootFilesystem;
+	private Boolean readOnlyRootFilesystem;
 
-	private boolean runAsNonRoot;
+	private Boolean runAsNonRoot;
 
-	private int runAsUser;
+	private Integer runAsUser;
 
 	private SELinuxOptions seLinuxOptions;
 
@@ -26,35 +28,35 @@ public class SecurityContext {
 		this.capabilities = capabilities;
 	}
 
-	public boolean isPrivileged() {
+	public Boolean getPrivileged() {
 		return privileged;
 	}
 
-	public void setPrivileged(boolean privileged) {
+	public void setPrivileged(Boolean privileged) {
 		this.privileged = privileged;
 	}
 
-	public boolean isReadOnlyRootFilesystem() {
+	public Boolean getReadOnlyRootFilesystem() {
 		return readOnlyRootFilesystem;
 	}
 
-	public void setReadOnlyRootFilesystem(boolean readOnlyRootFilesystem) {
+	public void setReadOnlyRootFilesystem(Boolean readOnlyRootFilesystem) {
 		this.readOnlyRootFilesystem = readOnlyRootFilesystem;
 	}
 
-	public boolean isRunAsNonRoot() {
+	public Boolean getRunAsNonRoot() {
 		return runAsNonRoot;
 	}
 
-	public void setRunAsNonRoot(boolean runAsNonRoot) {
+	public void setRunAsNonRoot(Boolean runAsNonRoot) {
 		this.runAsNonRoot = runAsNonRoot;
 	}
 
-	public int getRunAsUser() {
+	public Integer getRunAsUser() {
 		return runAsUser;
 	}
 
-	public void setRunAsUser(int runAsUser) {
+	public void setRunAsUser(Integer runAsUser) {
 		this.runAsUser = runAsUser;
 	}
 
