@@ -3,13 +3,13 @@ package com.bonc.epm.paas.controller;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.jdt.internal.compiler.codegen.DoubleCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -795,9 +795,10 @@ public class UserController {
 		} catch (KubernetesClientException e) {
 			LOG.error(e.getMessage() + ":" + JSON.toJSON(e.getStatus()));
 		}
-		Shera shera = sheraDao.findByUserId(id);
+		Iterator<Shera> iterator = sheraDao.findAll().iterator();
+//		Shera shera = sheraDao.findByUserId(id);
 		Iterable<Shera> sheraList = sheraDao.findAll();
-		model.addAttribute("userShera", shera);
+		model.addAttribute("userShera", iterator.hasNext() ? iterator.next() : null);
 		model.addAttribute("sheraList", sheraList);
 		model.addAttribute("restriction", restriction);
 		model.addAttribute("resource", resource);
@@ -1030,7 +1031,8 @@ public class UserController {
 			for (Storage storage : list) {
 				usedstorage = usedstorage + (double) storage.getStorageSize();
 			}
-			Shera shera = sheraDao.findByUserId(id);
+//			Shera shera = sheraDao.findByUserId(id);
+			Iterator<Shera> iterator = sheraDao.findAll().iterator();
 
 			// 获取sonarConfig
 			SonarConfig sonarConfig = new SonarConfig();
@@ -1044,7 +1046,7 @@ public class UserController {
 				LOG.info(e.getMessage());
 			}
 			model.addAttribute("userFavor", userFavor);
-			model.addAttribute("userShera", shera);
+			model.addAttribute("userShera", iterator.hasNext() ? iterator.next() : null);
 			model.addAttribute("usedstorage", usedstorage / 1024);
 			model.addAttribute("sonarConfig", sonarConfig);
 		} catch (KubernetesClientException e) {

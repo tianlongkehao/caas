@@ -33,8 +33,10 @@
 									</h5>
 
 									<div class="ibox-tools">
-										<a id="createSheraBtn" href="<%=path%>/shera/add" title="创建shera"><i
-											class="fa fa-plus"></i></a>
+										<c:if test="${ fn:length(sheraList) == 0 }">
+											<a id="createSheraBtn" href="<%=path%>/shera/add" title="创建shera"><i
+												class="fa fa-plus"></i></a>
+										</c:if>
 										<a href="javascript:delSheras()" title="删除"><i
 											class="fa fa-trash"></i></a>
 										<a href="javascript:window.location.reload(true);"

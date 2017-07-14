@@ -25,8 +25,7 @@ $(function(){
 
 
     var p=window.location.href;
-    var reg = new RegExp("b", "");
-    if (reg.test(p)){
+    if (p.charAt(p.length - 1) == 'b'){
             $("#pwd").removeClass("hide");
             $("#pwd").addClass("active");
             $("#pwd_wrap").removeClass("hide");
