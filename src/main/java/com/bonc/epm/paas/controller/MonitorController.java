@@ -355,7 +355,7 @@ public class MonitorController {
         List<String> listString = new ArrayList<>();
         String sql = "SELECT  container_name, last(\"value\")  FROM  \"memory/limit\"  WHERE 1=1  and "
 				+ "\"pod_namespace\" = \'" + namespace + "\'  AND \"pod_name\" = \'" + podName
-				+ "\' AND time > now() - 5m GROUP BY pod_namespace ,pod_name ,container_name, time(1m) fill(null)";
+				+ "\' AND \"container_name\" =~ /.*/ AND time > now() - 5m GROUP BY pod_namespace ,pod_name ,container_name, time(1m) fill(null)";
         try {
             Query sqlQuery = new Query(sql, dbName);
             QueryResult result_mem_limit = influxDB.query(sqlQuery);
