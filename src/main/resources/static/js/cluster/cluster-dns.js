@@ -7,7 +7,6 @@ $(document).ready(function () {
 			var data = eval("("+data+")");
 			var status = data.status;
 			if(status=='200'){
-				layer.close(load);
 				var pingResultList = data.pingResultList;
 				var dnsHtml = "";
 				for(var i=0; i<pingResultList.length; i++){
@@ -32,12 +31,13 @@ $(document).ready(function () {
 				$('.dataTables-example').dataTable({
 				    "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0,4] }],
 				    "aaSorting": [[ 3, "desc" ]]
-				}); 
+				});
 				$("#checkallbox").parent().removeClass("sorting_asc");
 			}
+			layer.close(load);
 		}
-	})
-})
+	});
+});
 function showOneDnsResult(obj){
 	var pingResult = $(obj).attr("dnspingResult");
 	tip_index=layer.tips(pingResult, $(obj) ,{
@@ -45,7 +45,7 @@ function showOneDnsResult(obj){
 	);
 }
 function hideOneDnsResult(obj){
-	layer.close(tip_index); 
+	layer.close(tip_index);
 }
 //创建dns
 function createDns(){
@@ -104,7 +104,7 @@ function createDNSMonitor(){
 						+'</tr>';
 			}
 			$("#timeTaskList").empty().append(monitorHtml);
-			
+
 		}
 	});
 	layer.open({
@@ -127,7 +127,7 @@ function createDNSMonitor(){
 					var checkItem = checkItems[i];
 					domains.push($(checkItem).attr("domain"));
 				}
-				
+
 			}
 			//选择定时
 			var checkTime = $("#dnsTime").val();
@@ -163,7 +163,7 @@ function createDNSMonitor(){
 							}
 						});
 					}
-					
+
 				}
 			})
 		}
@@ -205,7 +205,7 @@ function dnsHistory(){
 				yes: function(index,layero){
 					layer.close(index);
 				}
-			})	
+			})
 		}
 	})
 }
@@ -326,7 +326,7 @@ function delDns(){
 								}
 							});
 					}
-					
+
 				}
 			})
 		}
@@ -414,7 +414,7 @@ function dnsChangeTime(){
 									+'<p>'+dnsMonitorResultList[i].pingResult+'</p>';
 				}
 				$("#hisrotyInfos").empty().append(historyHtml);
-				
+
 			}
 		}
 	})

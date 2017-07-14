@@ -11,7 +11,6 @@
 <jsp:include page="../frame/bcm-menu.jsp" flush="true">
     <jsp:param name="service" value=""/>
 </jsp:include>
-
 <div class="page-container">
     <article>
         <div class="page-main">
@@ -47,51 +46,23 @@
 									<table class="table table-stripped table-hover dataTables-example">
 										<thead>
 											<tr>
-												<th text-indent: 30px;"><input
+												<th style="width: 5%; text-indent:30px;"><input
 													type="checkbox" autocomplete="off" class="chkAll"
 													id="checkallbox" /></th>
-												<th>磁盘名称/磁盘ID</th>
-	                                            <th>磁盘大小</th>
-	                                            <th>磁盘状态</th>
-	                                            <th>可卸载</th>
-	                                            <th>磁盘属性</th>
+												<th>磁盘名称</th>
+	                                            <th>磁盘大小(G)</th>
+	                                            <th>挂载服务</th>
+	                                            <th>挂载tensorflow</th>
 	                                            <th>描述</th>
 	                                            <th class="item-operation">操作</th>
 											</tr>
 										</thead>
-										<tbody id="storageList">
-											<tr>
-												<td text-indent: 30px;"><input
-													type="checkbox" autocomplete="off" class="chkAll"
-													id="checkallbox" /></td>
-												<td><span class="storageName"><a href="<%=path %>/storage/storage-quickDetail">adbde-dffds</a></span></td>
-	                                            <td>5G</td>
-	                                            <td>待挂载</td>
-	                                            <td>支持</td>
-	                                            <td>数据盘</td>
-	                                            <td>测试</td>
-	                                            <td class="item-operation">
-	                                            	<a onclick="createSnapshoot()"><i class="fa fa-camera fa-opr" title="创建快照" style="margin-left:0px"></i></a>
-	                                            	<a onclick="createStrategy()"><i class="fa fa-tasks fa-opr" title="设置自动快照策略"></i></a>
-	                                            	<a onclick="formatStrategy()"><i class="fa fa-eraser fa-opr" title="重新初始化磁盘"></i></a>
-	                                            	<ul class="moreFun" style="margin-bottom:0px;line-height:40px;">
-														<li class="dropdown ">
-															<a class="dropdown-toggle a-live" data-toggle="dropdown">
-															<i class="fa fa-gears fa-opr"></i></a>
-															<ul class="dropdown-menu" style="margin-left:-20px;margin-top:40px">
-																<li onclick="releaseStorage()"><a>释放</a></li>
-																<li onclick="changeDescribe()"><a>修改磁盘描述</a></li>
-																<li onclick="changeProperty()"><a>修改属性</a></li>
-																<li onclick="changeStorageSize()"><a>磁盘扩容</a></li>
-															</ul>
-														</li>
-													</ul>
-	                                            </td>
-											</tr>
+										<tbody id="rbdList">
+
 										</tbody>
 										<tfoot class="hide">
 											<tr>
-												<td colspan="8">
+												<td colspan="6">
 													<ul class="pagination pull-right"></ul>
 												</td>
 											</tr>
@@ -115,8 +86,8 @@
         </li>
         <li class="line-h-3">
             <div class="param-set">
-                <span class="">磁盘大小：</span>
-                <input type="radio" name="updateStorageSize" class="updateStorageSize" value="20480" id="size20"><label for="size20">20<span>G</span></label>
+                <span class="">磁盘大小(G)：</span>
+                <input type="radio" name="updateStorageSize" class="updateStorageSize" value="20480" id="size20" checked="checked"><label for="size20">20<span>G</span></label>
                 <input type="radio" name="updateStorageSize" class="updateStorageSize" value="51200" id="size50"><label for="size50">50<span>G</span></label>
                 <input type="radio" name="updateStorageSize" class="updateStorageSize" value="102400" id="size100"><label for="size100">100<span>G</span></label>
                 <input type="radio" name="updateStorageSize" class="updateStorageSize" value ="selfdefine" id="updatedefVolNum">
@@ -127,20 +98,8 @@
             </div>
         </li>
         <li class="line-h-3">
-            <span class="s-edit-name">可卸载：</span>
-            <span><i class="fa fa-toggle-onORoff fa-on" id="unloadBtn" value="1"></i><span class="toggle-text">支持</span></span>
-        </li>
-        <li class="line-h-3">
-            <span class="s-edit-name">磁盘属性：</span>
-            <select id="disktype" class="form-control q-storage">
-            	<option value="0">--请选择磁盘属性--</option>
-            	<option value="1">数据盘</option>
-            	<option value="2">系统盘</option>
-            </select>
-        </li>
-        <li class="line-h-3">
             <span class="s-edit-name">磁盘描述：</span>
-            <textarea type="text" row="3" class="form-control q-storage" id="storage-mark"></textarea>
+            <textarea row="3" class="form-control q-storage" id="storage-mark"></textarea>
         </li>
     </ul>
 </div>
@@ -150,31 +109,31 @@
     <ul class="popWin">
     	<li class="line-h-3">
             <span class="s-edit-name">磁盘名称：</span>
-            <input id="q-storageName" class="form-control q-storage" type="text" value="asdfg" disabled>
+            <input id="rbd" class="form-control q-storage" type="text" value="" disabled>
         </li>
         <li class="line-h-3">
-            <span class="s-edit-name">磁盘大小：</span>
-            <input id="q-storageName" class="form-control q-storage" type="text" value="50G" disabled>
+            <span class="s-edit-name">磁盘大小(G)：</span>
+            <input id="size" class="form-control q-storage" type="text" value="" disabled>
         </li>
         <li class="line-h-3">
             <span class="s-edit-name">释放行为：</span>
             <ul class="releaseStorageInfo">
-            	<li><label><input type="checkbox">磁盘随实例释放</label></li>
-            	<li><label><input type="checkbox">自动快照随磁盘释放</label></li>
+            	<li><label><input id="release" type="checkbox"/>磁盘随实例释放</label></li>
             </ul>
         </li>
     </ul>
 </div>
+
 <!-- 修改磁盘描述 -->
 <div id="changeDescribe" style="display:none">
     <ul class="popWin">
         <li class="line-h-3">
-            <span class="s-edit-name">磁盘名称：<font color="red">*</font></span>
-            <input id="q-storageName" class="form-control q-storage" type="text" value="">
+            <span class="s-edit-name">磁盘名称：<font color="red"></font></span>
+            <input id="rbd2" class="form-control q-storage" type="text" value="" disabled>
         </li>
         <li class="line-h-3">
             <span class="s-edit-name">磁盘描述：<font color="red">*</font></span>
-            <textarea type="text" row="3" class="form-control q-storage" id="storage-mark"></textarea>
+            <textarea  row="3" class="form-control q-storage" id="update-detail"></textarea>
         </li>
     </ul>
 </div>
@@ -183,19 +142,15 @@
     <ul class="popWin">
         <li class="line-h-3">
             <span class="s-edit-name">磁盘名称：</span>
-            <input id="q-storageName" class="form-control q-storage" type="text" value="sdgg" disabled>
-        </li>
-        <li class="line-h-3">
-            <span class="s-edit-name">磁盘ID：</span>
-            <input id="q-storageID" class="form-control q-storage" type="text" value="1234" disabled>
-        </li>
-        <li class="line-h-3">
-            <span class="s-edit-name">磁盘属性：</span>
-            <input id="q-storagePro" class="form-control q-storage" type="text" value="系统盘" disabled>
+            <input id="rbd-snap" class="form-control q-storage" type="text" style="background-color:#ddd" value="" readonly>
         </li>
         <li class="line-h-3">
             <span class="s-edit-name">快照名称：<font color="red">*</font></span>
             <input id="snapshootName" class="form-control q-storage" type="text" value="">
+        </li>
+        <li class="line-h-3">
+            <span class="s-edit-name">快照描述：<font color="red">*</font></span>
+            <textarea row="3" class="form-control q-storage" id="snap-mark"></textarea>
         </li>
     </ul>
 </div>
@@ -203,55 +158,59 @@
 <div id="createStrategy" style="display:none">
     <ul class="popWin">
         <li class="line-h-3">
-            <span class="s-edit-name">策略名称：<font color="red">*</font></span>
-            <input id="q-storageName" class="form-control q-storage" type="text" value="">
+            <span class="s-edit-name">策略名称：</span>
+            <input id="strategyname" class="form-control q-storage" type="text" value="" style="background-color:#ddd" readonly>
         </li>
         <li class="line-h-3">
-            <span class="s-edit-name">创建时间：<font color="red">*</font></span>
+            <span class="s-edit-name">创建时间：</span>
             <ul class="createTimeInfo">
-            	<li><label><input type="checkbox">00:00</label></li>
-            	<li><label><input type="checkbox">01:00</label></li>
-            	<li><label><input type="checkbox">02:00</label></li>
-            	<li><label><input type="checkbox">03:00</label></li>
-            	<li><label><input type="checkbox">04:00</label></li>
-            	<li><label><input type="checkbox">05:00</label></li>
-            	<li><label><input type="checkbox">06:00</label></li>
-            	<li><label><input type="checkbox">07:00</label></li>
-            	<li><label><input type="checkbox">08:00</label></li>
-            	<li><label><input type="checkbox">09:00</label></li>
-            	<li><label><input type="checkbox">10:00</label></li>
-            	<li><label><input type="checkbox">11:00</label></li>
-            	<li><label><input type="checkbox">12:00</label></li>
-            	<li><label><input type="checkbox">13:00</label></li>
-            	<li><label><input type="checkbox">14:00</label></li>
-            	<li><label><input type="checkbox">15:00</label></li>
-            	<li><label><input type="checkbox">16:00</label></li>
-            	<li><label><input type="checkbox">17:00</label></li>
-            	<li><label><input type="checkbox">18:00</label></li>
-            	<li><label><input type="checkbox">19:00</label></li>
-            	<li><label><input type="checkbox">20:00</label></li>
-            	<li><label><input type="checkbox">21:00</label></li>
-            	<li><label><input type="checkbox">22:00</label></li>
-            	<li><label><input type="checkbox">23:00</label></li>
+            	<li><label><input type="checkbox" name="time" value="0" disabled="disabled">00:00</label></li>
+            	<li><label><input type="checkbox" name="time" value="1" disabled="disabled">01:00</label></li>
+            	<li><label><input type="checkbox" name="time" value="2" disabled="disabled">02:00</label></li>
+            	<li><label><input type="checkbox" name="time" value="3" disabled="disabled">03:00</label></li>
+            	<li><label><input type="checkbox" name="time" value="4" disabled="disabled">04:00</label></li>
+            	<li><label><input type="checkbox" name="time" value="5" disabled="disabled">05:00</label></li>
+            	<li><label><input type="checkbox" name="time" value="6" disabled="disabled">06:00</label></li>
+            	<li><label><input type="checkbox" name="time" value="7" disabled="disabled">07:00</label></li>
+            	<li><label><input type="checkbox" name="time" value="8" disabled="disabled">08:00</label></li>
+            	<li><label><input type="checkbox" name="time" value="9" disabled="disabled">09:00</label></li>
+            	<li><label><input type="checkbox" name="time" value="10" disabled="disabled">10:00</label></li>
+            	<li><label><input type="checkbox" name="time" value="11" disabled="disabled">11:00</label></li>
+            	<li><label><input type="checkbox" name="time" value="12" disabled="disabled">12:00</label></li>
+            	<li><label><input type="checkbox" name="time" value="13" disabled="disabled">13:00</label></li>
+            	<li><label><input type="checkbox" name="time" value="14" disabled="disabled">14:00</label></li>
+            	<li><label><input type="checkbox" name="time" value="15" disabled="disabled">15:00</label></li>
+            	<li><label><input type="checkbox" name="time" value="16" disabled="disabled">16:00</label></li>
+            	<li><label><input type="checkbox" name="time" value="17" disabled="disabled">17:00</label></li>
+            	<li><label><input type="checkbox" name="time" value="18" disabled="disabled">18:00</label></li>
+            	<li><label><input type="checkbox" name="time" value="19" disabled="disabled">19:00</label></li>
+            	<li><label><input type="checkbox" name="time" value="20" disabled="disabled">20:00</label></li>
+            	<li><label><input type="checkbox" name="time" value="21" disabled="disabled">21:00</label></li>
+            	<li><label><input type="checkbox" name="time" value="22" disabled="disabled">22:00</label></li>
+            	<li><label><input type="checkbox" name="time" value="23" disabled="disabled">23:00</label></li>
             </ul>
         </li>
         <li class="line-h-3">
-            <span class="s-edit-name">重复日期：<font color="red">*</font></span>
+            <span class="s-edit-name">重复日期：</span>
             <ul class="repeatDateInfo">
-            	<li><label><input type="checkbox">周一</label></li>
-            	<li><label><input type="checkbox">周二</label></li>
-            	<li><label><input type="checkbox">周三</label></li>
-            	<li><label><input type="checkbox">周四</label></li>
-            	<li><label><input type="checkbox">周五</label></li>
-            	<li><label><input type="checkbox">周六</label></li>
-            	<li><label><input type="checkbox">周日</label></li>
+            	<li><label><input type="checkbox" name="week" value="1" disabled="disabled">周一</label></li>
+            	<li><label><input type="checkbox" name="week" value="2" disabled="disabled">周二</label></li>
+            	<li><label><input type="checkbox" name="week" value="3" disabled="disabled">周三</label></li>
+            	<li><label><input type="checkbox" name="week" value="4" disabled="disabled">周四</label></li>
+            	<li><label><input type="checkbox" name="week" value="5" disabled="disabled">周五</label></li>
+            	<li><label><input type="checkbox" name="week" value="6" disabled="disabled">周六</label></li>
+            	<li><label><input type="checkbox" name="week" value="0" disabled="disabled">周日</label></li>
             </ul>
         </li>
         <li class="line-h-3">
-            <span class="s-edit-name">保留时间：<font color="red">*</font></span>
+            <span class="s-edit-name">保留时间：</span>
             <ul class="retainTimeInfo">
-            	<li><label><input type="radio" name="retainTime" value="">自定义时长<input type="number" class="retainTimeInput" value="30">天</label><span>保留天数取值范围：1-35536</span></li>
-            	<li><label><input type="radio" name="retainTime">永久保留</label></li>
+            	<li><label><input type="radio" name="retainTime" value="1">自定义时长<input id="keep" type="number" class="retainTimeInput" style="background-color:#ddd" readonly>天</label><span>保留天数取值范围：1-35536</span></li>
+            	<li><label><input type="radio" name="retainTime" value="2">永久保留</label></li>
+            </ul>
+        </li>
+        <li class="line-h-3">
+            <ul id="operationBtn">
             </ul>
         </li>
     </ul>
@@ -261,15 +220,15 @@
     <ul class="popWin">
     	<li class="line-h-3">
             <span class="s-edit-name">磁盘名称：</span>
-            <input id="q-storageName" class="form-control q-storage" type="text" value="adfg" disabled>
+            <input id="rbd3" class="form-control q-storage" type="text" value="" disabled>
         </li>
         <li class="line-h-3">
-            <span class="s-edit-name">磁盘大小：</span>
-            <input id="q-storageSize" class="form-control q-storage" type="text" value="50G" disabled>
+            <span class="s-edit-name">磁盘大小(G)：</span>
+            <input id="size3" class="form-control q-storage" type="text" value="" disabled>
         </li>
         <li class="line-h-3">
             <span class="s-edit-name">磁盘扩容：<font color="red">*</font></span>
-            <input id="q-storageChangeSize" class="form-control q-storage" type="number" value=""><span class="storageUnit">GB</span>
+            <input id="extendsize" class="form-control q-storage" type="number" value=""><span class="storageUnit">G</span>
         </li>
     </ul>
 </div>

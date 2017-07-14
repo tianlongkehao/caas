@@ -6,8 +6,12 @@ import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
 import com.bonc.epm.paas.kubernetes.exceptions.Status;
 import com.bonc.epm.paas.kubernetes.model.HorizontalPodAutoscaler;
 import com.bonc.epm.paas.kubernetes.model.HorizontalPodAutoscalerList;
+import com.bonc.epm.paas.kubernetes.model.PodDisruptionBudget;
+import com.bonc.epm.paas.kubernetes.model.PodDisruptionBudgetList;
 import com.bonc.epm.paas.kubernetes.model.StatefulSet;
 import com.bonc.epm.paas.kubernetes.model.StatefulSetList;
+import com.bonc.epm.paas.kubernetes.model.StorageClass;
+import com.bonc.epm.paas.kubernetes.model.StorageClassList;
 import com.bonc.epm.paas.rest.util.RestFactory;
 
 public class KubernetesApisClient implements KubernetesAPISClientInterface {
@@ -244,6 +248,156 @@ public class KubernetesApisClient implements KubernetesAPISClientInterface {
 	public StatefulSetList getAllStatefulSets() throws KubernetesClientException {
 		try {
 			return apis.getStatefulSets();
+		} catch (KubernetesClientException e) {
+			if (e.getStatus().getReason().equals(NOTFOUND)) {
+				return null;
+			} else {
+				throw new KubernetesClientException(e);
+			}
+		} catch (WebApplicationException e) {
+			throw new KubernetesClientException(e);
+		}
+	}
+
+	@Override
+	public StorageClass createStorageClass(StorageClass storageClass) throws KubernetesClientException {
+		try {
+			return apis.createStorageClass(storageClass);
+		} catch (KubernetesClientException e) {
+			throw new KubernetesClientException(e);
+		} catch (WebApplicationException e) {
+			throw new KubernetesClientException(e);
+		}
+	}
+
+	@Override
+	public StorageClass replaceStorageClass(String name, StorageClass storageClass) throws KubernetesClientException {
+		try {
+			return apis.replaceStorageClass(name, storageClass);
+		} catch (KubernetesClientException e) {
+			throw new KubernetesClientException(e);
+		} catch (WebApplicationException e) {
+			throw new KubernetesClientException(e);
+		}
+	}
+
+	@Override
+	public Status deleteStorageClass(String name) throws KubernetesClientException {
+		try {
+			return apis.deleteStorageClass(name);
+		} catch (KubernetesClientException e) {
+			throw new KubernetesClientException(e);
+		} catch (WebApplicationException e) {
+			throw new KubernetesClientException(e);
+		}
+	}
+
+	@Override
+	public Status deleteStorageClasses() throws KubernetesClientException {
+		try {
+			return apis.deleteStorageClasses();
+		} catch (KubernetesClientException e) {
+			throw new KubernetesClientException(e);
+		} catch (WebApplicationException e) {
+			throw new KubernetesClientException(e);
+		}
+	}
+
+	@Override
+	public StorageClass getStorageClass(String name) throws KubernetesClientException {
+		try {
+			return apis.getStorageClass(name);
+		} catch (KubernetesClientException e) {
+			if (e.getStatus().getReason().equals(NOTFOUND)) {
+				return null;
+			} else {
+				throw new KubernetesClientException(e);
+			}
+		} catch (WebApplicationException e) {
+			throw new KubernetesClientException(e);
+		}
+	}
+
+	@Override
+	public StorageClassList getStorageClasses() throws KubernetesClientException {
+		try {
+			return apis.getStorageClasses();
+		} catch (KubernetesClientException e) {
+			if (e.getStatus().getReason().equals(NOTFOUND)) {
+				return null;
+			} else {
+				throw new KubernetesClientException(e);
+			}
+		} catch (WebApplicationException e) {
+			throw new KubernetesClientException(e);
+		}
+	}
+
+	@Override
+	public PodDisruptionBudget createPodDisruptionBudget(PodDisruptionBudget podDisruptionBudget)
+			throws KubernetesClientException {
+		try {
+			return apis.createPodDisruptionBudget(namespace, podDisruptionBudget);
+		} catch (KubernetesClientException e) {
+			throw new KubernetesClientException(e);
+		} catch (WebApplicationException e) {
+			throw new KubernetesClientException(e);
+		}
+	}
+
+	@Override
+	public PodDisruptionBudget replacePodDisruptionBudget(String name, PodDisruptionBudget podDisruptionBudget)
+			throws KubernetesClientException {
+		try {
+			return apis.replacePodDisruptionBudget(namespace, name, podDisruptionBudget);
+		} catch (KubernetesClientException e) {
+			throw new KubernetesClientException(e);
+		} catch (WebApplicationException e) {
+			throw new KubernetesClientException(e);
+		}
+	}
+
+	@Override
+	public Status deletePodDisruptionBudget(String name) throws KubernetesClientException {
+		try {
+			return apis.deletePodDisruptionBudget(namespace, name);
+		} catch (KubernetesClientException e) {
+			throw new KubernetesClientException(e);
+		} catch (WebApplicationException e) {
+			throw new KubernetesClientException(e);
+		}
+	}
+
+	@Override
+	public Status deletePodDisruptionBudgets() throws KubernetesClientException {
+		try {
+			return apis.deletePodDisruptionBudgets(namespace);
+		} catch (KubernetesClientException e) {
+			throw new KubernetesClientException(e);
+		} catch (WebApplicationException e) {
+			throw new KubernetesClientException(e);
+		}
+	}
+
+	@Override
+	public PodDisruptionBudget getPodDisruptionBudget(String name) throws KubernetesClientException {
+		try {
+			return apis.getPodDisruptionBudget(namespace, name);
+		} catch (KubernetesClientException e) {
+			if (e.getStatus().getReason().equals(NOTFOUND)) {
+				return null;
+			} else {
+				throw new KubernetesClientException(e);
+			}
+		} catch (WebApplicationException e) {
+			throw new KubernetesClientException(e);
+		}
+	}
+
+	@Override
+	public PodDisruptionBudgetList getPodDisruptionBudgets() throws KubernetesClientException {
+		try {
+			return apis.getPodDisruptionBudgets(namespace);
 		} catch (KubernetesClientException e) {
 			if (e.getStatus().getReason().equals(NOTFOUND)) {
 				return null;

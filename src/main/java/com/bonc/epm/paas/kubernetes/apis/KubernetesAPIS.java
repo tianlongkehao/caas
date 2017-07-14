@@ -33,8 +33,12 @@ import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
 import com.bonc.epm.paas.kubernetes.exceptions.Status;
 import com.bonc.epm.paas.kubernetes.model.HorizontalPodAutoscaler;
 import com.bonc.epm.paas.kubernetes.model.HorizontalPodAutoscalerList;
+import com.bonc.epm.paas.kubernetes.model.PodDisruptionBudget;
+import com.bonc.epm.paas.kubernetes.model.PodDisruptionBudgetList;
 import com.bonc.epm.paas.kubernetes.model.StatefulSet;
 import com.bonc.epm.paas.kubernetes.model.StatefulSetList;
+import com.bonc.epm.paas.kubernetes.model.StorageClass;
+import com.bonc.epm.paas.kubernetes.model.StorageClassList;
 
 public interface KubernetesAPIS {
 
@@ -209,4 +213,64 @@ public interface KubernetesAPIS {
 	@Path("/apps/v1beta1/statefulsets")
 	@Consumes(MediaType.APPLICATION_JSON)
 	public StatefulSetList getStatefulSets() throws KubernetesClientException;
+
+	@POST
+	@Path("/storage.k8s.io/v1/storageclasses")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public StorageClass createStorageClass(StorageClass storageClass) throws KubernetesClientException;
+
+	@PUT
+	@Path("/storage.k8s.io/v1/storageclasses/{name}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public StorageClass replaceStorageClass(@PathParam("name")String name, StorageClass storageClass) throws KubernetesClientException;
+
+	@DELETE
+	@Path("/storage.k8s.io/v1/storageclasses/{name}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Status deleteStorageClass(@PathParam("name")String name) throws KubernetesClientException;
+
+	@DELETE
+	@Path("/storage.k8s.io/v1/storageclasses")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Status deleteStorageClasses() throws KubernetesClientException;
+
+	@GET
+	@Path("/storage.k8s.io/v1/storageclasses/{name}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public StorageClass getStorageClass(@PathParam("name")String name) throws KubernetesClientException;
+
+	@GET
+	@Path("/storage.k8s.io/v1/storageclasses")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public StorageClassList getStorageClasses() throws KubernetesClientException;
+
+	@POST
+	@Path("/policy/v1beta1/namespaces/{namespace}/poddisruptionbudgets")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public PodDisruptionBudget createPodDisruptionBudget(@PathParam("namespace")String namespace, PodDisruptionBudget podDisruptionBudget) throws KubernetesClientException;
+
+	@PUT
+	@Path("/policy/v1beta1/namespaces/{namespace}/poddisruptionbudgets/{name}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public PodDisruptionBudget replacePodDisruptionBudget(@PathParam("namespace")String namespace, @PathParam("name")String name, PodDisruptionBudget podDisruptionBudget) throws KubernetesClientException;
+
+	@DELETE
+	@Path("/policy/v1beta1/namespaces/{namespace}/poddisruptionbudgets/{name}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Status deletePodDisruptionBudget(@PathParam("namespace")String namespace, @PathParam("name")String name) throws KubernetesClientException;
+
+	@DELETE
+	@Path("/policy/v1beta1/namespaces/{namespace}/poddisruptionbudgets")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Status deletePodDisruptionBudgets(@PathParam("namespace")String namespace) throws KubernetesClientException;
+
+	@GET
+	@Path("/policy/v1beta1/namespaces/{namespace}/poddisruptionbudgets/{name}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public PodDisruptionBudget getPodDisruptionBudget(@PathParam("namespace")String namespace, @PathParam("name")String name) throws KubernetesClientException;
+
+	@GET
+	@Path("/policy/v1beta1/namespaces/{namespace}/poddisruptionbudgets")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public PodDisruptionBudgetList getPodDisruptionBudgets(@PathParam("namespace")String namespace) throws KubernetesClientException;
 }

@@ -45,6 +45,7 @@ import com.bonc.epm.paas.constant.CommConstant;
 import com.bonc.epm.paas.constant.ServiceConstant;
 import com.bonc.epm.paas.constant.StorageConstant;
 import com.bonc.epm.paas.constant.UserConstant;
+import com.bonc.epm.paas.dao.CephRbdInfoDao;
 import com.bonc.epm.paas.dao.CiDao;
 import com.bonc.epm.paas.dao.CommonOperationLogDao;
 import com.bonc.epm.paas.dao.ConfigmapDao;
@@ -57,6 +58,7 @@ import com.bonc.epm.paas.dao.ServiceAndStorageDao;
 import com.bonc.epm.paas.dao.ServiceConfigmapDao;
 import com.bonc.epm.paas.dao.ServiceDao;
 import com.bonc.epm.paas.dao.ServiceOperationLogDao;
+import com.bonc.epm.paas.dao.ServiceRbdDao;
 import com.bonc.epm.paas.dao.StorageDao;
 import com.bonc.epm.paas.dao.UserDao;
 import com.bonc.epm.paas.dao.UserFavorDao;
@@ -79,11 +81,14 @@ import com.bonc.epm.paas.entity.ServiceConfigmap;
 import com.bonc.epm.paas.entity.Storage;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.entity.UserFavor;
+import com.bonc.epm.paas.entity.ceph.CephRbdInfo;
+import com.bonc.epm.paas.entity.ceph.ServiceCephRbd;
 import com.bonc.epm.paas.kubernetes.api.KubernetesAPIClientInterface;
 import com.bonc.epm.paas.kubernetes.apis.KubernetesAPISClientInterface;
 import com.bonc.epm.paas.kubernetes.exceptions.KubernetesClientException;
 import com.bonc.epm.paas.kubernetes.exceptions.Status;
 import com.bonc.epm.paas.kubernetes.model.CephFSVolumeSource;
+import com.bonc.epm.paas.kubernetes.model.CephRbd;
 import com.bonc.epm.paas.kubernetes.model.EventList;
 import com.bonc.epm.paas.kubernetes.model.LocalObjectReference;
 import com.bonc.epm.paas.kubernetes.model.Pod;
@@ -213,6 +218,15 @@ public class ServiceController {
 	private StorageDao storageDao;
 
 	/**
+	 * ceph
+	 */
+     @Autowired
+     private CephRbdInfoDao cephRbdInfoDao;
+
+     @Autowired
+     private CephController cephController;
+
+	/**
 	 * 服务和挂载卷之间的关联数据接口
 	 */
 	@Autowired
@@ -260,11 +274,11 @@ public class ServiceController {
 	@Value("${ceph.monitor}")
 	private String CEPH_MONITOR;
 
-	@Value ("${ratio.limittorequestcpu}")
-    private int RATIO_LIMITTOREQUESTCPU;
+	@Value("${ratio.limittorequestcpu}")
+	private int RATIO_LIMITTOREQUESTCPU;
 
-	@Value ("${ratio.limittorequestmemory}")
-    private int RATIO_LIMITTOREQUESTMEMORY;
+	@Value("${ratio.limittorequestmemory}")
+	private int RATIO_LIMITTOREQUESTMEMORY;
 
 	/**
 	 * 获取nginx中的服务分区
@@ -320,30 +334,37 @@ public class ServiceController {
 	@Value("${entry.host}")
 	private String ENTRY_HOST;
 
-    /**
-     * server api 地址
-     */
-    @Value("${kubernetes.api.address}")
+	/**
+	 * server api 地址
+	 */
+	@Value("${kubernetes.api.address}")
 	private String KUBERNETES_API_ADDRESS;
 
-    /**
-     * server api url
-     */
-    @Value("${kubernetes.api.endpoint}")
+	/**
+	 * server api url
+	 */
+	@Value("${kubernetes.api.endpoint}")
 	private String KUBERNETES_API_ENDPOINT;
 
 	/*
-     * 预留的cpu资源
-     */
-    @Value("${rest.resource.cpu}")
-    private int REST_RESOURCE_CPU;
+	 * 预留的cpu资源
+	 */
+	@Value("${rest.resource.cpu}")
+	private int REST_RESOURCE_CPU;
 
-    /*
-     * 预留的memory资源
-     */
-    @Value("${rest.resource.memory}")
-    private int REST_RESOURCE_MEMORY;
-    /**
+	/*
+	 * 预留的memory资源
+	 */
+	@Value("${rest.resource.memory}")
+	private int REST_RESOURCE_MEMORY;
+
+	/**
+	 * 服务和cephrbd关联dao
+	 */
+	@Autowired
+	private ServiceRbdDao serviceRbdDao;
+
+	/**
 	 * Description: <br>
 	 * 展示container和services
 	 *
@@ -378,6 +399,7 @@ public class ServiceController {
 			map.put("memoryValue", Double.parseDouble(memorySize[i]) * 1024);
 			memorySizeList.add(map);
 		}
+
 		model.addAttribute("cpuSizeList", cpuSizeList);
 		model.addAttribute("memorySizeList", memorySizeList);
 		model.addAttribute("userName", userName);
@@ -469,8 +491,6 @@ public class ServiceController {
 		return listService;
 	}
 
-
-
 	/**
 	 * Description: <br>
 	 * 获取nginxService参数
@@ -524,7 +544,7 @@ public class ServiceController {
 		List<Configmap> configmapList = configmapDao.findByCreateBy(currentUser.getId());
 		List<ServiceConfigmap> serviceConfigmapList = serviceConfigmapDao.findByServiceId(id);
 		ServiceConfigmap serviceConfigmap = null;
-		if(!CollectionUtils.isEmpty(serviceConfigmapList)){
+		if (!CollectionUtils.isEmpty(serviceConfigmapList)) {
 			serviceConfigmap = serviceConfigmapList.get(0);
 		}
 
@@ -564,12 +584,14 @@ public class ServiceController {
 			}
 		}
 		List<Storage> storageList = storageDao.findByServiceId(service.getId());
+		List<ServiceCephRbd> cephRbdList = serviceRbdDao.findByServiceId(service.getId());
 
 		model.addAttribute("entryHost", ENTRY_HOST);
 		model.addAttribute("dockerIOPort", DOCKER_IO_PORT);
 		model.addAttribute("configmapList", configmapList);
 		model.addAttribute("serviceConfigmap", serviceConfigmap);
 		model.addAttribute("storageList", storageList);
+		model.addAttribute("cephRbdList", cephRbdList);
 		model.addAttribute("namespace", currentUser.getNamespace());
 		model.addAttribute("id", id);
 		model.addAttribute("podNameList", podNameList);
@@ -668,6 +690,9 @@ public class ServiceController {
 			}
 		}
 
+		//获取未挂载的块设备
+        List<CephRbdInfo> cephRbdList =cephController.getUnUsedCephRbd();
+
 		// 获取监控配置
 		UserFavor userFavor = userFavorDao.findByUserId(currentUser.getId());
 		Integer monitor;
@@ -695,14 +720,15 @@ public class ServiceController {
 		List<Configmap> configmapList = configmapDao.findByCreateBy(currentUser.getId());
 
 		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
-        int nodecount = client.getAllNodes().getItems().size();
+		int nodecount = client.getAllNodes().getItems().size();
 
-        model.addAttribute("nodecount",nodecount);
+		model.addAttribute("nodecount", nodecount);
 		model.addAttribute("configmapList", configmapList);
 		model.addAttribute("cpuSizeList", cpuSizeList);
 		model.addAttribute("memorySizeList", memorySizeList);
 		model.addAttribute("userName", currentUser.getUserName());
 		model.addAttribute("storageList", storageList);
+		model.addAttribute("cephRbdList", cephRbdList);
 		model.addAttribute("imgID", imgID);
 		model.addAttribute("resourceName", resourceName);
 		model.addAttribute("imageName", imageName);
@@ -757,7 +783,6 @@ public class ServiceController {
 	// }
 	// return startCommand.toString();
 	// }
-
 
 	/**
 	 * Description: <br>
@@ -1038,6 +1063,7 @@ public class ServiceController {
 				LOG.debug("给rc添加存储卷信息");
 				if (service.getServiceType().equals("1")) {
 					controller = this.setVolumeStorage(controller, service.getId());
+					controller = setCephRbd(controller, service.getId());
 				}
 				controller = client.createReplicationController(controller);
 			} else {
@@ -1065,18 +1091,18 @@ public class ServiceController {
 					}
 				}
 
-				double cpu =service.getCpuNum();
+				double cpu = service.getCpuNum();
 				String memory = service.getRam();
 				for (com.bonc.epm.paas.kubernetes.model.Container container : containers) {
 					container.setCommand(command);
 					container.setArgs(args);
 
-					//重启服务时，重新设置container的资源，使得配置文件中的资源系数更改之后，能够生效
+					// 重启服务时，重新设置container的资源，使得配置文件中的资源系数更改之后，能够生效
 					ResourceRequirements requirements = new ResourceRequirements();
 
 					Map<String, Object> def = new HashMap<String, Object>();
 					def.put("cpu", cpu / RATIO_LIMITTOREQUESTCPU);
-					def.put("memory", Double.parseDouble(memory)/RATIO_LIMITTOREQUESTMEMORY + "Mi");
+					def.put("memory", Double.parseDouble(memory) / RATIO_LIMITTOREQUESTMEMORY + "Mi");
 
 					Map<String, Object> limit = new HashMap<String, Object>();
 					limit.put("cpu", cpu);
@@ -1131,23 +1157,36 @@ public class ServiceController {
 		}
 		serviceOperationLogDao.save(service.getServiceName(), service.toString(), operationType);
 
+		//保存rbd使用状态信息
+		List<ServiceCephRbd> serviceCephRbds = serviceRbdDao.findByServiceId(service.getId());
+		if(CollectionUtils.isNotEmpty(serviceCephRbds)){
+			for(ServiceCephRbd serviceCephRbd:serviceCephRbds){
+               CephRbdInfo cephRbdInfo = cephRbdInfoDao.findOne(serviceCephRbd.getCephrbdId());
+               cephRbdInfo.setUsed(true);
+               cephRbdInfoDao.save(cephRbdInfo);
+			}
+		}
+
 		map.put("status", "200");
 		return JSON.toJSONString(map);
 	}
 
 	/**
-	 * Description: <br>
-	 * 服务创建
-	 *
+	 * 创建服务
 	 * @param service
 	 * @param resourceName
 	 * @param envVariable
 	 * @param portConfig
-	 * @return String
+	 * @param cephAds
+	 * @param configmap
+	 * @param configmapPath
+	 * @param rbdId
+	 * @param rbdPath
+	 * @return
 	 */
 	@RequestMapping("service/constructContainer.do")
 	public String constructContainer(Service service, String resourceName, String envVariable, String portConfig,
-			String cephAds,String configmap,String configmapPath) {
+			String cephAds, String configmap, String configmapPath,String rbdStrs) {
 		Date currentDate = new Date();
 		User currentUser = CurrentUserUtils.getInstance().getUser();
 		// 保存服务信息
@@ -1163,16 +1202,16 @@ public class ServiceController {
 			service.setSessionAffinity(null);
 		}
 
-		if(Long.parseLong(configmap)!=-1){//选择了configmap
-		   Configmap configmap2 = configmapDao.findOne(Long.parseLong(configmap));
-           ServiceConfigmap serviceConfigmap = new ServiceConfigmap();
-           serviceConfigmap.setConfigmapId(Long.parseLong(configmap));
-           serviceConfigmap.setServiceId(service.getId());
-           serviceConfigmap.setCreateDate(currentDate);
-           serviceConfigmap.setCreateBy(currentUser.getId());
-           serviceConfigmap.setPath(configmapPath);
-           serviceConfigmap.setName(configmap2.getName());
-           serviceConfigmapDao.save(serviceConfigmap);
+		if (Long.parseLong(configmap) != -1) {// 选择了configmap
+			Configmap configmap2 = configmapDao.findOne(Long.parseLong(configmap));
+			ServiceConfigmap serviceConfigmap = new ServiceConfigmap();
+			serviceConfigmap.setConfigmapId(Long.parseLong(configmap));
+			serviceConfigmap.setServiceId(service.getId());
+			serviceConfigmap.setCreateDate(currentDate);
+			serviceConfigmap.setCreateBy(currentUser.getId());
+			serviceConfigmap.setPath(configmapPath);
+			serviceConfigmap.setName(configmap2.getName());
+			serviceConfigmapDao.save(serviceConfigmap);
 		}
 
 		// 将服务中的环境变量循环遍历，保存到相关联的实体类中；
@@ -1189,7 +1228,7 @@ public class ServiceController {
 			}
 		}
 
-		//增加环境变量api_server_ip和api_server_port
+		// 增加环境变量api_server_ip和api_server_port
 		EnvVariable ipVar = new EnvVariable();
 		ipVar.setCreateBy(currentUser.getId());
 		ipVar.setEnvKey("api_server_ip");
@@ -1259,6 +1298,23 @@ public class ServiceController {
 						CommConstant.STORAGE, CommConstant.OPERATION_TYPE_CREATED);
 				commonOperationLogDao.save(log);
 			}
+		}
+
+		//保存rbd到数据库
+		if(StringUtils.isNotEmpty(rbdStrs)){
+            String[] rbds = rbdStrs.split(";");
+            for(String rbd:rbds){
+            	long rbdId = Long.parseLong(rbd.split(",")[0]);
+            	String rbdName = rbd.split(",")[1];
+            	String path = rbd.split(",")[2];
+            	ServiceCephRbd serviceCephRbd = new ServiceCephRbd();
+            	serviceCephRbd.setServiceId(service.getId());
+            	serviceCephRbd.setServicename(service.getServiceName());
+            	serviceCephRbd.setCephrbdId(rbdId);
+            	serviceCephRbd.setRbdname(rbdName);
+            	serviceCephRbd.setPath(path);
+            	serviceRbdDao.save(serviceCephRbd);
+            }
 		}
 
 		// 保存到与service关联的portConfig实体类
@@ -1589,6 +1645,17 @@ public class ServiceController {
 			// 保存服务操作信息
 			serviceOperationLogDao.save(service.getServiceName(), service.toString(),
 					ServiceConstant.OPERATION_TYPE_STOP);
+
+			//更新rbd使用信息
+			List<ServiceCephRbd> serviceCephRbds = serviceRbdDao.findByServiceId(id);
+			if(CollectionUtils.isNotEmpty(serviceCephRbds)){
+				for(ServiceCephRbd serviceCephRbd:serviceCephRbds){
+	               CephRbdInfo cephRbdInfo = cephRbdInfoDao.findOne(serviceCephRbd.getCephrbdId());
+	               cephRbdInfo.setUsed(false);
+	               cephRbdInfoDao.save(cephRbdInfo);
+				}
+			}
+
 		} catch (KubernetesClientException e) {
 			map.put("status", "500");
 			map.put("msg", e.getStatus().getMessage());
@@ -2373,10 +2440,10 @@ public class ServiceController {
 		requirements.getLimits();
 		Map<String, Object> def = new HashMap<String, Object>();
 		def.put("cpu", cpus / Integer.valueOf(RATIO_LIMITTOREQUESTCPU));
-		def.put("memory", Double.parseDouble(rams) / Integer.valueOf(RATIO_LIMITTOREQUESTMEMORY)+ "Mi");
+		def.put("memory", Double.parseDouble(rams) / Integer.valueOf(RATIO_LIMITTOREQUESTMEMORY) + "Mi");
 		Map<String, Object> limit = new HashMap<String, Object>();
 		// limit = kubernetesClientService.getlimit(limit);
-		limit.put("cpu", cpus );
+		limit.put("cpu", cpus);
 		limit.put("memory", rams + "Mi");
 		requirements.setRequests(def);
 		requirements.setLimits(limit);
@@ -2411,7 +2478,7 @@ public class ServiceController {
 			map.put("status", "501");
 			return JSON.toJSONString(map);
 		}
-		//如果服务有hpa，则删除hpa
+		// 如果服务有hpa，则删除hpa
 		if (service.getTargetCPUUtilizationPercentage() != null) {
 			KubernetesAPISClientInterface apisClient = kubernetesClientService.getApisClient();
 			try {
@@ -2507,7 +2574,7 @@ public class ServiceController {
 			map.put("status", "200");
 			serviceDao.delete(id);
 			envVariableDao.deleteByServiceId(id);
-			serviceConfigmapDao.deleteByServiceId(id);//删除serviceConfigmap记录
+			serviceConfigmapDao.deleteByServiceId(id);// 删除serviceConfigmap记录
 			// 保存服务操作信息
 			serviceOperationLogDao.save(service.getServiceName(), service.toString(),
 					ServiceConstant.OPERATION_TYPE_DELETE);
@@ -2531,7 +2598,6 @@ public class ServiceController {
 					storage.setMountPoint("");
 					storage.setUpdateBy(user.getId());
 					storage.setUpdateDate(new Date());
-					;
 					storageDao.save(storage);
 
 					// 记录更新storage存储卷
@@ -2542,6 +2608,23 @@ public class ServiceController {
 				}
 				serviceAndStorageDao.delete(svcAndStoList);
 			}
+
+			//更新rbd信息，如果rbd随服务删除释放，则删除rbd，否则将rbd的使用状态改为false
+			List<ServiceCephRbd> serviceCephRbds = serviceRbdDao.findByServiceId(id);
+			if(CollectionUtils.isNotEmpty(serviceCephRbds)){
+				for(ServiceCephRbd serviceCephRbd : serviceCephRbds){
+                   long rbdId = serviceCephRbd.getCephrbdId();
+                   CephRbdInfo cephRbdInfo=cephRbdInfoDao.findOne(rbdId);
+                   if(cephRbdInfo.isReleaseWhenServiceDown()){
+                      cephController.deleteCephRbd(rbdId);
+                   }else{
+                      cephRbdInfo.setUsed(false);
+                      cephRbdInfoDao.save(cephRbdInfo);
+                   }
+				}
+			}
+			serviceRbdDao.deleteByServiceId(id);
+
 		} catch (KubernetesClientException e) {
 			map.put("status", "400");
 			map.put("msg", e.getStatus().getMessage());
@@ -2641,7 +2724,7 @@ public class ServiceController {
 			for (long id : ids) {
 				String creatresult = CreateContainer(id, false);
 				if (!creatresult.contains("200")) {
-						maps.put("status", "400");
+					maps.put("status", "400");
 				}
 				;
 			}
@@ -2702,6 +2785,61 @@ public class ServiceController {
 		List<com.bonc.epm.paas.kubernetes.model.Container> containers = podSpec.getContainers();
 		for (com.bonc.epm.paas.kubernetes.model.Container container : containers) {
 			container.setVolumeMounts(volumeMounts);
+		}
+		return controller;
+	}
+
+	/**
+	 * 挂载ceph_rbd
+	 *
+	 * @param controller
+	 * @param serviceId
+	 * @return
+	 */
+	private ReplicationController setCephRbd(ReplicationController controller, long serviceId) {
+		List<ServiceCephRbd> serviceCephRbds = serviceRbdDao.findByServiceId(serviceId);
+		if (!CollectionUtils.isEmpty(serviceCephRbds)) {
+			ReplicationControllerSpec rcSpec = controller.getSpec();
+			PodTemplateSpec template = rcSpec.getTemplate();
+			PodSpec podSpec = template.getSpec();
+			List<Volume> volumes = new ArrayList<Volume>();
+			List<VolumeMount> volumeMounts = new ArrayList<VolumeMount>();
+
+			int i = 0;
+			for (ServiceCephRbd serviceCephRbd : serviceCephRbds) {
+				i++;
+				Volume volume = new Volume();
+				volume.setName("rbd-" + i);
+				CephRbd cephrbd = new CephRbd();
+				List<String> monitors = new ArrayList<String>();
+				String[] ceph_monitors = CEPH_MONITOR.split(",");
+				for (String ceph_monitor : ceph_monitors) {
+					monitors.add(ceph_monitor);
+				}
+				cephrbd.setMonitors(monitors);
+				cephrbd.setPool(CurrentUserUtils.getInstance().getUser().getNamespace());
+				cephrbd.setImage(serviceCephRbd.getRbdname());
+				cephrbd.setUser("admin");
+				cephrbd.setFsType("ext4");
+				cephrbd.setReadOnly(false);
+				LocalObjectReference secretRef = new LocalObjectReference();
+				secretRef.setName("ceph-secret");
+				cephrbd.setSecretRef(secretRef);
+				// cephrbd.setKeyring(keyring);
+				volume.setRbd(cephrbd);
+				volumes.add(volume);
+
+				VolumeMount volumeMount = new VolumeMount();
+				volumeMount.setMountPath(serviceCephRbd.getPath());
+				volumeMount.setName("rbd-" + i);
+				volumeMounts.add(volumeMount);
+			}
+
+			podSpec.setVolumes(volumes);
+			List<com.bonc.epm.paas.kubernetes.model.Container> containers = podSpec.getContainers();
+			for (com.bonc.epm.paas.kubernetes.model.Container container : containers) {
+				container.setVolumeMounts(volumeMounts);
+			}
 		}
 		return controller;
 	}
@@ -2780,9 +2918,9 @@ public class ServiceController {
 
 			/**********************************
 			 * 查询升级服务的相关信息
-			 * ********************************/
+			 ********************************/
 			if (StringUtils.isNoneBlank(service.getTempName())) {
-				//升级服务rc
+				// 升级服务rc
 				ReplicationController newReplicationController;
 				try {
 					newReplicationController = client.getReplicationController(service.getTempName());
@@ -2801,8 +2939,7 @@ public class ServiceController {
 							Container container = new Container();
 							String image = pod.getSpec().getContainers().get(0).getImage();
 							String version = image.substring(image.lastIndexOf(":") + 1);
-							container
-									.setContainerName(service.getServiceName() + "-" + version + "-" + i++);
+							container.setContainerName(service.getServiceName() + "-" + version + "-" + i++);
 							container.setServiceAddr(pod.getMetadata().getName());
 							container.setServiceid(service.getId());
 							if (kubernetesClientService.isRunning(pod)) {
@@ -2878,8 +3015,8 @@ public class ServiceController {
 			Map<String, Object> params = new HashMap<>();
 			params.put("stdout", true);
 			params.put("stderr", true);
-			params.put("since", sinceDate.getTime()/1000);
-			params.put("until", untilDate.getTime()/1000);
+			params.put("since", sinceDate.getTime() / 1000);
+			params.put("until", untilDate.getTime() / 1000);
 			try (InputStream inputStream = WebClientUtil.doGetStream(url, params);) {
 				if (inputStream != null) {
 					FrameReader frameReader = new FrameReader(inputStream);
@@ -3286,7 +3423,6 @@ public class ServiceController {
 
 	}
 
-
 	/**
 	 *
 	 * Description: 编辑端口配置信息
@@ -3299,7 +3435,7 @@ public class ServiceController {
 	 */
 	@RequestMapping(value = "service/detail/editConfigmap.do")
 	@ResponseBody
-	public String editConfigmap(String serviceId,String configmapPath, String configmap) {
+	public String editConfigmap(String serviceId, String configmapPath, String configmap) {
 		Map<String, String> map = new HashMap<String, String>();
 		Service service = serviceDao.findOne(Long.parseLong(serviceId));
 		// 服务状态判断
@@ -3315,11 +3451,11 @@ public class ServiceController {
 		}
 		Date currentDate = new Date();
 		User currentUser = CurrentUserUtils.getInstance().getUser();
-		//保存serviceConfigmap
+		// 保存serviceConfigmap
 
 		serviceConfigmapDao.deleteByServiceId(service.getId());
-		ServiceConfigmap serviceConfigmap =null;
-		if(!configmap.equals("-1")){
+		ServiceConfigmap serviceConfigmap = null;
+		if (!configmap.equals("-1")) {
 			Configmap configmap2 = configmapDao.findOne(Long.parseLong(configmap));
 			serviceConfigmap = new ServiceConfigmap();
 			serviceConfigmap.setConfigmapId(Long.parseLong(configmap));
@@ -3337,12 +3473,14 @@ public class ServiceController {
 		service.setUpdateBy(currentUser.getId());
 		serviceDao.save(service);
 		// 保存服务操作信息
-		serviceOperationLogDao.save(service.getServiceName(), serviceConfigmap !=null?serviceConfigmap.toString():"没选择configmap",
+		serviceOperationLogDao.save(service.getServiceName(),
+				serviceConfigmap != null ? serviceConfigmap.toString() : "没选择configmap",
 				ServiceConstant.OPERATION_TYPE_UPDATE);
 		map.put("status", "200");
 
 		return JSON.toJSONString(map);
 	}
+
 	/**
 	 *
 	 * Description: 编辑端口配置信息
@@ -3815,7 +3953,7 @@ public class ServiceController {
 	 * @param serviceChName
 	 * @return String
 	 */
-	@RequestMapping(value = "service/modifyServiceChName.do",method = RequestMethod.GET)
+	@RequestMapping(value = "service/modifyServiceChName.do", method = RequestMethod.GET)
 	@ResponseBody
 	public String modifyServiceChName(long serviceId, String serviceChName) {
 		Map<String, String> map = new HashMap<>();
@@ -3834,7 +3972,7 @@ public class ServiceController {
 		return JSON.toJSONString(map);
 	}
 
-	//终端
+	// 终端
 	@RequestMapping(value = { "service/cmd/{id}/{podName}" }, method = RequestMethod.GET)
 	public String serviceCmd(Model model, @PathVariable long id, @PathVariable String podName) {
 		Service service = serviceDao.findOne(id);
@@ -3943,14 +4081,14 @@ public class ServiceController {
 		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
 		/**********************************
 		 * 查询当前服务的相关信息
-		 * ********************************/
-		//当前服务rc
+		 ********************************/
+		// 当前服务rc
 		ReplicationController replicationController;
-		//当前服务podlist
+		// 当前服务podlist
 		PodList podList = null;
-		//当前服务event
+		// 当前服务event
 		EventList replicationControllerEvents = null;
-		//当前服务pod event
+		// 当前服务pod event
 		List<EventList> podsEventList = new ArrayList<>();
 		try {
 			replicationController = client.getReplicationController(service.getServiceName());
@@ -3986,15 +4124,15 @@ public class ServiceController {
 
 		/**********************************
 		 * 查询升级服务的相关信息
-		 * ********************************/
+		 ********************************/
 		if (StringUtils.isNoneBlank(service.getTempName())) {
-			//升级服务rc
+			// 升级服务rc
 			ReplicationController newReplicationController;
-			//升级服务podlist
+			// 升级服务podlist
 			PodList newPodList = null;
-			//升级服务event
+			// 升级服务event
 			EventList newReplicationControllerEvents = null;
-			//升级服务pod event
+			// 升级服务pod event
 			List<EventList> newPodsEventList = new ArrayList<>();
 			try {
 				newReplicationController = client.getReplicationController(service.getTempName());

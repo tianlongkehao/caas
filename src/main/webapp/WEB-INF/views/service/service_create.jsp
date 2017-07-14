@@ -297,7 +297,7 @@
 													<span class="mountTips"></span>
 												<input type="hidden" id = "serviceType" name ="serviceType" value = "1"/>
 											</span></li>
-
+                                                     <!-- Ceph文件系统 -->
 											<li class="hide-set" id="save_roll_dev">
 												<ol id="mountPathList">
 
@@ -330,6 +330,40 @@
 															</tfoot>
 														</table>
 														<input type="hidden" id="cephAds" name = "cephAds" value="" />
+													</li>
+												</ol></li>
+												<!-- CephRbd -->
+												<li class="hide-set" id="save_roll_dev2">
+												<ol id="mountPathList2">
+
+													<li class="hide-select hide">
+														<select class="selectVolumeAddItme2 form-control"
+																		style="height: 30px; width: 98%;margin:0 auto;padding-top:4px;margin-left:4px">
+																<option  value="">选择一个块设备</option>
+																<c:forEach items="${cephRbdList }" var = "rbd">
+																    <option  value="${rbd.id },${rbd.name }">${rbd.name }  ${rbd.size }G</option>
+																</c:forEach>
+													    </select>
+														<input type="text" id="mountPath2" class="form-control" value="" />
+													</li>
+													<li>
+														<table class="table table-hover enabled" id="volPath2">
+															<thead>
+																<tr>
+																	<th style="width: 45%">块设备</th>
+																	<th style="width: 45%">挂载地址</th>
+																	<th style="width: 10%">操作</th>
+																</tr>
+															</thead>
+															<tbody id="volList2">
+															</tbody>
+															<tfoot class="addTfootBtn">
+																<tr id="addVolume2">
+																	<td colspan="3"><i class="fa fa-plus margin"></i>添加挂载</td>
+																</tr>
+															</tfoot>
+														</table>
+														<input type="hidden" id="rbdStrs" name = "rbdStrs" value="" />
 													</li>
 												</ol></li>
 											<li class="hide-set"><span class="ve_top">环境变量：</span>

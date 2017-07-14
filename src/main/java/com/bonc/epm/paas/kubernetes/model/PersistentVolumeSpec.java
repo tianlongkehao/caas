@@ -9,6 +9,8 @@
 
 package com.bonc.epm.paas.kubernetes.model;
 
+import java.util.List;
+
 /**
  * ClassName: PersistentVolumeSpec <br/>
  * Function: TODO ADD FUNCTION. <br/>
@@ -19,5 +21,6 @@ package com.bonc.epm.paas.kubernetes.model;
  * @version
  */
 public class PersistentVolumeSpec {
+      private List<String> accessModes;
 
 }

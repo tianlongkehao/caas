@@ -43,14 +43,12 @@ import com.bonc.epm.paas.constant.UserConstant;
 import com.bonc.epm.paas.dao.CommonOperationLogDao;
 import com.bonc.epm.paas.dao.ImageDao;
 import com.bonc.epm.paas.dao.ServiceOperationLogDao;
-import com.bonc.epm.paas.dao.SheraDao;
 import com.bonc.epm.paas.dao.StorageDao;
 import com.bonc.epm.paas.dao.UserDao;
 import com.bonc.epm.paas.dao.UserResourceDao;
 import com.bonc.epm.paas.dao.UserVisitingLogDao;
 import com.bonc.epm.paas.entity.CommonOperationLog;
 import com.bonc.epm.paas.entity.ServiceOperationLog;
-import com.bonc.epm.paas.entity.Shera;
 import com.bonc.epm.paas.entity.Storage;
 import com.bonc.epm.paas.entity.User;
 import com.bonc.epm.paas.entity.UserInfo;
@@ -136,11 +134,11 @@ public class IndexController {
     @Autowired
 	private StorageDao storageDao;
 
-    /**
-     * sheraDao
-     */
-    @Autowired
-    private SheraDao sheraDao;
+//    /**
+//     * sheraDao
+//     */
+//    @Autowired
+//    private SheraDao sheraDao;
 
     /**
      * service操作日志dao接口
@@ -203,8 +201,8 @@ public class IndexController {
 				for (Storage storage : list) {
 					usedstorage = usedstorage + (double) storage.getStorageSize();
 				}
-				Shera shera = sheraDao.findByUserId(id);
-				model.addAttribute("userShera", shera);
+//				Shera shera = sheraDao.findByUserId(id);
+//				model.addAttribute("userShera", shera);
 				model.addAttribute("usedstorage", (long)Math.floor(usedstorage / 1024));
 			} else {
 				//获取所有租户的信息
@@ -676,8 +674,8 @@ public class IndexController {
 			for (Storage storage : list) {
 				usedstorage = usedstorage + (double) storage.getStorageSize();
 			}
-			Shera shera = sheraDao.findByUserId(user.getId());
-			userInfo.setUserShera(shera);
+//			Shera shera = sheraDao.findByUserId(user.getId());
+//			userInfo.setUserShera(shera);
 			userInfo.setUsedStorage(usedstorage / 1024);
 
 		} else {

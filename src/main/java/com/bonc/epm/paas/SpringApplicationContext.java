@@ -26,7 +26,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class SpringApplicationContext implements ApplicationContextAware {
     /**
-     * 
+     *
      */
     public static ApplicationContext CONTEXT;
 
@@ -34,20 +34,19 @@ public class SpringApplicationContext implements ApplicationContextAware {
     public void setApplicationContext(final ApplicationContext context) throws BeansException {
         CONTEXT = context;
     }
-    
+
     /**
-     * 
+     *
      * Description:
      * getBean
-     * @param className 
+     * @param className
      * @param <T> bean
-     * @return <T> 
-     * @throws ClassNotFoundException 
-     * @throws BeansException 
+     * @return <T>
+     * @throws ClassNotFoundException
+     * @throws BeansException
      * @see
      */
-/*    @SuppressWarnings("unchecked")
-    public static <T> T getBean(String className) throws BeansException, ClassNotFoundException {
-        return (T)CONTEXT.getBean(Class.forName(className));
-    }*/
+    public static <T> T getBean(Class<T> requiredType) {
+    	return (T)CONTEXT.getBean(requiredType);
+    }
 }

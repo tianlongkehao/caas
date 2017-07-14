@@ -669,24 +669,11 @@ public class StorageController {
         }
         //获取存储卷剩余容量
         model.addAttribute("userResource", userResource);
-        /*model.addAttribute("menu_flag", "storage");*/
-        model.addAttribute("menu_flag", "service");
+        model.addAttribute("menu_flag", "storage");
         model.addAttribute("li_flag", "storageFile");
         return "storage/storage.jsp";
     }
-    /**
-     * storage-file.jsp
-     *
-     * @param model Model
-     * @return String
-     */
 
-    @RequestMapping(value = { "storage/storageBlock" }, method = RequestMethod.GET)
-    public String storageQuick(Model model) {
-        model.addAttribute("menu_flag", "storage");
-        model.addAttribute("li_flag", "storageBlock");
-        return "storage/storage-block.jsp";
-    }
     @RequestMapping(value = { "storage/storage-blockDetail" }, method = RequestMethod.GET)
     public String storageQuickDetail(Model model) {
         model.addAttribute("menu_flag", "storage");
@@ -706,24 +693,5 @@ public class StorageController {
         model.addAttribute("li_flag", "storageObj");
         return "storage/storage-obj.jsp";
     }
-    @RequestMapping(value = { "storage/storageSnap" }, method = RequestMethod.GET)
-    public String storageSnap(Model model) {
-        model.addAttribute("menu_flag", "storage");
-        model.addAttribute("li_flag", "storageSnap");
-        return "storage/storage-snap.jsp";
-    }
-    @RequestMapping(value = { "storage/snapStrategy" }, method = RequestMethod.GET)
-    public String storageSnapStrategy(Model model) {
-        model.addAttribute("menu_flag", "storage");
-        model.addAttribute("li_flag", "snapStrategy");
-        return "storage/storage-snapStrategy.jsp";
-    }
 
-    /*@RequestMapping(value = { "service/createcephrbd" }, method = RequestMethod.GET)
-	@ResponseBody
-	public String createCephRbd(String imgname,String disksize ,String unload,String disttype,String diskdetail) {
-		Map<String, List<Storage>> map = new HashMap<>();
-        cephController.createCephRbd(imgname);
-		return JSON.toJSONString(map);
-	}*/
 }

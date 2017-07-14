@@ -935,7 +935,6 @@ function testNodes(obj){
 						dockeritem = nodetestresult.docker;
 						dnsitem = nodetestresult.dns;
 					}
-					//前一次的操作项
 					$("#ping").prop("checked",pingitem);
 					$("#trace").prop("checked",traceitem);
 					$("#curl").prop("checked",curlitem);
@@ -980,6 +979,7 @@ function testNodes(obj){
 						$("#DeferredDeletedDeviceCountTarget").val(nodetestresult.dockerDeferredDeletedDeviceCountTarget);
 					}
 				}
+
 				if(flag == true){
 					layer.open({
 						type : 1,
@@ -1023,45 +1023,6 @@ function testNodes(obj){
 		})
 	}
 
-	/*if(flag == true){
-		layer.open({
-			type : 1,
-			title : '检测项信息',
-			content : $("#chkitem"),
-			area : [ '600px','500px' ],
-			btn :  [ '确定', '取消' ],
-			yes : function(index, layero) {
-				if (!checkitems()) {
-					return;// 校验没通过
-				}
-				layer.close(index);
-				//遮挡层
-				var loading = layer.load(0,{shade : [ 0.3, '#000' ]});
-				//假同步执行清理节点
-				var deferClear = $.Deferred();
-				deferClear.resolve();
-				$.each(selectednodes,function(i,e){
-
-
-					deferClear = deferClear.then(function () {
-					    return $.ajax({
-							url:ctx + "/cluster/deleteTestInfo?nodename="+e,
-							type:"get",
-							success:function(){
-								console.log("清理节点"+i+"==="+e);//TODO
-
-							}
-						})
-				  });
-				});
-				deferClear.done(function(){
-					var deferTest = $.Deferred();
-					deferTest.resolve();
-					times(selectednodes,0);
-				});
-			}
-		})
-	}*/
 }
 function times(selectednodes,j){
 	if(j >= selectednodes.length){
@@ -1139,6 +1100,7 @@ function times(selectednodes,j){
 	var nodeProgressDiv = $('input:checkbox[id="'+thisNodeName+'"]:checked').parents(".thisTr").find(".nodeProgress");
 	//测试结果
 	var nodeTestOpr = $('input:checkbox[id="'+thisNodeName+'"]:checked').parents(".thisTr").find(".clusterTestOpr");
+
 	nodeTestOpr.empty();
 	nodeProgressDiv.empty();
 	console.log("节点测试"+j+"==="+thisNodeName);//TODO
@@ -1154,6 +1116,7 @@ function times(selectednodes,j){
 		 +'<span>'+ids[count]+'测试中</span>'
 		 +'</div>';
 	nodeProgressDiv.empty().append(testPingHtml);
+
 	$.ajax({
 		url : ctx+"/cluster/test"+ids[count],
 		//type:'get',

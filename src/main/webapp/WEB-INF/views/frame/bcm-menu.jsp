@@ -111,8 +111,8 @@
 					<ul class="nav nav-second-level">
 						<li id="li_service"><a class="J_menuItem" href="<%=path %>/service"><i class="fa fa_circle"></i>服务管理</a></li>
 						<%-- <li id="li_storage"><a class="J_menuItem" href="<%=path %>/service/storage"><i class="fa fa_circle"></i>存储与备份</a></li> --%>
-						<li id="li_storageFile"><a class="J_menuItem" href="<%=path %>/storage/storageFile"><i class="fa fa_circle"></i>存储与备份</a></li>
 						<li id="li_import"><a class="J_menuItem" href="<%=path %>/service/import"><i class="fa fa_circle"></i>引入外部服务</a></li>
+						<li id="li_tensorflow"><a class="J_menuItem" href="<%=path %>/tensorflow/list"><i class="fa fa_circle"></i>TensorFlow</a></li>
 					</ul></li>
 				<li id="menu_ci"><a href="#" class="first-a">
 					<i class="fa-nav fa-nav-ci"></i>
@@ -211,14 +211,17 @@
 						<li id="li_logCommon"><a class="J_menuItem" href="<%=path %>/logCommon"><i class="fa fa_circle"></i>通用操作日志</a></li>
 					</ul></li>
 				</c:if>
+
 				<li id="menu_database"><a href="#" class="first-a">
 					<i class="fa-nav fa-nav-log"></i>
-					<span class="nav-label">数据库服务</span>
+					<span class="nav-label">云市场</span>
 				</a>
 					<ul class="nav nav-second-level">
 						<li id="li_redis"><a class="J_menuItem" href="<%=path %>/RedisController/redis"><i class="fa fa_circle"></i>redis</a></li>
-					</ul></li>
-				<%-- <li id="menu_storage"><a href="#" class="first-a">
+						<li id="li_zookeeper"><a class="J_menuItem" href="<%=path %>/zookeeper/list"><i class="fa fa_circle"></i>zookeeper</a></li>
+					</ul>
+					</li>
+				<li id="menu_storage"><a href="#" class="first-a">
 					<i class="fa-nav fa-nav-storage"></i>
 					<span class="nav-label">云存储</span>
 				</a>
@@ -229,7 +232,7 @@
 						<li id="li_storageSnap"><a class="J_menuItem" href="<%=path %>/storage/storageSnap"><i class="fa fa_circle"></i>快照</a></li>
 						<li id="li_snapStrategy"><a class="J_menuItem" href="<%=path %>/storage/snapStrategy"><i class="fa fa_circle"></i>快照策略</a></li>
 					</ul>
-				</li> --%>
+				</li>
 				<%-- <li id="menu_product"><a href="<%=path %>/product/help" target="_blank"> <img alt="image" class="tit-image"
 						src="<%=path%>/images/help-red.png"
 						style="width: 14px; margin-left: 3px;" /> <span class="nav-label">帮助文档</span>
