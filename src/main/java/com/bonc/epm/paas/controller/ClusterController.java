@@ -1115,7 +1115,7 @@ public class ClusterController {
 		// 讲节点状态为Ready的节点返回，用于测试
 		for (Node node : nodeList) {
 
-			if (node.getStatus().getConditions().get(1).getStatus().equals("True")) {
+			if (node.getStatus().getConditions().get(3).getStatus().equals("True")) {
 				NodeInfo nodeInfo = new NodeInfo();
 				nodeInfo.setNodename(node.getMetadata().getName());
 				for (Pod pod : pods) {
