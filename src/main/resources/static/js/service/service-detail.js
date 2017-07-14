@@ -1001,6 +1001,35 @@ function delEnvEdit(obj) {
 	});
 }
 
+//删除块设备
+/*function delRbd(obj){
+	layer.open({
+
+		title : '删除块设备',
+		content : "确定删除？",
+		btn : ['确定', '取消'],
+		yes : function(index, layero) {
+			layer.close(index);
+			var serviceRbdId = $(obj).parent().attr("serviceRbdId");
+			$.ajax({
+				url : ctx + "/ceph/deleteServiceRbd?serviceRbdId=" + serviceRbdId,
+				type : "GET",
+				success : function(data) {
+					var data = eval("(" + data + ")");
+					if ("200" == data.status) {
+						layer.msg("删除成功！", {
+							icon : 1
+						});
+						$(obj).parent().parent().remove();
+					} else {
+						alert("删除失败！");
+					}
+				}
+			});
+		}
+	});
+}*/
+
 //环境变量验重
 function checkRepEnv(obj, id, envKey) {
 	var flag = 0;

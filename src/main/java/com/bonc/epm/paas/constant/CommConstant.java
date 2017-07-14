@@ -6,27 +6,32 @@ import java.util.Map;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter.Indenter;
 
 public class CommConstant {
-	
+
 	public static final Integer TYPE_YES_VALUE = 1;
 	public static final Integer TYPE_NO_VALUE = 0;
-	
-	
+
+
 	/*Common Operation*/
 	// catalog Type
 	public static final Integer DOCKFILE_TEMPLATE=10;                 //dockerfile模板
 	public static final Integer ENV_TEMPLATE=20;                      //环境变量模板
 	public static final Integer CODE_CI=30;                           //代码构建
-	public static final Integer QUICK_CI=40;                          //快速构建 
+	public static final Integer QUICK_CI=40;                          //快速构建
 	public static final Integer DOCKER_FILE_CI=50;                    //dockerfile构建
 	public static final Integer UPLOAD_IMAGE=60;                      //上传镜像
     public static final Integer IMAGE=70;                             //镜像中心
 	public static final Integer USER_MANAGER=80;                      //用户管理
     public static final Integer USER_SCRETKEY=90;                     //秘钥管理
     public static final Integer TENANT_MANAGER=100;                   //租户管理
-    public static final Integer SHERA_MANAGER=110;                    //shera管理 
+    public static final Integer SHERA_MANAGER=110;                    //shera管理
     public static final Integer STORAGE=120;                          //存储与备份
-    public static final Integer REF_SERVICE=130;                      //外部服务    	
-	
+    public static final Integer REF_SERVICE=130;                      //外部服务
+    public static final Integer CEPH_FS=140;                          //ceph文件系统
+    public static final Integer CEPH_RBD=150;                          //ceph块存储
+    public static final Integer CEPH_GW=160;                          //ceph对象存储
+    public static final Integer CEPH_SNAP=170;                          //块存储快照
+    public static final Integer CEPH_SNAP_STRATEGY=180;                //快照策略
+
 	public static Map<Integer, String> CatalogType_MAP;
 	static {
 		CatalogType_MAP = new HashMap<Integer, String>();
@@ -43,11 +48,16 @@ public class CommConstant {
 		CatalogType_MAP.put(SHERA_MANAGER, "shera管理");
 		CatalogType_MAP.put(STORAGE, "存储与备份");
 		CatalogType_MAP.put(REF_SERVICE, "外部服务");
+		CatalogType_MAP.put(CEPH_FS, "ceph文件存储");
+		CatalogType_MAP.put(CEPH_RBD, "ceph块存储");
+		CatalogType_MAP.put(CEPH_GW, "ceph对象存储");
+		CatalogType_MAP.put(CEPH_SNAP, "快照");
+		CatalogType_MAP.put(CEPH_SNAP_STRATEGY, "快照策略");
 	}
-    
-    
-    
-    
+
+
+
+
 	// operation Type
 	public static final Integer OPERATION_TYPE_CREATED    = 10;       //创建
 	public static final Integer OPERATION_TYPE_UPDATE     = 20;       //更新
@@ -58,8 +68,8 @@ public class CommConstant {
 	public static final Integer OPERATION_TYPE_EXPORT     = 70;       //导出
 	public static final Integer OPERATION_TYPE_START_CI   = 80;       //构建镜像
 	public static final Integer OPERATION_TYPE_STOP_CI    = 90;       //停止构建镜像
-	public static final Integer OPERATION_TYPE_DEL_CI     = 100;      //删除一个代码构建执行 
-	
+	public static final Integer OPERATION_TYPE_DEL_CI     = 100;      //删除一个代码构建执行
+
 	public static Map<Integer, String> OPERATION_TYPE_MAP;
 	static {
 		OPERATION_TYPE_MAP = new HashMap<Integer, String>();
@@ -75,5 +85,5 @@ public class CommConstant {
 		OPERATION_TYPE_MAP.put(OPERATION_TYPE_DEL_CI, "删除一个代码构建执行");
 	}
 
-	
+
 }

@@ -227,8 +227,19 @@ $(document).ready(function(){
 	    	if(!saveCephData()) {
 				return;
 			}
+	    	if(!saveCephData2()) {
+				return;
+			}
 	    } else {
 	    	$("#serviceType").val(2);
+	    }
+
+	    //块设备不能共享，副本数只能为1
+	    var rbdStr = $("#rbdStrs").val();
+	    if(rbdStr!=""&&instNum!=1){
+	    	  layer.tips('块设备不能共享，实例数量只能为1！','#instanceNum',{tips: [1, '#3595CC']});
+		      $('#instanceNum').focus();
+		      return;
 	    }
 
 	    var nginxstr = "";
@@ -349,12 +360,19 @@ $(document).ready(function(){
 
 	// 控制checkbook后输入框是否可填写
 	$("#save_roll_dev").hide();
+	$("#save_roll_dev2").hide();
 	$("#state_service").click(function(){
 		$("#save_roll_dev").toggle();
 		$("#mountPath").focus();
 		//调节界面高度
 		var imagePage_height = $(".host_step2").height();
     	$(".step-inner").height(imagePage_height+100);
+
+    	$("#save_roll_dev2").toggle();
+		$("#mountPath2").focus();
+		//调节界面高度
+		var imagePage_height2 = $(".host_step2").height();
+    	$(".step-inner").height(imagePage_height2+100);
 	});
 
 	// 启动命令
@@ -472,6 +490,24 @@ $(document).ready(function(){
 //		$("#storageName_"+count).val(selectVolume);
 //		$("#mountPoint_"+count).val(mountPath);
 //		$("#id_"+count).val(id);
+		count++;
+		//调节界面高度
+		var imagePage_height = $(".host_step2").height();
+    	$(".step-inner").height(imagePage_height+100);
+	});
+
+	$("#addVolume2").click(function(){
+		var selectItem = $(".selectVolumeAddItme2")[0].outerHTML;
+		var tr = '<tr>'
+				+'<td class="keys'+count+'"></td>'
+				+'<td class="vals"><input type="text" id = "mountPoint_'+count+'" style="width: 98%"></td>'
+				+'<td class="func"><a href="javascript:void(0)" onclick="deleteCephRow(this)" class="gray">'
+				+'<i class="fa fa-trash-o fa-lg"></i></a><input type="hidden" id = "id_'+count+'">'
+				+'</td>'
+				+'</tr>';
+		$("#volList2").append(tr);
+		var keyTd = '.keys'+count;
+		$(keyTd).append(selectItem);
 		count++;
 		//调节界面高度
 		var imagePage_height = $(".host_step2").height();
@@ -937,6 +973,56 @@ function saveCephData(){
     return true;
 }
 
+//保存挂载地址数据到json中,rbd
+function saveCephData2(){
+	var dataJson="";
+	var arrayKey = new Array(1) ;
+	var arrayValue = new Array(1);
+	var flag = 0;
+    $("#volList2 tr").each(function (index, domEle){
+    	 var id = "";
+         var mountPoint = "";
+//         $(domEle).find("input").each(function(index,data){
+//             if (index == 1){
+//             	mountPoint = $(data).val();
+//             }
+//             if(index == 2){
+//             	id = $(data).val();
+//             }
+//         });
+        id = $(domEle).find("select").val();
+        mountPoint = $(domEle).find(".vals").find("input").val();
+
+ 		for (var i = 0; i<arrayKey.length;i++) {
+ 			if (id == arrayKey[i]) {
+ 				layer.tips('存储卷不能重复，请您重新选择',domEle,{tips: [1, '#3595CC']});
+ 				$(domEle).focus();
+ 				flag = 1;
+ 				break;
+ 			}
+ 		}
+ 		arrayKey.push(id);
+ 		for (var i = 0; i<arrayValue.length;i++) {
+ 			if (mountPoint == arrayValue[i]) {
+ 				layer.tips('挂载地址不能重复，请您重新填写',domEle,{tips: [1, '#3595CC']});
+ 				$(domEle).focus();
+ 				flag = 1;
+ 				break;
+ 			}
+ 		}
+ 		arrayValue.push(mountPoint);
+ 		dataJson += id+","+mountPoint+";";
+    });
+
+    if (flag == 1) {
+    	return false;
+    }
+    if (dataJson != "") {
+        dataJson = dataJson.substring(0,dataJson.length -1);
+    }
+    $('#rbdStrs').val(dataJson);
+    return true;
+}
 
 //删除挂载卷
 function deleteCephRow(obj){

@@ -98,7 +98,7 @@
 												<c:otherwise>正常</c:otherwise>
 											</c:choose></td>
 										<td style="width: 20%;"><c:choose>
-												<c:when test="${node.status.conditions[1].status==true}">Ready</c:when>
+												<c:when test="${node.status.conditions[3].status==true}">Ready</c:when>
 												<c:otherwise>NotReady</c:otherwise>
 											</c:choose></td>
 										<td style="width: 20%;"><c:choose>

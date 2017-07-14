@@ -30,7 +30,10 @@ public class WebAppConfig extends WebMvcConfigurerAdapter {
 	 * @see
 	 */
 	public static void main(String[] args) {
-		SpringApplication.run(WebAppConfig.class, args);
+		SpringApplication springApplication = new SpringApplication(WebAppConfig.class);
+		springApplication.addListeners(new SnapListener());
+		springApplication.run(args);
+		//SpringApplication.run(WebAppConfig.class, args);
 	}
 
 	/**
