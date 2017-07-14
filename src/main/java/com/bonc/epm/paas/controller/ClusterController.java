@@ -958,13 +958,13 @@ public class ClusterController {
 
 		if (nodestatus.equals("1")) {
 			for (Node node : nodeList1) {
-				if (node.getStatus().getConditions().get(1).getStatus().equals("True")) {
+				if (node.getStatus().getConditions().get(3).getStatus().equals("True")) {
 					nodeList2.add(node);
 				}
 			}
 		} else if (nodestatus.equals("2")) {
 			for (Node node : nodeList1) {
-				if (!node.getStatus().getConditions().get(1).getStatus().equals("True")) {
+				if (!node.getStatus().getConditions().get(3).getStatus().equals("True")) {
 					nodeList2.add(node);
 				}
 			}
@@ -2234,7 +2234,7 @@ public class ClusterController {
 		// 讲节点状态为Ready的节点返回，用于测试
 		for (Node node : nodeList) {
 
-			if (node.getStatus().getConditions().get(1).getStatus().equals("True")) {
+			if (node.getStatus().getConditions().get(3).getStatus().equals("True")) {
 				NodeInfo nodeInfo = new NodeInfo();
 				nodeInfo.setNodename(node.getMetadata().getName());
 				for (Pod pod : pods) {
