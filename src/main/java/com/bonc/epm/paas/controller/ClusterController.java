@@ -1150,22 +1150,9 @@ public class ClusterController {
 		Map<String, Object> map = new HashMap<String, Object>();
 		KubernetesAPIClientInterface client = kubernetesClientService.getClient();
 
-		// 清空集群中所有node上的测试pod,pod的名称与node的名称相同
-		/*
-		 * NodeList nodes = client.getAllNodes(); List<Node> nodeList =
-		 * nodes.getItems();
-		 */
-
 		PodList podList = client.getPods();
 		List<Pod> pods = podList.getItems();
 
-		/*
-		 * for (Node node : nodeList) { for (Pod pod : pods) { if
-		 * (pod.getMetadata().getName().equals(node.getMetadata().getName())) {
-		 * client.deletePodOfNamespace("kube-system",
-		 * node.getMetadata().getName()); System.out.println("pod:" +
-		 * node.getMetadata().getName() + "被删除！"); break; } } }
-		 */
 		LOG.info("**********************开始部署：" + nodenames + "**************************");
 
 		String[] names = nodenames.split(",");
@@ -1244,10 +1231,10 @@ public class ClusterController {
 				LOG.info("pod:clusterhealthy被创建！");
 			}
 
-			boolean localhealthy = false;
-			boolean clusterhealthy = false;
+			boolean localhealthy = true;
+			boolean clusterhealthy = true;
 
-			List<Service> services = client.getAllServicesOfNamespace("kube-system").getItems();
+			/*List<Service> services = client.getAllServicesOfNamespace("kube-system").getItems();
 			for (Service service : services) {
 				if (service.getMetadata().getName().equals("localhealthy")) {
 					localhealthy = true;
@@ -1256,6 +1243,18 @@ public class ClusterController {
 					clusterhealthy = true;
 					continue;
 				}
+			}*/
+
+			try {
+				client.getServiceOfNamespace("kube-system", "localhealthy");
+			} catch (KubernetesClientException e) {
+				localhealthy = false;
+			}
+
+			try {
+				client.getServiceOfNamespace("kube-system", "clusterhealthy");
+			} catch (KubernetesClientException e) {
+				clusterhealthy = false;
 			}
 
 			// 创建两个服务localhealthy与clusterhealthy
