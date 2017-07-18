@@ -1555,26 +1555,28 @@ public class ServiceController {
 			}
 
 			//删除临时rc
-			try {
-				controller = client.getReplicationController(service.getTempName());
-			} catch (Exception e1) {
-				controller = null;
-			}
-			if (controller != null) {
-				controller = client.updateReplicationController(service.getTempName(), 0);
+			if (StringUtils.isNoneBlank(service.getTempName())) {
 				try {
-					com.bonc.epm.paas.kubernetes.model.Service service2 = client.getService(service.getTempName());
-					PodList pods = client.getLabelSelectorPods(service2.getSpec().getSelector());
-					for (Pod pod : pods.getItems()){
-						client.deletePod(pod.getMetadata().getName());
-					}
+					controller = client.getReplicationController(service.getTempName());
 				} catch (Exception e1) {
-					e1.printStackTrace();
+					controller = null;
 				}
-				try {
-					client.deleteReplicationController(service.getTempName());
-				} catch (Exception e) {
-					e.printStackTrace();
+				if (controller != null) {
+					controller = client.updateReplicationController(service.getTempName(), 0);
+					try {
+						com.bonc.epm.paas.kubernetes.model.Service service2 = client.getService(service.getTempName());
+						PodList pods = client.getLabelSelectorPods(service2.getSpec().getSelector());
+						for (Pod pod : pods.getItems()){
+							client.deletePod(pod.getMetadata().getName());
+						}
+					} catch (Exception e1) {
+						e1.printStackTrace();
+					}
+					try {
+						client.deleteReplicationController(service.getTempName());
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
 			}
 
